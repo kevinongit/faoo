@@ -40,20 +40,9 @@ export default function Dashboard() {
     // 추가 배너...
   ];
   const { user, isAuthenticated } = useAuthStore();
-  const { isLoading, setIsLoading } = useState(true);
 
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      setIsLoading(false);
-      console.log({ isAuthenticated, user });
-    }
-  }, [isAuthenticated, user]);
   console.log("Dashboard");
   console.log({ isAuthenticated, user });
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <ProtectedRoute>
@@ -61,7 +50,7 @@ export default function Dashboard() {
         {/* 1열: 상단 바 */}
         <div className="flex justify-between items-center p-4 bg-yellow-400">
           <div className="flex items-center">
-            <span className="font-bold mr-2">{user.username}</span>
+            <span className="font-bold mr-2">{user?.username}</span>
             <Button onClick={() => setShowAccountPopup(true)}>내 계좌</Button>
           </div>
           <Bell
