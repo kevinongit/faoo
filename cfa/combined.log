@@ -1,0 +1,8 @@
+{"level":"info","message":"Server is running on http://localhost:6200","timestamp":"2025-02-11T01:55:09.553Z"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2025-02-11T01:55:09.569Z"}
+{"level":"info","message":"Merchant data retrieved. Total count: 0","timestamp":"2025-02-11T04:25:31.900Z"}
+{"level":"info","message":"Merchant data retrieved. Total count: 0","timestamp":"2025-02-11T04:38:14.917Z"}
+{"level":"info","message":"Merchant data retrieved. Total count: 20","timestamp":"2025-02-11T04:39:44.029Z"}
+{"level":"info","message":"Purchase data retrieved. Total count: 20","timestamp":"2025-02-11T04:43:32.536Z"}
+{"level":"info","message":"Approval data retrieved. Total count: 20","timestamp":"2025-02-11T04:43:46.830Z"}
+{"level":"info","message":"Deposit data retrieved. Total count: 20","timestamp":"2025-02-11T04:44:08.663Z"}

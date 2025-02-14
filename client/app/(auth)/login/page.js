@@ -36,6 +36,7 @@ export default function LoginPage() {
       toast({
         title: "로그인 성공",
         description: `${response.data.user.username}님 환영합니다!`,
+        duration: 1000,
       });
       router.push("/dashboard");
     } catch (error) {

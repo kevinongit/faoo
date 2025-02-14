@@ -9,6 +9,7 @@ export default function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuthStore();
   const [isMounted, setIsMounted] = useState(false);
 
+  console.log("ProtectedRoute", { isAuthenticated, isMounted });
   useEffect(() => {
     setIsMounted(true);
     if (!isAuthenticated) {

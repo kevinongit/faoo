@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import api from "@/lib/api";
+// import api from "@/lib/api";
 import { useState } from "react";
 
 export default function Header() {
@@ -30,14 +30,15 @@ export default function Header() {
       setIsLoading(false);
     }
   };
+  console.log("Header", { user, isAuthenticated });
 
   return (
     <header className="fixed top-0 w-full bg-white shadow-sm z-50">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* 로고 */}
-          <Link href="/" className="flex items-center">
-            <span className="text-2xl font-bold text-blue-600">BD</span>
+          <Link href="/dashboard" className="flex items-center">
+            <span className="text-2xl font-bold text-blue-600">FA</span>
           </Link>
 
           {/* 네비게이션 메뉴 */}

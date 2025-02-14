@@ -6,12 +6,17 @@ const api = axios.create({
   baseURL: "http://localhost:5100/api",
 });
 
-api.interceptors.request.use((config) => {
-  const { token } = useAuthStore.getState();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+api.interceptors.request.use(
+  (config) => {
+    const { token } = useAuthStore.getState();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
 export default api;

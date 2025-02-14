@@ -1,11 +1,12 @@
 // components/GNB.js
-import { Home, Gift, Package, MoreHorizontal } from "lucide-react";
+import { Home, Gift, Package, Gauge, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 
 const menuItems = [
-  { icon: Home, label: "홈", href: "/" },
+  { icon: Home, label: "홈", href: "/dashboard" },
   { icon: Gift, label: "혜택", href: "/benefits" },
   { icon: Package, label: "상품", href: "/products" },
+  { icon: Gauge, label: "매출", href: "/sales-dashboard" },
   { icon: MoreHorizontal, label: "전체", href: "/menu" },
 ];
 

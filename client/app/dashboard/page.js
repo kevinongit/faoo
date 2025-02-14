@@ -7,13 +7,20 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuthStore } from "@/lib/store/authStore";
 
-import ProtectedRoute from "@/components/ProtectedRoute";
 import FullWidthCarousel from "@/components/FullWidthCarousel";
 import GNB from "@/components/GNB";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function Dashboard() {
+  const { user, token, isAuthenticated } = useAuthStore();
   const router = useRouter();
   const [showAccountPopup, setShowAccountPopup] = useState(false);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/login");
+    }
+  }, [isAuthenticated, router]);
 
   const eventBanners = [
     {
@@ -39,7 +46,6 @@ export default function Dashboard() {
     },
     // 추가 배너...
   ];
-  const { user, isAuthenticated } = useAuthStore();
 
   console.log("Dashboard");
   console.log({ isAuthenticated, user });
@@ -65,7 +71,7 @@ export default function Dashboard() {
         {/* 3열: 내 통장 정보 */}
         <Card className="mx-4 my-6">
           <CardContent className="p-6">
-            {user.hasAccount ? (
+            {false ? (
               <div>
                 <h2 className="font-bold text-lg mb-2">내 통장</h2>
                 <p className="text-2xl font-bold">잔액: ₩1,234,567</p>

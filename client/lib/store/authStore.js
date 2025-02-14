@@ -8,6 +8,12 @@ export const useAuthStore = create(
       user: null,
       token: null,
       isAuthenticated: false,
+      // initializeAuth: () => {
+      //   const storedAuth = JSON.parse(localStorage.getItem('auth-storage') || '{}');
+      //   if (storedAuth.state?.isAuthenticated) {
+      //     set({ isAuthenticated: true, user: storedAuth.state.user });
+      //   }
+      // },
       login: (user, token) => set({ user, token, isAuthenticated: true }),
       logout: () => set({ user: null, token: null, isAuthenticated: false }),
     }),

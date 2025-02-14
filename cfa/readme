@@ -1,0 +1,10 @@
+여신금융협회(The Credit Finance Association)의 매통조 API를 시뮬레이션하는 이 시스템에서 가맹점(merchant) 목록을 얻기 위한 엔드포인트 접근 절차는 다음과 같습니다:
+- 토큰 발급:
+    엔드포인트: POST /oauth/token
+    요청 본문: { "grant_type": "client_credentials" }
+    응답: 액세스 토큰 정보를 포함한 JSON 객체
+- 가맹점 목록 조회:
+    엔드포인트: POST /oauth2/mer/page
+    헤더: Authorization: Bearer <access_token>
+    요청 본문: { "pageNo": 1, "numOfRows": 10 }
+    응답: 가맹점 목록 정보를 포함한 JSON 객체
