@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Search, Menu, Plus, Send } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { differenceInMinutes, parseISO } from 'date-fns';
 import { sendMessage } from '@/lib/api';
 import { useSocket } from '@/lib/socket';
 import { useChatStore } from '@/store/chatStore';
@@ -20,6 +22,8 @@ export default function ChatRoom({ chatId }) {
   const user = useAuthStore(state => state.user);
 
   const selectedChat = getSelectedChat();
+
+
 
   useEffect(() => {
     if (socket) {
@@ -60,6 +64,15 @@ export default function ChatRoom({ chatId }) {
     }
   };
 
+  const shouldShowAvatar = (message, index, messages) => {
+    if (message.from === user.id) return false;
+    if (index === 0) return true;
+    const prevMessage = messages[index - 1];
+    if (prevMessage.from !== message.from) return true;
+    const timeDiff = differenceInMinutes(parseISO(message.timestamp), parseISO(prevMessage.timestamp));
+    return timeDiff >= 1;
+  };
+
   if (!selectedChat) {
     return <div>Loading...</div>;
   }
@@ -74,16 +87,25 @@ export default function ChatRoom({ chatId }) {
           <Menu className="inline-block cursor-pointer" />
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto p-4">
-        {selectedChat.messages.map((message, index) => (
-          <div key={index} className={`mb-4 ${message.from === user.id ? 'text-right' : 'text-left'}`}>
-            <div className={`inline-block p-2 rounded-lg ${message.from === user.id ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
+
+
+      <div className="flex-1 p-4 overflow-y-auto">
+        {selectedChat.messages.map((message, index, messages) => (
+          <div key={index} className={`mb-4 flex ${message.from === user.id ? 'justify-end' : 'justify-start'}`}>
+            {message.from !== user.id && shouldShowAvatar(message, index, messages) && (
+              <Avatar className="flex-shrink-0 mr-2">
+                <AvatarImage src={`/images/users/${message.from}.jpg`} alt={message.from} />
+                <AvatarFallback>{message.from[0].toUpperCase()}</AvatarFallback>
+              </Avatar>
+            )}
+            <div className={`p-2 rounded-lg ${message.from === user.id ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
               {message.content}
             </div>
           </div>
         ))}
         <div ref={messagesEndRef} />
       </div>
+
       <div className="flex items-center p-4 bg-white border-t">
         <Plus className="mr-2 cursor-pointer" />
         <Input
