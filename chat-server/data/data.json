@@ -1,0 +1,72 @@
+{
+  "users": [
+    {
+      "id": "aa",
+      "password": "aa"
+    },
+    {
+      "id": "bb",
+      "password": "bb"
+    },
+    {
+      "id": "cc",
+      "password": "cc"
+    },
+    {
+      "id": "dd",
+      "password": "dd"
+    },
+    {
+      "id": "ee",
+      "password": "ee"
+    }
+  ],
+  "chatLists": {
+    "aa": [
+      {
+        "with": "bb",
+        "messages": [
+          {
+            "from": "aa",
+            "to": "bb",
+            "content": "안녕하세요!",
+            "type": "text",
+            "timestamp": "2023-05-01T10:00:00Z",
+            "read": true
+          },
+          {
+            "from": "bb",
+            "to": "aa",
+            "content": "<b>반갑습니다!</b>",
+            "type": "html",
+            "timestamp": "2023-05-01T10:05:00Z",
+            "read": false
+          }
+        ]
+      }
+    ],
+    "bb": [
+      {
+        "with": "aa",
+        "messages": [
+          {
+            "from": "aa",
+            "to": "bb",
+            "content": "안녕하세요!",
+            "type": "text",
+            "timestamp": "2023-05-01T10:00:00Z",
+            "read": true
+          },
+          {
+            "from": "bb",
+            "to": "aa",
+            "content": "<b>반갑습니다!</b>",
+            "type": "html",
+            "timestamp": "2023-05-01T10:05:00Z",
+            "read": true
+          }
+        ]
+      }
+    ]
+  }
+}
