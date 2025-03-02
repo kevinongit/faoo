@@ -8,14 +8,14 @@ import { ArrowLeft, Search, Menu, Plus, Send } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { differenceInMinutes, parseISO } from 'date-fns';
 import { sendMessage } from '@/lib/api';
-import { useSocket } from '@/lib/socket';
+import useSocketStore from '@/store/socketStore';
 import { useChatStore } from '@/store/chatStore';
 import { useAuthStore } from '@/store/authStore';
 
 export default function ChatRoom({ chatId }) {
   const [newMessage, setNewMessage] = useState('');
   const router = useRouter();
-  const socket = useSocket();
+  const socket = useSocketStore(state => state.socket);
   const messagesEndRef = useRef(null);
 
   const { getSelectedChat, addMessage, updateUnreadCount } = useChatStore();
@@ -27,22 +27,24 @@ export default function ChatRoom({ chatId }) {
 
   useEffect(() => {
     if (socket) {
-      socket.on('new-message', (message) => {
-        if (message.from === chatId || message.to === chatId) {
+      const handleNewMessage = (message) => {
+        console.log('new-message:', message);
+        if (message.to === user.id) {
           addMessage(chatId, message);
+          updateUnreadCount(chatId, 1);
         }
-      });
-    }
+      };
 
-    return () => {
-      if (socket) {
-        socket.off('new-message');
-      }
-    };
-  }, [socket, chatId, addMessage]);
+      socket.on('new-message', handleNewMessage);
+
+      return () => {
+        socket.off('new-message', handleNewMessage);
+      };
+    }
+  }, [socket, chatId, user.id, addMessage, updateUnreadCount]);
 
   useEffect(() => {
-    updateUnreadCount(chatId);
+    updateUnreadCount(chatId, 0);
   }, [chatId, updateUnreadCount]);
 
   useEffect(() => {
@@ -58,6 +60,7 @@ export default function ChatRoom({ chatId }) {
         timestamp: new Date().toISOString(),
         type: 'text',
       };
+      //    sendMessage(from,    to,     msg,        type)
       await sendMessage(user.id, chatId, newMessage, 'text');
       addMessage(chatId, message);
       setNewMessage('');
@@ -77,6 +80,51 @@ export default function ChatRoom({ chatId }) {
     return <div>Loading...</div>;
   }
 
+  // return (
+  //   <div className="flex flex-col h-screen">
+  //     <div className="flex items-center justify-between p-4 bg-white border-b">
+  //       <ArrowLeft onClick={() => router.back()} className="cursor-pointer" />
+  //       <h2 className="text-lg font-semibold">{selectedChat.with}</h2>
+  //       <div>
+  //         <Search className="inline-block mr-4 cursor-pointer" />
+  //         <Menu className="inline-block cursor-pointer" />
+  //       </div>
+  //     </div>
+
+
+  //     <div className="flex-1 p-4 overflow-y-auto">
+  //       {selectedChat.messages.map((message, index, messages) => (
+  //         <div key={index} className={`mb-4 flex ${message.from === user.id ? 'justify-end' : 'justify-start'}`}>
+  //           {message.from !== user.id && shouldShowAvatar(message, index, messages) && (
+  //             <Avatar className="flex-shrink-0 mr-2">
+  //               <AvatarImage src={`/images/users/${message.from}.jpg`} alt={message.from} />
+  //               <AvatarFallback>{message.from[0].toUpperCase()}</AvatarFallback>
+  //             </Avatar>
+  //           )}
+  //           <div className={`p-2 rounded-lg ${message.from === user.id ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
+  //             {message.content}
+  //           </div>
+  //         </div>
+  //       ))}
+  //       <div ref={messagesEndRef} />
+  //     </div>
+
+  //     <div className="flex items-center p-4 bg-white border-t">
+  //       <Plus className="mr-2 cursor-pointer" />
+  //       <Input
+  //         value={newMessage}
+  //         onChange={(e) => setNewMessage(e.target.value)}
+  //         placeholder="메시지를 입력하세요..."
+  //         className="flex-1 mr-2"
+  //         onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+  //       />
+  //       <Button onClick={handleSend}>
+  //         <Send />
+  //       </Button>
+  //     </div>
+  //   </div>
+  // );
+
   return (
     <div className="flex flex-col h-screen">
       <div className="flex items-center justify-between p-4 bg-white border-b">
@@ -87,7 +135,6 @@ export default function ChatRoom({ chatId }) {
           <Menu className="inline-block cursor-pointer" />
         </div>
       </div>
-
 
       <div className="flex-1 p-4 overflow-y-auto">
         {selectedChat.messages.map((message, index, messages) => (
@@ -121,4 +168,5 @@ export default function ChatRoom({ chatId }) {
       </div>
     </div>
   );
+
 }

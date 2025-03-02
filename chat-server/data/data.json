@@ -25,6 +25,7 @@
     "aa": [
       {
         "with": "bb",
+        "unreadCount": 2,
         "messages": [
           {
             "from": "aa",
@@ -86,6 +87,7 @@
       },
       {
         "with": "cc",
+        "unreadCount": 1,
         "messages": [
           {
             "from": "aa",
@@ -125,6 +127,7 @@
     "bb": [
       {
         "with": "aa",
+        "unreadCount": 3,
         "messages": [
           {
             "from": "aa",
@@ -170,6 +173,7 @@
       },
       {
         "with": "dd",
+        "unreadCount": 1,
         "messages": [
           {
             "from": "bb",
@@ -209,6 +213,7 @@
     "cc": [
       {
         "with": "aa",
+        "unreadCount": 0,
         "messages": [
           {
             "from": "aa",
@@ -254,6 +259,7 @@
       },
       {
         "with": "ee",
+        "unreadCount": 1,
         "messages": [
           {
             "from": "cc",
@@ -293,6 +299,7 @@
     "dd": [
       {
         "with": "bb",
+        "unreadCount": 3,
         "messages": [
           {
             "from": "bb",
@@ -340,6 +347,7 @@
     "ee": [
       {
         "with": "cc",
+        "unreadCount": 1,
         "messages": [
           {
             "from": "cc",

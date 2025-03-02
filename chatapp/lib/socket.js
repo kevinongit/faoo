@@ -1,15 +1,15 @@
 import { io } from 'socket.io-client';
 import { useEffect, useState } from 'react';
-import { useAuthStore } from '@/store/authStore';
+import { getAuthStore } from '@/store/authStore';
 
 const SOCKET_SERVER_URL = 'http://localhost:3001'; // Socket.IO 서버 주소로 변경해주세요
 
 let socket;
 
 export const initSocket = () => {
-  const token = useAuthStore.getState().token;
+  const token = getAuthStore().getState().token;
   socket = io(SOCKET_SERVER_URL, {
-    auth: {
+    query: {
       token,
     },
   });

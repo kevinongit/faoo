@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { login } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
+import useSocketStore from '@/store/socketStore';
 
 export default function LoginForm() {
   const [id, setId] = useState('');
@@ -13,6 +14,7 @@ export default function LoginForm() {
   const router = useRouter();
   const setToken = useAuthStore(state => state.setToken);
   const setUser = useAuthStore(state => state.setUser);
+  const initSocket = useSocketStore(state => state.initSocket);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,11 +22,16 @@ export default function LoginForm() {
       const token = await login(id, password);
       setToken(token);
       setUser({ id, token });
+
+      // Initialize socket connection
+      initSocket(token);
+
       router.push('/chat-list');
     } catch (error) {
       console.error('Login failed:', error);
     }
   };
+
 
   return (
     <Card className="w-[350px]">

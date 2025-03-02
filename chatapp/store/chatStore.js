@@ -35,19 +35,27 @@ export const useChatStore = create((set, get) => ({
     }));
   },
 
-  updateUnreadCount: (chatId) => {
-    set((state) => ({
-      chatList: state.chatList.map((chat) => {
-        if (chat.with === chatId) {
-          return {
-            ...chat,
-            messages: chat.messages.map((msg) => ({ ...msg, read: true })),
-          };
-        }
-        return chat;
-      }),
-    }));
-  },
+  updateUnreadCount: (chatId, updater) => set(state => ({
+    chatList: state.chatList.map(chat =>
+      chat.with === chatId
+        ? { ...chat, unreadCount: typeof updater === 'function' ? updater(chat.unreadCount ?? 0) : updater }
+        : chat
+    )
+  })),
+
+  // updateUnreadCount: (chatId) => {
+  //   set((state) => ({
+  //     chatList: state.chatList.map((chat) => {
+  //       if (chat.with === chatId) {
+  //         return {
+  //           ...chat,
+  //           messages: chat.messages.map((msg) => ({ ...msg, read: true })),
+  //         };
+  //       }
+  //       return chat;
+  //     }),
+  //   }));
+  // },
 
   getSelectedChat: () => {
     const { chatList, selectedChatId } = get();
