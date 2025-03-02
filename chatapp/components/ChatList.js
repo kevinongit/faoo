@@ -105,17 +105,33 @@ export default function ChatList() {
   return (
     <div className="flex flex-col h-screen">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 bg-white">
-        <h1 className="text-2xl font-bold">채팅</h1>
-        <div>
+      <div className="flex items-center p-4 bg-white">
+        <div className="flex-1">
+          {/* Left side: Optional title or left content */}
+          <h1 className="text-2xl font-bold">채팅</h1>
+        </div>
+        <div className="flex-1 text-center">
+          {/* Center: Display user id */}
+          <span className="text-xl">@{user.id}</span>
+        </div>
+        <div className="flex-1 text-right">
+          {/* Right side: Action icons */}
           <Search className="inline-block mr-4" />
           <Settings className="inline-block" />
         </div>
       </div>
 
       {/* Banner */}
-      <div className="h-40 bg-gray-200">
-        {/* 배너 이미지 */}
+      <div className="w-full max-w-[500px] mb-5 mx-auto">
+        <Image
+          src="/images/banners/sky2-500x150.jpg"
+          alt="Banner"
+          width={500}
+          height={140}
+          className="object-cover w-full h-auto"
+          placeholder="blur" // 로딩 중 흐릿한 효과
+          blurDataURL="data:image/jpeg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAKAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAX/xAAbEAACAgMBAAAAAAAAAAAAAAAcEAYQMEISI//EABUBAQEAAAAAAAAAAAAAAAAAAAUG/8QAGREAAgMBAAAAAAAAAAAAAAAAABEBEiEx/9oADAMBAAIRAxEAPwCNtA1u3zIJG5k6sM9oHWOeR2A2H3qPEeM5YcE8dQv/Z" // 샘플 blur 이미지
+        />
       </div>
 
       {/* Chat list */}

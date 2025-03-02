@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Search, Menu, Plus, Send } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { differenceInMinutes, parseISO } from 'date-fns';
-import { sendMessage } from '@/lib/api';
+import { sendMessage, markAllRead } from '@/lib/api';
 import useSocketStore from '@/store/socketStore';
 import { useChatStore } from '@/store/chatStore';
 import { useAuthStore } from '@/store/authStore';
@@ -27,11 +27,13 @@ export default function ChatRoom({ chatId }) {
 
   useEffect(() => {
     if (socket) {
-      const handleNewMessage = (message) => {
+      const handleNewMessage = async (message) => {
         console.log('new-message:', message);
         if (message.to === user.id) {
           addMessage(chatId, message);
-          updateUnreadCount(chatId, 1);
+          // updateUnreadCount(chatId, 0);
+          await markAllRead({ userId: user.id, chatId });
+
         }
       };
 
