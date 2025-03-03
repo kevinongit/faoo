@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+import { MessageCircleMoreIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { login } from '@/lib/api';
@@ -35,8 +36,9 @@ export default function LoginForm() {
 
   return (
     <Card className="w-[350px]">
-      <CardHeader>
-        <h2 className="text-2xl font-bold text-center">Login</h2>
+      <CardHeader className="flex flex-row items-center justify-center gap-2">
+        <h2 className="text-2xl font-bold text-center text-blue-600">Kokoa Talk</h2>
+        <MessageCircleMoreIcon size={28} className="w-6 h-6 text-gray-700" /> {/* Talk 아이콘 */}
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit}>

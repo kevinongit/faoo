@@ -1,6 +1,7 @@
 const express = require('express');
 const data = require('../data/data.json');
 const logger = require('../utils/logger');
+const path = require('path')
 
 function createChatRouter(io) {
   const router = express.Router();
@@ -140,6 +141,36 @@ function createChatRouter(io) {
     }
 
     return res.status(200).json({ success: true, message: 'All messages marked as read (if applicable)' });
+  });
+
+  router.post('/fd-notify', (req, res) => {
+    const { to, type, filename, title, path: filePath = '/pdf/', desc = '' } = req.body;
+
+    console.log('fd-notify : req.body:', req.body);
+    if (!to || !type || !filename) {
+      logger.error('Missing required fields in fd-notify request');
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const fileTitle = title || path.parse(filename).name;
+    const message = {
+      from: 'admin',
+      to,
+      content: '파일이 도착했습니다.',
+      type,
+      filename,
+      title: fileTitle,
+      path: filePath,
+      desc,
+      timestamp: new Date().toISOString(),
+    };
+
+    logger.info(`Sending file notification to ${to}: ${filename}`);
+
+    // Emit the file notification via Socket.IO to the recipient
+    io.to(to).emit('new-message', message);
+
+    res.status(200).json({ success: true, message: 'File notification sent successfully' });
   });
 
 

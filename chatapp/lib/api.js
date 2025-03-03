@@ -29,6 +29,16 @@ export const login = async (id, password) => {
   }
 };
 
+export const fetchUsers = async () => {
+  try {
+    const response = await api.get('/users');
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch users:', error);
+    throw error;
+  }
+};
+
 export const getChatList = async (userId) => {
   try {
     const response = await api.get(`/chat-list/${userId}`);
@@ -68,6 +78,15 @@ export const markAllRead = async ({ userId, chatId }) => {
   return response.data;
 };
 
+export const sendFileNotification = async (data) => {
+  try {
+    const response = await api.post('/fd-notify', data);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to send file notification:', error);
+    throw error;
+  }
+};
 
 
 export default api;

@@ -4,6 +4,20 @@ const data = require('../data/data.json');
 const logger = require('../utils/logger');
 const jwt = require('jsonwebtoken');
 
+// Middleware to verify JWT token
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+};
+
 router.post('/login', (req, res) => {
   const { id, password } = req.body;
   logger.info(`Login attempt for user: ${id}`);
@@ -25,25 +39,16 @@ router.post('/login', (req, res) => {
   }
 });
 
-// // Login endpoint for MongoDB
-// router.post("/login", async (req, res) => {
-//   try {
-//     const user = await User.findOne({ userId: req.body.userId });
-//     if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
-//       console.log(`Invalid login credentials for ${req.body.userId}`);
-//       return res.status(400).send({ error: "Invalid login credentials" });
-//     }
-//     const token = jwt.sign(
-//       { _id: user._id.toString() },
-//       process.env.JWT_SECRET
-//     );
-//     const { _id, __v, password, ...aUser } = user.toObject();
-//     console.log(`User ${aUser.userId} logged in`);
-//     res.send({ user: aUser, token });
-//   } catch (error) {
-//     console.log(`Error logging in: ${error}`);
-//     res.status(400).send(error);
-//   }
-// });
+// New GET interface for authenticated users to retrieve user list
+router.get('/users', /* authenticateToken,**/(req, res) => {
+  logger.info('Fetching user list');
+  const userList = data.users.map(user => ({
+    id: user.id,
+    name: user.name
+  }));
+
+  logger.info(`User requested user list : ${JSON.stringify(userList)}`);
+  res.json(userList);
+});
 
 module.exports = router;

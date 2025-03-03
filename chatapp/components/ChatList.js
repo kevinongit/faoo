@@ -1,67 +1,68 @@
 "use client";
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, Settings } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
+import { Search, Settings, X } from 'lucide-react';
+import { format, parseISO, addDays } from 'date-fns';
 import { useAuthStore } from '@/store/authStore';
 import { useChatStore } from '@/store/chatStore';
 import Image from 'next/image';
 import useSocketStore from '@/store/socketStore';
-// Import the new API function to mark all messages read
-import { markAllRead } from '@/lib/api';
+import { fetchUsers, markAllRead, sendFileNotification } from '@/lib/api';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 export default function ChatList() {
   const router = useRouter();
   const user = useAuthStore(state => state.user);
   const { chatList, fetchChatList, selectChat, isLoading, error, addMessage, updateUnreadCount } = useChatStore();
   const socket = useSocketStore(state => state.socket);
+  const [users, setUsers] = useState([]);
+  const [showFileNotifyForm, setShowFileNotifyForm] = useState(false);
+  const [selectedRecipient, setSelectedRecipient] = useState('');
+  const [selectedFileType, setSelectedFileType] = useState('');
 
-  // Log initial user
-  console.debug('[ChatList] Rendered with user:', user);
-
-  // On mount: join socket and fetch chat list
   useEffect(() => {
     if (socket && user) {
-      console.debug('[ChatList] Emitting join event for user:', user.id);
       socket.emit('join', user.id);
-      console.debug('[ChatList] Fetching chat list for user:', user.id);
       fetchChatList(user.id);
     }
   }, [socket, user, fetchChatList]);
 
-  // Log chat list when updated
-  useEffect(() => {
-    console.debug('[ChatList] Fetched chat list:', chatList);
-  }, [chatList]);
-
-  // Handle incoming new messages
   useEffect(() => {
     if (socket) {
       const handleNewMessage = (message) => {
-        console.debug('[ChatList] new-message event received:', message);
-        // Add the new message to the state
         addMessage(message.from, message);
-        // Only increment unread count if message is from another user
         if (message.from !== user.id) {
-          console.debug('[ChatList] Incrementing unread count for chat:', message.from);
-          updateUnreadCount(message.from, (prev) => {
-            const newCount = prev + 1;
-            console.debug('[ChatList] Updated unread count for', message.from, ':', newCount);
-            return newCount;
-          });
+          updateUnreadCount(message.from, (prev) => prev + 1);
         }
       };
 
       socket.on('new-message', handleNewMessage);
-      console.debug('[ChatList] Registered new-message handler.');
       return () => {
         socket.off('new-message', handleNewMessage);
-        console.debug('[ChatList] Unregistered new-message handler.');
       };
     }
   }, [socket, addMessage, updateUnreadCount, user.id]);
+
+  useEffect(() => {
+    const getUsers = async () => {
+      try {
+        const fetchedUsers = await fetchUsers();
+        // Filter out the current user from the list
+        const filteredUsers = fetchedUsers.filter(u => u.id !== user.id);
+        setUsers(filteredUsers);
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
+
+    getUsers();
+  }, [user.id]);
 
   const formatDate = (timestamp) => {
     const date = parseISO(timestamp);
@@ -75,53 +76,115 @@ export default function ChatList() {
     }
   };
 
-  // Modified selectChatHandler to call the /allread endpoint API
   const selectChatHandler = async (chatId) => {
-    console.debug('[ChatList] Chat selected:', chatId);
     try {
-      // Call the API endpoint to mark all messages read for this chat
       await markAllRead({ userId: user.id, chatId });
-      console.debug('[ChatList] All messages marked as read for chat:', chatId);
-      // Update the unread count locally to 0
       updateUnreadCount(chatId, 0);
     } catch (err) {
-      console.error('[ChatList] Failed to mark messages as read:', err);
+      console.error('Failed to mark messages as read:', err);
     }
-    // Set the selected chat and navigate to the ChatRoom
     selectChat(chatId);
     router.push(`/chat/${chatId}`);
   };
 
-  if (isLoading) {
-    console.debug('[ChatList] Loading chat list...');
-    return <div>Loading...</div>;
-  }
-  if (error) {
-    console.error('[ChatList] Error fetching chat list:', error);
-    return <div>Error: {error}</div>;
-  }
-  console.log('chatList:', chatList);
+  const handleFileNotify = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData);
+
+    if (!data.filename.includes('.')) {
+      data.filename += `.${data.type.toLowerCase()}`;
+    }
+
+    // Use the selected dates from the form
+    data.fromDate = formData.get('fromDate') || new Date().toISOString().split('T')[0];
+    data.toDate = formData.get('toDate') || addDays(new Date(), 10).toISOString().split('T')[0];
+
+    try {
+      await sendFileNotification(data);
+      setShowFileNotifyForm(false);
+    } catch (error) {
+      console.error('Error sending file notification:', error);
+    }
+  };
+
+
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
+
+
 
   return (
     <div className="flex flex-col h-screen">
-      {/* Header */}
       <div className="flex items-center p-4 bg-white">
         <div className="flex-1">
-          {/* Left side: Optional title or left content */}
           <h1 className="text-2xl font-bold">채팅</h1>
         </div>
         <div className="flex-1 text-center">
-          {/* Center: Display user id */}
           <span className="text-xl">@{user.id}</span>
         </div>
         <div className="flex-1 text-right">
-          {/* Right side: Action icons */}
           <Search className="inline-block mr-4" />
-          <Settings className="inline-block" />
+          {user.id === 'admin' && (
+            <Dialog open={showFileNotifyForm} onOpenChange={setShowFileNotifyForm}>
+              <DialogTrigger asChild>
+                <Settings className="inline-block cursor-pointer" />
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>파일 알림 전송</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleFileNotify} className="space-y-4">
+                  <Select name="to" required value={selectedRecipient} onValueChange={setSelectedRecipient}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="수신자 선택" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {users.map(user => (
+                        <SelectItem key={user.id} value={user.id}>{user.name} ({user.id})</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input name="title" placeholder="제목" defaultValue="2분기 매출보고서" required />
+                  <Textarea name="desc" placeholder="설명" defaultValue="사장님 2분기 매출 보고서입니다." required />
+                  <Input name="path" placeholder="다운로드 디렉토리" defaultValue="/pdf" required />
+                  <Select name="type" required value={selectedFileType} onValueChange={setSelectedFileType}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="파일 타입" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pdf">PDF</SelectItem>
+                      <SelectItem value="xlsx">엑셀</SelectItem>
+                      <SelectItem value="docx">워드</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input name="filename" placeholder="파일명" defaultValue="2q-revenue" required />
+                  <div className="flex space-x-2">
+                    <Input
+                      type="date"
+                      name="fromDate"
+                      defaultValue={new Date().toISOString().split('T')[0]}
+                      required
+                    />
+                    <Input
+                      type="date"
+                      name="toDate"
+                      defaultValue={addDays(new Date(), 10).toISOString().split('T')[0]}
+                      required
+                    />
+                  </div>
+                  <Button type="submit" disabled={!selectedRecipient || !selectedFileType}>전송</Button>
+
+                </form>
+
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </div>
 
-      {/* Banner */}
       <div className="w-full max-w-[500px] mb-5 mx-auto">
         <Image
           src="/images/banners/sky2-500x150.jpg"
@@ -129,12 +192,11 @@ export default function ChatList() {
           width={500}
           height={140}
           className="object-cover w-full h-auto"
-          placeholder="blur" // 로딩 중 흐릿한 효과
-          blurDataURL="data:image/jpeg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAKAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAX/xAAbEAACAgMBAAAAAAAAAAAAAAAcEAYQMEISI//EABUBAQEAAAAAAAAAAAAAAAAAAAUG/8QAGREAAgMBAAAAAAAAAAAAAAAAABEBEiEx/9oADAMBAAIRAxEAPwCNtA1u3zIJG5k6sM9oHWOeR2A2H3qPEeM5YcE8dQv/Z" // 샘플 blur 이미지
+          placeholder="blur"
+          blurDataURL="data:image/jpeg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAKAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAX/xAAbEAACAgMBAAAAAAAAAAAAAAAcEAYQMEISI//EABUBAQEAAAAAAAAAAAAAAAAAAAUG/8QAGREAAgMBAAAAAAAAAAAAAAAAABEBEiEx/9oADAMBAAIRAxEAPwCNtA1u3zIJG5k6sM9oHWOeR2A2H3qPEeM5YcE8dQv/Z"
         />
       </div>
 
-      {/* Chat list */}
       <div className="flex-1 overflow-y-auto">
         {chatList.map((chat) => (
           <Card key={chat.with} className="mb-2" onClick={() => selectChatHandler(chat.with)}>
@@ -148,7 +210,9 @@ export default function ChatList() {
               <div className="flex-grow mr-4 overflow-hidden">
                 <h3 className="text-lg font-semibold">{chat.with}</h3>
                 <p className="text-sm text-gray-500 truncate max-w-[200px]">
-                  {chat.messages[chat.messages.length - 1].content}
+                  {chat.messages[chat.messages.length - 1].type === 'text'
+                    ? chat.messages[chat.messages.length - 1].content
+                    : chat.messages[chat.messages.length - 1].title}
                 </p>
               </div>
               <div className="flex-shrink-0 w-16 text-right">
