@@ -1,0 +1,445 @@
+{
+  "users": [
+    {
+      "id": "admin",
+      "name": "관리자",
+      "password": "admin"
+    },
+    {
+      "id": "suji",
+      "name": "김수지",
+      "password": "suji"
+    },
+    {
+      "id": "chris",
+      "name": "크리스 마스",
+      "password": "chris"
+    },
+    {
+      "id": "jane",
+      "name": "제인 에어",
+      "password": "jane"
+    },
+    {
+      "id": "dave",
+      "name": "데비 존스",
+      "password": "dave"
+    }
+  ],
+  "chatLists": {
+    "admin": [
+      {
+        "with": "suji",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "admin",
+            "to": "suji",
+            "content": "안녕하세요, 오늘 밤 12시부터 2시까지 시스템 점검이 있습니다.",
+            "type": "text",
+            "timestamp": "2025-03-03T10:00:00Z",
+            "read": true
+          },
+          {
+            "from": "admin",
+            "to": "suji",
+            "content": "내일 밤에도 점검이 예정되어 있으니 참고 부탁드립니다.",
+            "type": "text",
+            "timestamp": "2025-03-03T10:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "chris",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "admin",
+            "to": "chris",
+            "content": "안녕하세요, 오늘 밤 12시부터 2시까지 시스템 점검이 있습니다.",
+            "type": "text",
+            "timestamp": "2025-03-03T10:00:00Z",
+            "read": true
+          },
+          {
+            "from": "admin",
+            "to": "chris",
+            "content": "내일 밤에도 점검이 예정되어 있으니 참고 부탁드립니다.",
+            "type": "text",
+            "timestamp": "2025-03-03T10:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "jane",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "admin",
+            "to": "jane",
+            "content": "안녕하세요, 오늘 밤 12시부터 2시까지 시스템 점검이 있습니다.",
+            "type": "text",
+            "timestamp": "2025-03-03T10:00:00Z",
+            "read": true
+          },
+          {
+            "from": "admin",
+            "to": "jane",
+            "content": "내일 밤에도 점검이 예정되어 있으니 참고 부탁드립니다.",
+            "type": "text",
+            "timestamp": "2025-03-03T10:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "dave",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "admin",
+            "to": "dave",
+            "content": "안녕하세요, 오늘 밤 12시부터 2시까지 시스템 점검이 있습니다.",
+            "type": "text",
+            "timestamp": "2025-03-03T10:00:00Z",
+            "read": true
+          },
+          {
+            "from": "admin",
+            "to": "dave",
+            "content": "내일 밤에도 점검이 예정되어 있으니 참고 부탁드립니다.",
+            "type": "text",
+            "timestamp": "2025-03-03T10:05:00Z",
+            "read": true
+          }
+        ]
+      }
+    ],
+    "suji": [
+      {
+        "with": "admin",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "admin",
+            "to": "suji",
+            "content": "안녕하세요, 오늘 밤 12시부터 2시까지 시스템 점검이 있습니다.",
+            "type": "text",
+            "timestamp": "2025-03-03T10:00:00Z",
+            "read": true
+          },
+          {
+            "from": "admin",
+            "to": "suji",
+            "content": "내일 밤에도 점검이 예정되어 있으니 참고 부탁드립니다.",
+            "type": "text",
+            "timestamp": "2025-03-03T10:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "chris",
+        "unreadCount": 2,
+        "messages": [
+          {
+            "from": "suji",
+            "to": "chris",
+            "content": "안녕 크리스, 요즘 좀 어때?",
+            "type": "text",
+            "timestamp": "2025-03-03T14:00:00Z",
+            "read": true
+          },
+          {
+            "from": "chris",
+            "to": "suji",
+            "content": "나 괜찮아, 수지 너는?",
+            "type": "text",
+            "timestamp": "2025-03-03T14:02:00Z",
+            "read": true
+          },
+          {
+            "from": "suji",
+            "to": "chris",
+            "content": "나도 괜찮지. 이번 주말에 뭐해?",
+            "type": "text",
+            "timestamp": "2025-03-03T14:04:00Z",
+            "read": false
+          },
+          {
+            "from": "chris",
+            "to": "suji",
+            "content": "아직 계획 없는데, 같이 영화 볼까?",
+            "type": "text",
+            "timestamp": "2025-03-03T14:06:00Z",
+            "read": false
+          }
+        ]
+      }
+    ],
+    "chris": [
+      {
+        "with": "admin",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "admin",
+            "to": "chris",
+            "content": "안녕하세요, 오늘 밤 12시부터 2시까지 시스템 점검이 있습니다.",
+            "type": "text",
+            "timestamp": "2025-03-03T10:00:00Z",
+            "read": true
+          },
+          {
+            "from": "admin",
+            "to": "chris",
+            "content": "내일 밤에도 점검이 예정되어 있으니 참고 부탁드립니다.",
+            "type": "text",
+            "timestamp": "2025-03-03T10:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "suji",
+        "unreadCount": 1,
+        "messages": [
+          {
+            "from": "suji",
+            "to": "chris",
+            "content": "안녕 크리스, 요즘 좀 어때?",
+            "type": "text",
+            "timestamp": "2025-03-03T14:00:00Z",
+            "read": true
+          },
+          {
+            "from": "chris",
+            "to": "suji",
+            "content": "나 괜찮아, 수지 너는?",
+            "type": "text",
+            "timestamp": "2025-03-03T14:02:00Z",
+            "read": true
+          },
+          {
+            "from": "suji",
+            "to": "chris",
+            "content": "나도 괜찮지. 이번 주말에 뭐해?",
+            "type": "text",
+            "timestamp": "2025-03-03T14:04:00Z",
+            "read": true
+          },
+          {
+            "from": "chris",
+            "to": "suji",
+            "content": "아직 계획 없는데, 같이 영화 볼까?",
+            "type": "text",
+            "timestamp": "2025-03-03T14:06:00Z",
+            "read": false
+          }
+        ]
+      },
+      {
+        "with": "jane",
+        "unreadCount": 2,
+        "messages": [
+          {
+            "from": "chris",
+            "to": "jane",
+            "content": "제인, 요즘 좀 바빠?",
+            "type": "text",
+            "timestamp": "2025-03-04T09:00:00Z",
+            "read": true
+          },
+          {
+            "from": "jane",
+            "to": "chris",
+            "content": "응, 좀 정신없네. 너는?",
+            "type": "text",
+            "timestamp": "2025-03-04T09:02:00Z",
+            "read": true
+          },
+          {
+            "from": "chris",
+            "to": "jane",
+            "content": "나도 비슷해. 이번 주말에 뭐 할 계획 있어?",
+            "type": "text",
+            "timestamp": "2025-03-04T09:04:00Z",
+            "read": false
+          },
+          {
+            "from": "jane",
+            "to": "chris",
+            "content": "아직 없는데, 뭐 같이 할까?",
+            "type": "text",
+            "timestamp": "2025-03-04T09:06:00Z",
+            "read": false
+          }
+        ]
+      }
+    ],
+    "jane": [
+      {
+        "with": "admin",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "admin",
+            "to": "jane",
+            "content": "안녕하세요, 오늘 밤 12시부터 2시까지 시스템 점검이 있습니다.",
+            "type": "text",
+            "timestamp": "2025-03-03T10:00:00Z",
+            "read": true
+          },
+          {
+            "from": "admin",
+            "to": "jane",
+            "content": "내일 밤에도 점검이 예정되어 있으니 참고 부탁드립니다.",
+            "type": "text",
+            "timestamp": "2025-03-03T10:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "chris",
+        "unreadCount": 1,
+        "messages": [
+          {
+            "from": "chris",
+            "to": "jane",
+            "content": "제인, 요즘 좀 바빠?",
+            "type": "text",
+            "timestamp": "2025-03-04T09:00:00Z",
+            "read": true
+          },
+          {
+            "from": "jane",
+            "to": "chris",
+            "content": "응, 좀 정신없네. 너는?",
+            "type": "text",
+            "timestamp": "2025-03-04T09:02:00Z",
+            "read": true
+          },
+          {
+            "from": "chris",
+            "to": "jane",
+            "content": "나도 비슷해. 이번 주말에 뭐 할 계획 있어?",
+            "type": "text",
+            "timestamp": "2025-03-04T09:04:00Z",
+            "read": true
+          },
+          {
+            "from": "jane",
+            "to": "chris",
+            "content": "아직 없는데, 뭐 같이 할까?",
+            "type": "text",
+            "timestamp": "2025-03-04T09:06:00Z",
+            "read": false
+          }
+        ]
+      },
+      {
+        "with": "dave",
+        "unreadCount": 2,
+        "messages": [
+          {
+            "from": "jane",
+            "to": "dave",
+            "content": "데이브, 최근에 좀 어때?",
+            "type": "text",
+            "timestamp": "2025-03-05T13:00:00Z",
+            "read": true
+          },
+          {
+            "from": "dave",
+            "to": "jane",
+            "content": "나 괜찮아, 제인 너는?",
+            "type": "text",
+            "timestamp": "2025-03-05T13:02:00Z",
+            "read": true
+          },
+          {
+            "from": "jane",
+            "to": "dave",
+            "content": "나도 괜찮지. 주말에 뭐해?",
+            "type": "text",
+            "timestamp": "2025-03-05T13:04:00Z",
+            "read": false
+          },
+          {
+            "from": "dave",
+            "to": "jane",
+            "content": "특별한 계획 없는데, 같이 밥이라도 먹을까?",
+            "type": "text",
+            "timestamp": "2025-03-05T13:06:00Z",
+            "read": false
+          }
+        ]
+      }
+    ],
+    "dave": [
+      {
+        "with": "admin",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "admin",
+            "to": "dave",
+            "content": "안녕하세요, 오늘 밤 12시부터 2시까지 시스템 점검이 있습니다.",
+            "type": "text",
+            "timestamp": "2025-03-03T10:00:00Z",
+            "read": true
+          },
+          {
+            "from": "admin",
+            "to": "dave",
+            "content": "내일 밤에도 점검이 예정되어 있으니 참고 부탁드립니다.",
+            "type": "text",
+            "timestamp": "2025-03-03T10:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "jane",
+        "unreadCount": 1,
+        "messages": [
+          {
+            "from": "jane",
+            "to": "dave",
+            "content": "데이브, 최근에 좀 어때?",
+            "type": "text",
+            "timestamp": "2025-03-05T13:00:00Z",
+            "read": true
+          },
+          {
+            "from": "dave",
+            "to": "jane",
+            "content": "나 괜찮아, 제인 너는?",
+            "type": "text",
+            "timestamp": "2025-03-05T13:02:00Z",
+            "read": true
+          },
+          {
+            "from": "jane",
+            "to": "dave",
+            "content": "나도 괜찮지. 주말에 뭐해?",
+            "type": "text",
+            "timestamp": "2025-03-05T13:04:00Z",
+            "read": true
+          },
+          {
+            "from": "dave",
+            "to": "jane",
+            "content": "특별한 계획 없는데, 같이 밥이라도 먹을까?",
+            "type": "text",
+            "timestamp": "2025-03-05T13:06:00Z",
+            "read": false
+          }
+        ]
+      }
+    ]
+  }
+}
