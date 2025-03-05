@@ -1,15 +1,15 @@
-import { create } from 'zustand';
-import { io } from 'socket.io-client';
+import { create } from "zustand";
+import { io } from "socket.io-client";
 
 const useSocketStore = create((set) => ({
   socket: null,
   isConnected: false,
   initSocket: (token) => {
-    const socket = io('http://localhost:3001', {
-      query: { token }
+    const socket = io("http://localhost:5200", {
+      query: { token },
     });
-    socket.on('connect', () => set({ isConnected: true }));
-    socket.on('disconnect', () => set({ isConnected: false }));
+    socket.on("connect", () => set({ isConnected: true }));
+    socket.on("disconnect", () => set({ isConnected: false }));
     set({ socket });
   },
   disconnectSocket: () => {
@@ -19,7 +19,7 @@ const useSocketStore = create((set) => ({
       }
       return { socket: null, isConnected: false };
     });
-  }
+  },
 }));
 
 export default useSocketStore;
