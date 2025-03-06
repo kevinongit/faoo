@@ -127,7 +127,7 @@ def generate_unique_user_id(base_id):
     user_id = base_id[:8].lower()  # 최대 8자
     if len(user_id) < 5:
         user_id = user_id.ljust(5, 'x')  # 최소 5자
-    
+
     original_id = user_id
     counter = 1
     while users_collection.find_one({"userId": user_id}):
@@ -137,22 +137,22 @@ def generate_unique_user_id(base_id):
         if len(user_id) > 8:  # 8자를 초과하면
             # 랜덤한 문자열 생성
             user_id = ''.join(random.choices(string.ascii_lowercase, k=5)) + str(counter).zfill(3)
-    
+
     return user_id
 
 def generate_mock_users():
     users = []
     all_characters = korean_generals + superheroes + got_characters
 
-    for username, englishName, nickname in all_characters:
+    for (username, englishName, nickname), business_info in zip(all_characters, [{"name": f"사업장{i:03d}", "number": f"1111100{i:03d}"} for i in range(1, 101)]):
         base_id = ''.join(e for e in englishName.split()[:2] if e.isalnum())
         userId = generate_unique_user_id(base_id)
-        
+
         character_type = "korean_general" if username in [name for name, _, _ in korean_generals] else \
                          "superhero" if username in [name for name, _, _ in superheroes] else "got_character"
-        
+
         job, company = assign_job_and_company(character_type)
-        
+
         user = {
             "userId": userId,
             "isSuperUser": False,
@@ -170,7 +170,9 @@ def generate_mock_users():
             "company": company,
             "workAddress": generate_random_address(character_type),
             "workPhone": generate_random_phone_number(),
-            "mailReceiveAddress": assign_mail_receive_address()
+            "mailReceiveAddress": assign_mail_receive_address(),
+            "business_number": business_info["number"],
+            "business_name": business_info["name"]
         }
         users.append(user)
     return users
