@@ -6,6 +6,7 @@ const connectDB = require("./config/db");
 const logger = require("./middleware/logger");
 
 const routes = require("./routes/routes");
+const dashboardRouter = require("./routes/dashboardRouters");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -16,10 +17,11 @@ connectDB();
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({extended: true}));
 
 // Routes
 app.use("/api", routes);
+app.use("/api/dashboard", dashboardRouter);
 
 // Start server
 app.listen(port, () => {
