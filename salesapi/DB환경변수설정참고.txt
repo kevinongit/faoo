@@ -1,0 +1,5 @@
+.env 파일 설정 내용
+
+MONGODB_URI=mongodb://localhost:27017/business_data
+MONGO_SALES_URI=mongodb://localhost:27017/chart_data
+PORT=6100

@@ -1,13 +1,14 @@
 // store/salesStore.js
 import { create } from "zustand";
 
-const useSalesStore = create((set) => ({
+const useSalesStore = create((set, get) => ({
+  apiUrl: `${process.env.NEXT_PUBLIC_BASE_URL}:6100`,
   salesData: null,
   isLoading: false,
   error: null,
   fetchSalesData: async (businessNumber) => {
     set({ isLoading: true });
-    const HOST = "http://localhost:6100";
+    const HOST = get().apiUrl;
     try {
       const [hometaxData, coupangData, naverData, zeropayData] =
         await Promise.all([
