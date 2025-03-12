@@ -1,7 +1,9 @@
 import useCalendarStore from "@/lib/store/useCalendarStore";
+import {useRouter} from "next/navigation";
 
 const Calendar = ({dailySales}) => {
   const {currentYear, currentMonth, setCurrentYear, setCurrentMonth} = useCalendarStore();
+  const router = useRouter();
 
   const today = new Date();
 
@@ -68,9 +70,10 @@ const Calendar = ({dailySales}) => {
           return (
             <div
               key={index}
-              className="text-center p-2 rounded-md flex flex-col items-center justify-center">
+              className="text-center p-2 rounded-md flex flex-col items-center justify-center cursor-pointer"
+              onClick={() => router.push(`/chart-dashboard?date=${dateKey}`)}>
               <span>{day ? day : ""}</span>
-              <span className="text-green-600 text-xs h-4 flex items-center">{formattedSales}</span>
+              <span className="text-green-600 text-xs h-4 flex items-center whitespace-nowrap">{formattedSales}</span>
             </div>
           );
         })}
