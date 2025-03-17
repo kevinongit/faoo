@@ -24,6 +24,7 @@ router.post("/signup", async (req, res) => {
 // Login endpoint
 router.post("/login", async (req, res) => {
   try {
+    console.log(`Logging in user ${req.body.userId}`);
     const user = await User.findOne({ userId: req.body.userId });
     if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
       console.log(`Invalid login credentials for ${req.body.userId}`);

@@ -1,0 +1,62 @@
+[
+  {
+    "smb_sector": "chicken",
+    "smb_sector_en": "치킨",
+    "offline_ratio": 0.4,
+    "online_ratio": 0.6,
+    "card_ratio": 0.8,
+    "cash_ratio": 0.2,
+    "tax_invoice_issuance_rate": 0.05,
+    "delivery_platform_ratio": 0.5
+  },
+  {
+    "smb_sector": "pizza",
+    "smb_sector_en": "피자",
+    "offline_ratio": 0.2,
+    "online_ratio": 0.8,
+    "card_ratio": 0.85,
+    "cash_ratio": 0.15,
+    "tax_invoice_issuance_rate": 0.05,
+    "delivery_platform_ratio": 0.4
+  },
+  {
+    "smb_sector": "jokbal",
+    "smb_sector_en": "족발",
+    "offline_ratio": 0.5,
+    "online_ratio": 0.5,
+    "card_ratio": 0.75,
+    "cash_ratio": 0.25,
+    "tax_invoice_issuance_rate": 0.02,
+    "delivery_platform_ratio": 0.45
+  },
+  {
+    "smb_sector": "restaurant",
+    "smb_sector_en": "한식",
+    "offline_ratio": 0.7,
+    "online_ratio": 0.3,
+    "card_ratio": 0.65,
+    "cash_ratio": 0.35,
+    "tax_invoice_issuance_rate": 0.01,
+    "delivery_platform_ratio": 0.2
+  },
+  {
+    "smb_sector": "clothing",
+    "smb_sector_en": "옷가게",
+    "offline_ratio": 0.8,
+    "online_ratio": 0.2,
+    "card_ratio": 0.8,
+    "cash_ratio": 0.2,
+    "tax_invoice_issuance_rate": 0.03,
+    "delivery_platform_ratio": 0
+  },
+  {
+    "smb_sector": "bunsik",
+    "smb_sector_en": "분식",
+    "offline_ratio": 0.5,
+    "online_ratio": 0.5,
+    "card_ratio": 0.8,
+    "cash_ratio": 0.2,
+    "tax_invoice_issuance_rate": 0,
+    "delivery_platform_ratio": 0.4
+  }
+]

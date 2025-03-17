@@ -1,0 +1,387 @@
+{
+    "baemin": {
+        "daily_sales_data": [
+            {
+                "daily_sales": [
+                    {
+                        "amount": 6712,
+                        "approval_datetime": "2025-03-10 20:31:59",
+                        "approval_number": "BA-A808462170",
+                        "card_type": "삼성카드",
+                        "fee": 671,
+                        "net_amount": 6041
+                    },
+                    {
+                        "amount": 6131,
+                        "approval_datetime": "2025-03-10 12:20:14",
+                        "approval_number": "BA-A852828789",
+                        "card_type": "신한카드",
+                        "fee": 613,
+                        "net_amount": 5518
+                    },
+                    {
+                        "amount": 4918,
+                        "approval_datetime": "2025-03-10 13:16:14",
+                        "approval_number": "BA-A499013815",
+                        "card_type": "현대카드",
+                        "fee": 491,
+                        "net_amount": 4427
+                    }
+                ],
+                "date": "2025-03-10",
+                "payment_due_date": "2025-03-17",
+                "payment_status": "pending",
+                "settlement_amount": 15986,
+                "settlement_reference": "BA-SET-0310-001",
+                "total_fee": 1775,
+                "total_sales_amount": 17761
+            }
+        ],
+        "merchant_info": {
+            "account_number": "123-456789-01-001",
+            "bid": "user1",
+            "biz_number": "1001010001",
+            "biz_number_dash": "100-10-10001",
+            "deposit_bank": "기업은행",
+            "merchant_address": "서울시 중구 을지로동 123-45",
+            "merchant_name": "민재네 치킨",
+            "merchant_zipcode": "04549",
+            "smb_sector": "치킨",
+            "smb_sector_en": "chicken"
+        }
+    },
+    "card_sales_data": {
+        "daily_sales_data": [
+            {
+                "acquisition_details": {
+                    "acquisition_date": "2025-03-11",
+                    "acquisition_number": "ACQ-0310-001",
+                    "card_company": "혼합",
+                    "net_amount": 163006,
+                    "total_amount": 166327,
+                    "total_fee": 3321,
+                    "total_supply_value": 151201,
+                    "total_vat": 15126
+                },
+                "address": "서울시 중구 을지로동 123-45",
+                "approval_details": [
+                    {
+                        "approval_datetime": "2025-03-10 13:01:58",
+                        "approval_number": "A209799730",
+                        "card_type": "신한카드",
+                        "fee": 335,
+                        "net_amount": 16462,
+                        "supply_value": 15269,
+                        "total_amount": 16797,
+                        "transaction_type": "online",
+                        "vat": 1528
+                    },
+                    {
+                        "approval_datetime": "2025-03-10 13:06:31",
+                        "approval_number": "A296156884",
+                        "card_type": "삼성카드",
+                        "fee": 442,
+                        "net_amount": 21687,
+                        "supply_value": 20117,
+                        "total_amount": 22129,
+                        "transaction_type": "online",
+                        "vat": 2012
+                    },
+                    {
+                        "approval_datetime": "2025-03-10 15:44:28",
+                        "approval_number": "A728952940",
+                        "card_type": "삼성카드",
+                        "fee": 400,
+                        "net_amount": 19645,
+                        "supply_value": 18222,
+                        "total_amount": 20045,
+                        "transaction_type": "online",
+                        "vat": 1823
+                    },
+                    {
+                        "approval_datetime": "2025-03-10 20:52:12",
+                        "approval_number": "A263790237",
+                        "card_type": "신한카드",
+                        "fee": 402,
+                        "net_amount": 19698,
+                        "supply_value": 18272,
+                        "total_amount": 20100,
+                        "transaction_type": "offline",
+                        "vat": 1828
+                    },
+                    {
+                        "approval_datetime": "2025-03-10 20:22:18",
+                        "approval_number": "A396005099",
+                        "card_type": "삼성카드",
+                        "fee": 153,
+                        "net_amount": 7512,
+                        "supply_value": 6968,
+                        "total_amount": 7665,
+                        "transaction_type": "online",
+                        "vat": 697
+                    },
+                    {
+                        "approval_datetime": "2025-03-10 11:01:47",
+                        "approval_number": "A134790130",
+                        "card_type": "신한카드",
+                        "fee": 316,
+                        "net_amount": 15524,
+                        "supply_value": 14399,
+                        "total_amount": 15840,
+                        "transaction_type": "offline",
+                        "vat": 1441
+                    },
+                    {
+                        "approval_datetime": "2025-03-10 17:01:54",
+                        "approval_number": "A821219241",
+                        "card_type": "롯데카드",
+                        "fee": 164,
+                        "net_amount": 8070,
+                        "supply_value": 7485,
+                        "total_amount": 8234,
+                        "transaction_type": "offline",
+                        "vat": 749
+                    },
+                    {
+                        "approval_datetime": "2025-03-10 19:12:57",
+                        "approval_number": "A823289084",
+                        "card_type": "신한카드",
+                        "fee": 341,
+                        "net_amount": 16750,
+                        "supply_value": 15537,
+                        "total_amount": 17091,
+                        "transaction_type": "online",
+                        "vat": 1554
+                    },
+                    {
+                        "approval_datetime": "2025-03-10 16:41:05",
+                        "approval_number": "A138138733",
+                        "card_type": "현대카드",
+                        "fee": 431,
+                        "net_amount": 21129,
+                        "supply_value": 19600,
+                        "total_amount": 21560,
+                        "transaction_type": "online",
+                        "vat": 1960
+                    },
+                    {
+                        "approval_datetime": "2025-03-10 20:57:51",
+                        "approval_number": "A201972147",
+                        "card_type": "삼성카드",
+                        "fee": 337,
+                        "net_amount": 16529,
+                        "supply_value": 15332,
+                        "total_amount": 16866,
+                        "transaction_type": "online",
+                        "vat": 1534
+                    }
+                ],
+                "biz_number": "1001010001",
+                "date": "2025-03-10",
+                "deposit_details": {
+                    "account_number": "123-456789-01-001",
+                    "bank": "기업은행",
+                    "deposit_amount": 163006,
+                    "deposit_date": "2025-03-13",
+                    "deposit_reference": "DEP-0310-001",
+                    "fee": 3321
+                },
+                "merchant_name": "민재네 치킨"
+            }
+        ],
+        "merchant_info": {
+            "account_number": "123-456789-01-001",
+            "bid": "user1",
+            "biz_number": "1001010001",
+            "biz_number_dash": "100-10-10001",
+            "deposit_bank": "기업은행",
+            "merchant_address": "서울시 중구 을지로동 123-45",
+            "merchant_name": "민재네 치킨",
+            "merchant_zipcode": "04549",
+            "smb_sector": "치킨",
+            "smb_sector_en": "chicken"
+        }
+    },
+    "coupangeats": {
+        "daily_sales_data": [
+            {
+                "daily_sales": [
+                    {
+                        "amount": 4048,
+                        "approval_datetime": "2025-03-10 20:28:15",
+                        "approval_number": "CO-A656550041",
+                        "card_type": "현대카드",
+                        "fee": 404,
+                        "net_amount": 3644
+                    },
+                    {
+                        "amount": 6740,
+                        "approval_datetime": "2025-03-10 17:41:56",
+                        "approval_number": "CO-A548697595",
+                        "card_type": "삼성카드",
+                        "fee": 674,
+                        "net_amount": 6066
+                    }
+                ],
+                "date": "2025-03-10",
+                "payment_due_date": "2025-03-13",
+                "payment_status": "pending",
+                "settlement_amount": 9710,
+                "settlement_reference": "CO-SET-0310-001",
+                "total_fee": 1078,
+                "total_sales_amount": 10788
+            }
+        ],
+        "merchant_info": {
+            "account_number": "123-456789-01-001",
+            "bid": "user1",
+            "biz_number": "1001010001",
+            "biz_number_dash": "100-10-10001",
+            "deposit_bank": "기업은행",
+            "merchant_address": "서울시 중구 을지로동 123-45",
+            "merchant_name": "민재네 치킨",
+            "merchant_zipcode": "04549",
+            "smb_sector": "치킨",
+            "smb_sector_en": "chicken"
+        }
+    },
+    "hometax_cash_receipt": {
+        "daily_cash_receipts_data": [
+            {
+                "cash_receipts": [
+                    {
+                        "amount": 5495,
+                        "customer_id": "010-1760-5356",
+                        "issue_datetime": "2025-03-10 16:03:14",
+                        "receipt_number": "CR-250310-001",
+                        "status": "issued"
+                    },
+                    {
+                        "amount": 4625,
+                        "customer_id": "010-9372-1791",
+                        "issue_datetime": "2025-03-10 17:48:21",
+                        "receipt_number": "CR-250310-002",
+                        "status": "issued"
+                    },
+                    {
+                        "amount": 3085,
+                        "customer_id": "010-5847-5973",
+                        "issue_datetime": "2025-03-10 16:32:18",
+                        "receipt_number": "CR-250310-003",
+                        "status": "issued"
+                    }
+                ],
+                "date": "2025-03-10",
+                "issued_count": 3,
+                "non_issued_count": 0,
+                "total_cash_amount": 12862,
+                "total_issued_amount": 13205
+            }
+        ],
+        "merchant_info": {
+            "account_number": "123-456789-01-001",
+            "bid": "user1",
+            "biz_number": "1001010001",
+            "biz_number_dash": "100-10-10001",
+            "deposit_bank": "기업은행",
+            "merchant_address": "서울시 중구 을지로동 123-45",
+            "merchant_name": "민재네 치킨",
+            "merchant_zipcode": "04549",
+            "smb_sector": "치킨",
+            "smb_sector_en": "chicken"
+        }
+    },
+    "hometax_tax_invoice": {
+        "daily_tax_invoices_data": [
+            {
+                "date": "2025-03-10",
+                "issued_count": 0,
+                "tax_invoices": [],
+                "total_issued_amount": 0
+            }
+        ],
+        "merchant_info": {
+            "account_number": "123-456789-01-001",
+            "bid": "user1",
+            "biz_number": "1001010001",
+            "biz_number_dash": "100-10-10001",
+            "deposit_bank": "기업은행",
+            "merchant_address": "서울시 중구 을지로동 123-45",
+            "merchant_name": "민재네 치킨",
+            "merchant_zipcode": "04549",
+            "smb_sector": "치킨",
+            "smb_sector_en": "chicken"
+        }
+    },
+    "merchant_info": {
+        "account_number": "123-456789-01-001",
+        "bid": "user1",
+        "biz_number": "1001010001",
+        "biz_number_dash": "100-10-10001",
+        "deposit_bank": "기업은행",
+        "merchant_address": "서울시 중구 을지로동 123-45",
+        "merchant_name": "민재네 치킨",
+        "merchant_zipcode": "04549",
+        "smb_sector": "치킨",
+        "smb_sector_en": "chicken"
+    },
+    "yogiyo": {
+        "daily_sales_data": [
+            {
+                "daily_sales": [
+                    {
+                        "amount": 6626,
+                        "approval_datetime": "2025-03-10 12:30:17",
+                        "approval_number": "YO-A309376962",
+                        "card_type": "롯데카드",
+                        "fee": 662,
+                        "net_amount": 5964
+                    },
+                    {
+                        "amount": 4770,
+                        "approval_datetime": "2025-03-10 11:20:46",
+                        "approval_number": "YO-A206078085",
+                        "card_type": "삼성카드",
+                        "fee": 477,
+                        "net_amount": 4293
+                    },
+                    {
+                        "amount": 3834,
+                        "approval_datetime": "2025-03-10 20:52:27",
+                        "approval_number": "YO-A895458724",
+                        "card_type": "신한카드",
+                        "fee": 383,
+                        "net_amount": 3451
+                    },
+                    {
+                        "amount": 6851,
+                        "approval_datetime": "2025-03-10 13:09:32",
+                        "approval_number": "YO-A573682076",
+                        "card_type": "롯데카드",
+                        "fee": 685,
+                        "net_amount": 6166
+                    }
+                ],
+                "date": "2025-03-10",
+                "payment_due_date": "2025-03-11",
+                "payment_status": "pending",
+                "settlement_amount": 19874,
+                "settlement_reference": "YO-SET-0310-001",
+                "total_fee": 2207,
+                "total_sales_amount": 22081
+            }
+        ],
+        "merchant_info": {
+            "account_number": "123-456789-01-001",
+            "bid": "user1",
+            "biz_number": "1001010001",
+            "biz_number_dash": "100-10-10001",
+            "deposit_bank": "기업은행",
+            "merchant_address": "서울시 중구 을지로동 123-45",
+            "merchant_name": "민재네 치킨",
+            "merchant_zipcode": "04549",
+            "smb_sector": "치킨",
+            "smb_sector_en": "chicken"
+        }
+    }
+}

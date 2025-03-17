@@ -179,6 +179,7 @@ def generate_mock_users():
 
 # 사용자 데이터 생성
 mock_users = generate_mock_users()
-result = users_collection.insert_many(mock_users)
+print (mock_users)
 
-print(f"{len(result.inserted_ids)} 명의 사용자가 성공적으로 추가되었습니다.")
+# result = users_collection.insert_many(mock_users)
+# print(f"{len(result.inserted_ids)} 명의 사용자가 성공적으로 추가되었습니다.")

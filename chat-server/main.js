@@ -18,9 +18,10 @@ app.use(morgan("combined"));
 
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:4200",
-    methods: ["GET", "POST"],
-    credentials: true,
+    origin: "*",
+    // origin: "http://localhost:4200",
+    // methods: ["GET", "POST"],
+    // credentials: true,
   },
 });
 

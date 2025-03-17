@@ -38,7 +38,7 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* 로고 */}
           <Link href="/dashboard" className="flex items-center">
-            <span className="text-2xl font-bold text-blue-600">FA</span>
+            <span className="text-2xl font-bold text-blue-600">IBK 기업</span>
           </Link>
 
           {/* 네비게이션 메뉴 */}

@@ -1,0 +1,238 @@
+{
+  "merchant_info": {
+    "bid": "user18",
+    "bpassword": "user18",
+    "ssn": "950328-2901234",
+    "name": "곽나영",
+    "en_name": "Kwak Na-young",
+    "kid": "user18",
+    "password": "user18",
+    "biz_number": "1001010018",
+    "biz_number_dash": "100-10-10018",
+    "merchant_name": "나영 분식 타운",
+    "merchant_address": "서울시 중구 을지로동 89-67",
+    "merchant_zipcode": "04551",
+    "smb_sector": "분식",
+    "smb_sector_en": "bunsik",
+    "deposit_bank": "국민은행",
+    "account_number": "624-357951-02-018"
+  },
+  "daily_cash_receipt_data": [
+    {
+      "date": "2025-03-01",
+      "cash_receipts": [
+        {
+          "amount": 15594,
+          "receipt_number": "CR-250301-001",
+          "issue_datetime": "2025-03-01 11:00:00",
+          "customer_id": "010-2544-3223",
+          "status": "issued"
+        },
+        {
+          "amount": 11912,
+          "receipt_number": "CR-250301-002",
+          "issue_datetime": "2025-03-01 12:00:00",
+          "customer_id": "010-7817-1515",
+          "status": "issued"
+        },
+        {
+          "amount": 15884,
+          "receipt_number": "CR-250301-003",
+          "issue_datetime": "2025-03-01 13:00:00",
+          "customer_id": "010-6335-6396",
+          "status": "issued"
+        }
+      ],
+      "total_cash_amount": 48000,
+      "total_issued_amount": 43390,
+      "issued_count": 3,
+      "non_issued_count": 0
+    },
+    {
+      "date": "2025-03-02",
+      "cash_receipts": [
+        {
+          "amount": 10429,
+          "receipt_number": "CR-250302-001",
+          "issue_datetime": "2025-03-02 11:00:00",
+          "customer_id": "010-3822-2625",
+          "status": "issued"
+        }
+      ],
+      "total_cash_amount": 48534,
+      "total_issued_amount": 10429,
+      "issued_count": 1,
+      "non_issued_count": 0
+    },
+    {
+      "date": "2025-03-03",
+      "cash_receipts": [
+        {
+          "amount": 10268,
+          "receipt_number": "CR-250303-001",
+          "issue_datetime": "2025-03-03 11:00:00",
+          "customer_id": "010-9132-9810",
+          "status": "issued"
+        },
+        {
+          "amount": 11732,
+          "receipt_number": "CR-250303-002",
+          "issue_datetime": "2025-03-03 12:00:00",
+          "customer_id": "010-9494-1963",
+          "status": "issued"
+        },
+        {
+          "amount": 15161,
+          "receipt_number": "CR-250303-003",
+          "issue_datetime": "2025-03-03 13:00:00",
+          "customer_id": "010-7915-9501",
+          "status": "issued"
+        }
+      ],
+      "total_cash_amount": 40889,
+      "total_issued_amount": 37161,
+      "issued_count": 3,
+      "non_issued_count": 0
+    },
+    {
+      "date": "2025-03-04",
+      "cash_receipts": [
+        {
+          "amount": 41334,
+          "receipt_number": "CR-250304-001",
+          "issue_datetime": "2025-03-04 11:00:00",
+          "customer_id": "010-1132-1366",
+          "status": "issued"
+        }
+      ],
+      "total_cash_amount": 41334,
+      "total_issued_amount": 41334,
+      "issued_count": 1,
+      "non_issued_count": 2
+    },
+    {
+      "date": "2025-03-05",
+      "cash_receipts": [
+        {
+          "amount": 11341,
+          "receipt_number": "CR-250305-001",
+          "issue_datetime": "2025-03-05 11:00:00",
+          "customer_id": "010-7785-9957",
+          "status": "issued"
+        },
+        {
+          "amount": 19342,
+          "receipt_number": "CR-250305-002",
+          "issue_datetime": "2025-03-05 12:00:00",
+          "customer_id": "010-6549-8126",
+          "status": "issued"
+        },
+        {
+          "amount": 10308,
+          "receipt_number": "CR-250305-003",
+          "issue_datetime": "2025-03-05 13:00:00",
+          "customer_id": "010-7064-3868",
+          "status": "issued"
+        }
+      ],
+      "total_cash_amount": 41778,
+      "total_issued_amount": 40991,
+      "issued_count": 3,
+      "non_issued_count": 0
+    },
+    {
+      "date": "2025-03-06",
+      "cash_receipts": [
+        {
+          "amount": 42223,
+          "receipt_number": "CR-250306-001",
+          "issue_datetime": "2025-03-06 11:00:00",
+          "customer_id": "010-9254-2126",
+          "status": "issued"
+        }
+      ],
+      "total_cash_amount": 42223,
+      "total_issued_amount": 42223,
+      "issued_count": 1,
+      "non_issued_count": 2
+    },
+    {
+      "date": "2025-03-07",
+      "cash_receipts": [
+        {
+          "amount": 16140,
+          "receipt_number": "CR-250307-001",
+          "issue_datetime": "2025-03-07 11:00:00",
+          "customer_id": "010-2326-8742",
+          "status": "issued"
+        },
+        {
+          "amount": 19670,
+          "receipt_number": "CR-250307-002",
+          "issue_datetime": "2025-03-07 12:00:00",
+          "customer_id": "010-5683-9233",
+          "status": "issued"
+        }
+      ],
+      "total_cash_amount": 42667,
+      "total_issued_amount": 35810,
+      "issued_count": 2,
+      "non_issued_count": 0
+    },
+    {
+      "date": "2025-03-08",
+      "cash_receipts": [
+        {
+          "amount": 15602,
+          "receipt_number": "CR-250308-001",
+          "issue_datetime": "2025-03-08 11:00:00",
+          "customer_id": "010-1212-1284",
+          "status": "issued"
+        }
+      ],
+      "total_cash_amount": 51734,
+      "total_issued_amount": 15602,
+      "issued_count": 1,
+      "non_issued_count": 0
+    },
+    {
+      "date": "2025-03-09",
+      "cash_receipts": [
+        {
+          "amount": 12815,
+          "receipt_number": "CR-250309-001",
+          "issue_datetime": "2025-03-09 11:00:00",
+          "customer_id": "010-9777-2430",
+          "status": "issued"
+        },
+        {
+          "amount": 18984,
+          "receipt_number": "CR-250309-002",
+          "issue_datetime": "2025-03-09 12:00:00",
+          "customer_id": "010-8237-7245",
+          "status": "issued"
+        }
+      ],
+      "total_cash_amount": 52267,
+      "total_issued_amount": 31799,
+      "issued_count": 2,
+      "non_issued_count": 0
+    },
+    {
+      "date": "2025-03-10",
+      "cash_receipts": [
+        {
+          "amount": 12442,
+          "receipt_number": "CR-250310-001",
+          "issue_datetime": "2025-03-10 11:00:00",
+          "customer_id": "010-5727-9307",
+          "status": "issued"
+        }
+      ],
+      "total_cash_amount": 44000,
+      "total_issued_amount": 12442,
+      "issued_count": 1,
+      "non_issued_count": 0
+    }
+  ]
+}

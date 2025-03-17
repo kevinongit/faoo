@@ -2,440 +2,962 @@
   "users": [
     {
       "id": "admin",
-      "name": "관리자",
-      "password": "admin"
+      "password": "admin",
+      "name": "IBK 소상공인 서비스"
     },
     {
-      "id": "suji",
-      "name": "김수지",
-      "password": "suji"
+      "id": "user1",
+      "password": "user1",
+      "name": "김민재"
     },
     {
-      "id": "chris",
-      "name": "크리스 마스",
-      "password": "chris"
+      "id": "user2",
+      "password": "user2",
+      "name": "이수진"
     },
     {
-      "id": "jane",
-      "name": "제인 에어",
-      "password": "jane"
+      "id": "user3",
+      "password": "user3",
+      "name": "박영훈"
     },
     {
-      "id": "dave",
-      "name": "데비 존스",
-      "password": "dave"
+      "id": "user4",
+      "password": "user4",
+      "name": "최지은"
+    },
+    {
+      "id": "user5",
+      "password": "user5",
+      "name": "강현우"
+    },
+    {
+      "id": "user6",
+      "password": "user6",
+      "name": "윤서영"
+    },
+    {
+      "id": "user7",
+      "password": "user7",
+      "name": "정민호"
+    },
+    {
+      "id": "user8",
+      "password": "user8",
+      "name": "오지혜"
+    },
+    {
+      "id": "user9",
+      "password": "user9",
+      "name": "한수민"
+    },
+    {
+      "id": "user10",
+      "password": "user10",
+      "name": "송태호"
+    },
+    {
+      "id": "user11",
+      "password": "user11",
+      "name": "황지훈"
+    },
+    {
+      "id": "user12",
+      "password": "user12",
+      "name": "문혜영"
+    },
+    {
+      "id": "user13",
+      "password": "user13",
+      "name": "신유진"
+    },
+    {
+      "id": "user14",
+      "password": "user14",
+      "name": "조민수"
+    },
+    {
+      "id": "user15",
+      "password": "user15",
+      "name": "류하영"
+    },
+    {
+      "id": "user16",
+      "password": "user16",
+      "name": "임소희"
+    },
+    {
+      "id": "user17",
+      "password": "user17",
+      "name": "백준영"
+    },
+    {
+      "id": "user18",
+      "password": "user18",
+      "name": "곽나영"
     }
   ],
   "chatLists": {
-    "admin": [
+    "user1": [
       {
-        "with": "suji",
-        "unreadCount": 0,
-        "messages": [
-          {
-            "from": "admin",
-            "to": "suji",
-            "content": "안녕하세요, 오늘 밤 12시부터 2시까지 시스템 점검이 있습니다.",
-            "type": "text",
-            "timestamp": "2025-03-03T10:00:00Z",
-            "read": true
-          },
-          {
-            "from": "admin",
-            "to": "suji",
-            "content": "내일 밤에도 점검이 예정되어 있으니 참고 부탁드립니다.",
-            "type": "text",
-            "timestamp": "2025-03-03T10:05:00Z",
-            "read": true
-          }
-        ]
-      },
-      {
-        "with": "chris",
-        "unreadCount": 0,
-        "messages": [
-          {
-            "from": "admin",
-            "to": "chris",
-            "content": "안녕하세요, 오늘 밤 12시부터 2시까지 시스템 점검이 있습니다.",
-            "type": "text",
-            "timestamp": "2025-03-03T10:00:00Z",
-            "read": true
-          },
-          {
-            "from": "admin",
-            "to": "chris",
-            "content": "내일 밤에도 점검이 예정되어 있으니 참고 부탁드립니다.",
-            "type": "text",
-            "timestamp": "2025-03-03T10:05:00Z",
-            "read": true
-          }
-        ]
-      },
-      {
-        "with": "jane",
-        "unreadCount": 0,
-        "messages": [
-          {
-            "from": "admin",
-            "to": "jane",
-            "content": "안녕하세요, 오늘 밤 12시부터 2시까지 시스템 점검이 있습니다.",
-            "type": "text",
-            "timestamp": "2025-03-03T10:00:00Z",
-            "read": true
-          },
-          {
-            "from": "admin",
-            "to": "jane",
-            "content": "내일 밤에도 점검이 예정되어 있으니 참고 부탁드립니다.",
-            "type": "text",
-            "timestamp": "2025-03-03T10:05:00Z",
-            "read": true
-          }
-        ]
-      },
-      {
-        "with": "dave",
-        "unreadCount": 0,
-        "messages": [
-          {
-            "from": "admin",
-            "to": "dave",
-            "content": "안녕하세요, 오늘 밤 12시부터 2시까지 시스템 점검이 있습니다.",
-            "type": "text",
-            "timestamp": "2025-03-03T10:00:00Z",
-            "read": true
-          },
-          {
-            "from": "admin",
-            "to": "dave",
-            "content": "내일 밤에도 점검이 예정되어 있으니 참고 부탁드립니다.",
-            "type": "text",
-            "timestamp": "2025-03-03T10:05:00Z",
-            "read": true
-          }
-        ]
-      }
-    ],
-    "suji": [
-      {
-        "with": "admin",
-        "unreadCount": 0,
-        "messages": [
-          {
-            "from": "admin",
-            "to": "suji",
-            "content": "안녕하세요, 오늘 밤 12시부터 2시까지 시스템 점검이 있습니다.",
-            "type": "text",
-            "timestamp": "2025-03-03T10:00:00Z",
-            "read": true
-          },
-          {
-            "from": "admin",
-            "to": "suji",
-            "content": "내일 밤에도 점검이 예정되어 있으니 참고 부탁드립니다.",
-            "type": "text",
-            "timestamp": "2025-03-03T10:05:00Z",
-            "read": true
-          }
-        ]
-      },
-      {
-        "with": "chris",
-        "unreadCount": 2,
-        "messages": [
-          {
-            "from": "suji",
-            "to": "chris",
-            "content": "안녕 크리스, 요즘 좀 어때?",
-            "type": "text",
-            "timestamp": "2025-03-03T14:00:00Z",
-            "read": true
-          },
-          {
-            "from": "chris",
-            "to": "suji",
-            "content": "나 괜찮아, 수지 너는?",
-            "type": "text",
-            "timestamp": "2025-03-03T14:02:00Z",
-            "read": true
-          },
-          {
-            "from": "suji",
-            "to": "chris",
-            "content": "나도 괜찮지. 이번 주말에 뭐해?",
-            "type": "text",
-            "timestamp": "2025-03-03T14:04:00Z",
-            "read": false
-          },
-          {
-            "from": "chris",
-            "to": "suji",
-            "content": "아직 계획 없는데, 같이 영화 볼까?",
-            "type": "text",
-            "timestamp": "2025-03-03T14:06:00Z",
-            "read": false
-          }
-        ]
-      }
-    ],
-    "chris": [
-      {
-        "with": "admin",
-        "unreadCount": 0,
-        "messages": [
-          {
-            "from": "admin",
-            "to": "chris",
-            "content": "안녕하세요, 오늘 밤 12시부터 2시까지 시스템 점검이 있습니다.",
-            "type": "text",
-            "timestamp": "2025-03-03T10:00:00Z",
-            "read": true
-          },
-          {
-            "from": "admin",
-            "to": "chris",
-            "content": "내일 밤에도 점검이 예정되어 있으니 참고 부탁드립니다.",
-            "type": "text",
-            "timestamp": "2025-03-03T10:05:00Z",
-            "read": true
-          }
-        ]
-      },
-      {
-        "with": "suji",
+        "with": "user2",
         "unreadCount": 1,
         "messages": [
           {
-            "from": "suji",
-            "to": "chris",
-            "content": "안녕 크리스, 요즘 좀 어때?",
+            "from": "user1",
+            "to": "user2",
+            "content": "수진님, 이번 주 치킨 재료 공동 구매 어떠신가요?",
             "type": "text",
-            "timestamp": "2025-03-03T14:00:00Z",
+            "timestamp": "2025-03-13T09:00:00Z",
             "read": true
           },
           {
-            "from": "chris",
-            "to": "suji",
-            "content": "나 괜찮아, 수지 너는?",
+            "from": "user2",
+            "to": "user1",
+            "content": "좋은 생각이에요, 민재님. 양념치킨 소스도 같이 살까요?",
             "type": "text",
-            "timestamp": "2025-03-03T14:02:00Z",
-            "read": true
-          },
-          {
-            "from": "suji",
-            "to": "chris",
-            "content": "나도 괜찮지. 이번 주말에 뭐해?",
-            "type": "text",
-            "timestamp": "2025-03-03T14:04:00Z",
-            "read": true
-          },
-          {
-            "from": "chris",
-            "to": "suji",
-            "content": "아직 계획 없는데, 같이 영화 볼까?",
-            "type": "text",
-            "timestamp": "2025-03-03T14:06:00Z",
+            "timestamp": "2025-03-13T09:05:00Z",
             "read": false
           }
         ]
       },
       {
-        "with": "jane",
+        "with": "user3",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "user1",
+            "to": "user3",
+            "content": "영훈님, BBQ 치킨 레시피 좀 공유해 주실 수 있나요?",
+            "type": "text",
+            "timestamp": "2025-03-12T14:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user3",
+            "to": "user1",
+            "content": "당연하지요, 민재님. 이메일로 보내드릴게요!",
+            "type": "text",
+            "timestamp": "2025-03-12T14:10:00Z",
+            "read": true
+          }
+        ]
+      }
+    ],
+    "user2": [
+      {
+        "with": "user1",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "user1",
+            "to": "user2",
+            "content": "수진님, 이번 주 치킨 재료 공동 구매 어떠신가요?",
+            "type": "text",
+            "timestamp": "2025-03-13T09:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user2",
+            "to": "user1",
+            "content": "좋은 생각이에요, 민재님. 양념치킨 소스도 같이 살까요?",
+            "type": "text",
+            "timestamp": "2025-03-13T09:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "user4",
         "unreadCount": 2,
         "messages": [
           {
-            "from": "chris",
-            "to": "jane",
-            "content": "제인, 요즘 좀 바빠?",
+            "from": "user2",
+            "to": "user4",
+            "content": "지은님, 피자 반죽 팁 좀 주실 수 있나요?",
             "type": "text",
-            "timestamp": "2025-03-04T09:00:00Z",
+            "timestamp": "2025-03-13T10:00:00Z",
             "read": true
           },
           {
-            "from": "jane",
-            "to": "chris",
-            "content": "응, 좀 정신없네. 너는?",
+            "from": "user4",
+            "to": "user2",
+            "content": "수진님, 제가 쓰는 반죽 비율 알려드릴게요.",
             "type": "text",
-            "timestamp": "2025-03-04T09:02:00Z",
-            "read": true
-          },
-          {
-            "from": "chris",
-            "to": "jane",
-            "content": "나도 비슷해. 이번 주말에 뭐 할 계획 있어?",
-            "type": "text",
-            "timestamp": "2025-03-04T09:04:00Z",
+            "timestamp": "2025-03-13T10:05:00Z",
             "read": false
           },
           {
-            "from": "jane",
-            "to": "chris",
-            "content": "아직 없는데, 뭐 같이 할까?",
+            "from": "user4",
+            "to": "user2",
+            "content": "혹시 치킨 튀김 온도도 궁금하시면 말씀해주세요!",
             "type": "text",
-            "timestamp": "2025-03-04T09:06:00Z",
+            "timestamp": "2025-03-13T10:07:00Z",
             "read": false
           }
         ]
       }
     ],
-    "jane": [
+    "user3": [
       {
-        "with": "admin",
+        "with": "user1",
         "unreadCount": 0,
         "messages": [
           {
-            "from": "admin",
-            "to": "jane",
-            "content": "안녕하세요, 오늘 밤 12시부터 2시까지 시스템 점검이 있습니다.",
+            "from": "user1",
+            "to": "user3",
+            "content": "영훈님, BBQ 치킨 레시피 좀 공유해 주실 수 있나요?",
             "type": "text",
-            "timestamp": "2025-03-03T10:00:00Z",
+            "timestamp": "2025-03-12T14:00:00Z",
             "read": true
           },
           {
-            "from": "admin",
-            "to": "jane",
-            "content": "내일 밤에도 점검이 예정되어 있으니 참고 부탁드립니다.",
+            "from": "user3",
+            "to": "user1",
+            "content": "당연하지요, 민재님. 이메일로 보내드릴게요!",
             "type": "text",
-            "timestamp": "2025-03-03T10:05:00Z",
+            "timestamp": "2025-03-12T14:10:00Z",
             "read": true
           }
         ]
       },
       {
-        "with": "chris",
+        "with": "user5",
         "unreadCount": 1,
         "messages": [
           {
-            "from": "chris",
-            "to": "jane",
-            "content": "제인, 요즘 좀 바빠?",
+            "from": "user3",
+            "to": "user5",
+            "content": "현우님, 피자 파크 매출 괜찮으신가요?",
             "type": "text",
-            "timestamp": "2025-03-04T09:00:00Z",
+            "timestamp": "2025-03-13T11:00:00Z",
             "read": true
           },
           {
-            "from": "jane",
-            "to": "chris",
-            "content": "응, 좀 정신없네. 너는?",
+            "from": "user5",
+            "to": "user3",
+            "content": "영훈님, 요즘 좀 늘었어요. 치킨은 어떠신가요?",
             "type": "text",
-            "timestamp": "2025-03-04T09:02:00Z",
-            "read": true
-          },
-          {
-            "from": "chris",
-            "to": "jane",
-            "content": "나도 비슷해. 이번 주말에 뭐 할 계획 있어?",
-            "type": "text",
-            "timestamp": "2025-03-04T09:04:00Z",
-            "read": true
-          },
-          {
-            "from": "jane",
-            "to": "chris",
-            "content": "아직 없는데, 뭐 같이 할까?",
-            "type": "text",
-            "timestamp": "2025-03-04T09:06:00Z",
-            "read": false
-          }
-        ]
-      },
-      {
-        "with": "dave",
-        "unreadCount": 2,
-        "messages": [
-          {
-            "from": "jane",
-            "to": "dave",
-            "content": "데이브, 최근에 좀 어때?",
-            "type": "text",
-            "timestamp": "2025-03-05T13:00:00Z",
-            "read": true
-          },
-          {
-            "from": "dave",
-            "to": "jane",
-            "content": "나 괜찮아, 제인 너는?",
-            "type": "text",
-            "timestamp": "2025-03-05T13:02:00Z",
-            "read": true
-          },
-          {
-            "from": "jane",
-            "to": "dave",
-            "content": "나도 괜찮지. 주말에 뭐해?",
-            "type": "text",
-            "timestamp": "2025-03-05T13:04:00Z",
-            "read": false
-          },
-          {
-            "from": "dave",
-            "to": "jane",
-            "content": "특별한 계획 없는데, 같이 밥이라도 먹을까?",
-            "type": "text",
-            "timestamp": "2025-03-05T13:06:00Z",
+            "timestamp": "2025-03-13T11:05:00Z",
             "read": false
           }
         ]
       }
     ],
-    "dave": [
+    "user4": [
       {
-        "with": "admin",
+        "with": "user2",
         "unreadCount": 0,
         "messages": [
           {
-            "from": "admin",
-            "to": "dave",
-            "content": "안녕하세요, 오늘 밤 12시부터 2시까지 시스템 점검이 있습니다.",
+            "from": "user2",
+            "to": "user4",
+            "content": "지은님, 피자 반죽 팁 좀 주실 수 있나요?",
             "type": "text",
-            "timestamp": "2025-03-03T10:00:00Z",
+            "timestamp": "2025-03-13T10:00:00Z",
             "read": true
           },
           {
-            "from": "admin",
-            "to": "dave",
-            "content": "내일 밤에도 점검이 예정되어 있으니 참고 부탁드립니다.",
+            "from": "user4",
+            "to": "user2",
+            "content": "수진님, 제가 쓰는 반죽 비율 알려드릴게요.",
             "type": "text",
-            "timestamp": "2025-03-03T10:05:00Z",
+            "timestamp": "2025-03-13T10:05:00Z",
+            "read": true
+          },
+          {
+            "from": "user4",
+            "to": "user2",
+            "content": "혹시 치킨 튀김 온도도 궁금하시면 말씀해주세요!",
+            "type": "text",
+            "timestamp": "2025-03-13T10:07:00Z",
             "read": true
           }
         ]
       },
       {
-        "with": "jane",
+        "with": "user5",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "user4",
+            "to": "user5",
+            "content": "현우님, 피자 치즈 공급업체 추천해줄 수 있나요?",
+            "type": "text",
+            "timestamp": "2025-03-12T15:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user5",
+            "to": "user4",
+            "content": "지은님, 제가 쓰는 업체 정보 드릴게요!",
+            "type": "text",
+            "timestamp": "2025-03-12T15:10:00Z",
+            "read": true
+          }
+        ]
+      }
+    ],
+    "user5": [
+      {
+        "with": "user3",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "user3",
+            "to": "user5",
+            "content": "현우님, 피자 파크 매출 괜찮으신가요?",
+            "type": "text",
+            "timestamp": "2025-03-13T11:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user5",
+            "to": "user3",
+            "content": "영훈님, 요즘 좀 늘었어요. 치킨은 어떠신가요?",
+            "type": "text",
+            "timestamp": "2025-03-13T11:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "user4",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "user4",
+            "to": "user5",
+            "content": "현우님, 피자 치즈 공급업체 추천해줄 수 있나요?",
+            "type": "text",
+            "timestamp": "2025-03-12T15:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user5",
+            "to": "user4",
+            "content": "지은님, 제가 쓰는 업체 정보 드릴게요!",
+            "type": "text",
+            "timestamp": "2025-03-12T15:10:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "user6",
         "unreadCount": 1,
         "messages": [
           {
-            "from": "jane",
-            "to": "dave",
-            "content": "데이브, 최근에 좀 어때?",
+            "from": "user5",
+            "to": "user6",
+            "content": "서영님, 피자 스토리 메뉴 추천 좀 해주실 수 있나요?",
             "type": "text",
-            "timestamp": "2025-03-05T13:00:00Z",
+            "timestamp": "2025-03-13T12:00:00Z",
             "read": true
           },
           {
-            "from": "dave",
-            "to": "jane",
-            "content": "나 괜찮아, 제인 너는?",
+            "from": "user6",
+            "to": "user5",
+            "content": "현우님, 페퍼로니 피자가 잘 나가요. 추천드릴게요!",
             "type": "text",
-            "timestamp": "2025-03-05T13:02:00Z",
+            "timestamp": "2025-03-13T12:05:00Z",
+            "read": false
+          }
+        ]
+      }
+    ],
+    "user6": [
+      {
+        "with": "user5",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "user5",
+            "to": "user6",
+            "content": "서영님, 피자 스토리 메뉴 추천 좀 해주실 수 있나요?",
+            "type": "text",
+            "timestamp": "2025-03-13T12:00:00Z",
             "read": true
           },
           {
-            "from": "jane",
-            "to": "dave",
-            "content": "나도 괜찮지. 주말에 뭐해?",
+            "from": "user6",
+            "to": "user5",
+            "content": "현우님, 페퍼로니 피자가 잘 나가요. 추천드릴게요!",
             "type": "text",
-            "timestamp": "2025-03-05T13:04:00Z",
+            "timestamp": "2025-03-13T12:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "user7",
+        "unreadCount": 1,
+        "messages": [
+          {
+            "from": "user6",
+            "to": "user7",
+            "content": "민호님, 족발이랑 피자 콜라보 메뉴 어떠신가요?",
+            "type": "text",
+            "timestamp": "2025-03-12T16:00:00Z",
             "read": true
           },
           {
-            "from": "dave",
-            "to": "jane",
-            "content": "특별한 계획 없는데, 같이 밥이라도 먹을까?",
+            "from": "user7",
+            "to": "user6",
+            "content": "서영님, 재밌는 아이디어네요. 한번 시도해볼까요?",
             "type": "text",
-            "timestamp": "2025-03-05T13:06:00Z",
+            "timestamp": "2025-03-12T16:05:00Z",
+            "read": false
+          }
+        ]
+      }
+    ],
+    "user7": [
+      {
+        "with": "user6",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "user6",
+            "to": "user7",
+            "content": "민호님, 족발이랑 피자 콜라보 메뉴 어떠신가요?",
+            "type": "text",
+            "timestamp": "2025-03-12T16:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user7",
+            "to": "user6",
+            "content": "서영님, 재밌는 아이디어네요. 한번 시도해볼까요?",
+            "type": "text",
+            "timestamp": "2025-03-12T16:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "user8",
+        "unreadCount": 1,
+        "messages": [
+          {
+            "from": "user7",
+            "to": "user8",
+            "content": "지혜님, 족발 양념 비법 좀 알려주실 수 있나요?",
+            "type": "text",
+            "timestamp": "2025-03-13T13:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user8",
+            "to": "user7",
+            "content": "민호님, 매콤한 양념 비율 알려드릴게요!",
+            "type": "text",
+            "timestamp": "2025-03-13T13:05:00Z",
+            "read": false
+          }
+        ]
+      }
+    ],
+    "user8": [
+      {
+        "with": "user7",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "user7",
+            "to": "user8",
+            "content": "지혜님, 족발 양념 비법 좀 알려주실 수 있나요?",
+            "type": "text",
+            "timestamp": "2025-03-13T13:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user8",
+            "to": "user7",
+            "content": "민호님, 매콤한 양념 비율 알려드릴게요!",
+            "type": "text",
+            "timestamp": "2025-03-13T13:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "user9",
+        "unreadCount": 1,
+        "messages": [
+          {
+            "from": "user8",
+            "to": "user9",
+            "content": "수민님, 족발 타운 배달 매출이 어떠신가요?",
+            "type": "text",
+            "timestamp": "2025-03-12T17:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user9",
+            "to": "user8",
+            "content": "지혜님, 요즘 배달이 좀 늘었어요. 지혜님은요?",
+            "type": "text",
+            "timestamp": "2025-03-12T17:05:00Z",
+            "read": false
+          }
+        ]
+      }
+    ],
+    "user9": [
+      {
+        "with": "user8",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "user8",
+            "to": "user9",
+            "content": "수민님, 족발 타운 배달 매출이 어떠신가요?",
+            "type": "text",
+            "timestamp": "2025-03-12T17:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user9",
+            "to": "user8",
+            "content": "지혜님, 요즘 배달이 좀 늘었어요. 지혜님은요?",
+            "type": "text",
+            "timestamp": "2025-03-12T17:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "user10",
+        "unreadCount": 1,
+        "messages": [
+          {
+            "from": "user9",
+            "to": "user10",
+            "content": "태호님, 한식당에서 족발도 팔면 어떨까요?",
+            "type": "text",
+            "timestamp": "2025-03-13T14:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user10",
+            "to": "user9",
+            "content": "수민님, 좋은 생각이에요. 메뉴 추가 고려해볼게요!",
+            "type": "text",
+            "timestamp": "2025-03-13T14:05:00Z",
+            "read": false
+          }
+        ]
+      }
+    ],
+    "user10": [
+      {
+        "with": "user9",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "user9",
+            "to": "user10",
+            "content": "태호님, 한식당에서 족발도 팔면 어떨까요?",
+            "type": "text",
+            "timestamp": "2025-03-13T14:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user10",
+            "to": "user9",
+            "content": "수민님, 좋은 생각이에요. 메뉴 추가 고려해볼게요!",
+            "type": "text",
+            "timestamp": "2025-03-13T14:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "user11",
+        "unreadCount": 1,
+        "messages": [
+          {
+            "from": "user10",
+            "to": "user11",
+            "content": "지훈님, 한식 밥집 손님 반응이 어떠신가요?",
+            "type": "text",
+            "timestamp": "2025-03-12T18:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user11",
+            "to": "user10",
+            "content": "태호님, 요즘 단골이 늘었어요. 태호님은요?",
+            "type": "text",
+            "timestamp": "2025-03-12T18:05:00Z",
+            "read": false
+          }
+        ]
+      }
+    ],
+    "user11": [
+      {
+        "with": "user10",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "user10",
+            "to": "user11",
+            "content": "지훈님, 한식 밥집 손님 반응이 어떠신가요?",
+            "type": "text",
+            "timestamp": "2025-03-12T18:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user11",
+            "to": "user10",
+            "content": "태호님, 요즘 단골이 늘었어요. 태호님은요?",
+            "type": "text",
+            "timestamp": "2025-03-12T18:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "user12",
+        "unreadCount": 1,
+        "messages": [
+          {
+            "from": "user11",
+            "to": "user12",
+            "content": "혜영님, 부페 메뉴에 새 반찬 추천 좀 해주세요!",
+            "type": "text",
+            "timestamp": "2025-03-13T15:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user12",
+            "to": "user11",
+            "content": "지훈님, 감자조림 괜찮을 것 같아요!",
+            "type": "text",
+            "timestamp": "2025-03-13T15:05:00Z",
+            "read": false
+          }
+        ]
+      }
+    ],
+    "user12": [
+      {
+        "with": "user11",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "user11",
+            "to": "user12",
+            "content": "혜영님, 부페 메뉴에 새 반찬 추천 좀 해주세요!",
+            "type": "text",
+            "timestamp": "2025-03-13T15:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user12",
+            "to": "user11",
+            "content": "지훈님, 감자조림 괜찮을 것 같아요!",
+            "type": "text",
+            "timestamp": "2025-03-13T15:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "user13",
+        "unreadCount": 1,
+        "messages": [
+          {
+            "from": "user12",
+            "to": "user13",
+            "content": "유진님, 직원 유니폼 제작 어디서 하세요?",
+            "type": "text",
+            "timestamp": "2025-03-12T19:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user13",
+            "to": "user12",
+            "content": "혜영님, 제가 아는 업체 추천드릴게요!",
+            "type": "text",
+            "timestamp": "2025-03-12T19:05:00Z",
+            "read": false
+          }
+        ]
+      }
+    ],
+    "user13": [
+      {
+        "with": "user12",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "user12",
+            "to": "user13",
+            "content": "유진님, 직원 유니폼 제작 어디서 하세요?",
+            "type": "text",
+            "timestamp": "2025-03-12T19:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user13",
+            "to": "user12",
+            "content": "혜영님, 제가 아는 업체 추천드릴게요!",
+            "type": "text",
+            "timestamp": "2025-03-12T19:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "user14",
+        "unreadCount": 1,
+        "messages": [
+          {
+            "from": "user13",
+            "to": "user14",
+            "content": "민수님, 패션 스토어 매출이 어떠신가요?",
+            "type": "text",
+            "timestamp": "2025-03-13T16:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user14",
+            "to": "user13",
+            "content": "유진님, 요즘 봄옷이 잘 나가요. 유진님은요?",
+            "type": "text",
+            "timestamp": "2025-03-13T16:05:00Z",
+            "read": false
+          }
+        ]
+      }
+    ],
+    "user14": [
+      {
+        "with": "user13",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "user13",
+            "to": "user14",
+            "content": "민수님, 패션 스토어 매출이 어떠신가요?",
+            "type": "text",
+            "timestamp": "2025-03-13T16:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user14",
+            "to": "user13",
+            "content": "유진님, 요즘 봄옷이 잘 나가요. 유진님은요?",
+            "type": "text",
+            "timestamp": "2025-03-13T16:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "user15",
+        "unreadCount": 1,
+        "messages": [
+          {
+            "from": "user14",
+            "to": "user15",
+            "content": "하영님, 의류 매장 디스플레이 팁 있나요?",
+            "type": "text",
+            "timestamp": "2025-03-12T20:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user15",
+            "to": "user14",
+            "content": "민수님, 계절별 테마로 꾸며보세요!",
+            "type": "text",
+            "timestamp": "2025-03-12T20:05:00Z",
+            "read": false
+          }
+        ]
+      }
+    ],
+    "user15": [
+      {
+        "with": "user14",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "user14",
+            "to": "user15",
+            "content": "하영님, 의류 매장 디스플레이 팁 있나요?",
+            "type": "text",
+            "timestamp": "2025-03-12T20:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user15",
+            "to": "user14",
+            "content": "민수님, 계절별 테마로 꾸며보세요!",
+            "type": "text",
+            "timestamp": "2025-03-12T20:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "user16",
+        "unreadCount": 1,
+        "messages": [
+          {
+            "from": "user15",
+            "to": "user16",
+            "content": "소희님, 분식 코너에 옷걸이 광고 걸어볼까요?",
+            "type": "text",
+            "timestamp": "2025-03-13T17:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user16",
+            "to": "user15",
+            "content": "하영님, 좋은 아이디어네요. 해볼게요!",
+            "type": "text",
+            "timestamp": "2025-03-13T17:05:00Z",
+            "read": false
+          }
+        ]
+      }
+    ],
+    "user16": [
+      {
+        "with": "user15",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "user15",
+            "to": "user16",
+            "content": "소희님, 분식 코너에 옷걸이 광고 걸어볼까요?",
+            "type": "text",
+            "timestamp": "2025-03-13T17:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user16",
+            "to": "user15",
+            "content": "하영님, 좋은 아이디어네요. 해볼게요!",
+            "type": "text",
+            "timestamp": "2025-03-13T17:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "user17",
+        "unreadCount": 1,
+        "messages": [
+          {
+            "from": "user16",
+            "to": "user17",
+            "content": "준영님, 떡볶이 소스 레시피 공유해줄 수 있나요?",
+            "type": "text",
+            "timestamp": "2025-03-12T21:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user17",
+            "to": "user16",
+            "content": "소희님, 제가 쓰는 매운 소스 비법 드릴게요!",
+            "type": "text",
+            "timestamp": "2025-03-12T21:05:00Z",
+            "read": false
+          }
+        ]
+      }
+    ],
+    "user17": [
+      {
+        "with": "user16",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "user16",
+            "to": "user17",
+            "content": "준영님, 떡볶이 소스 레시피 공유해줄 수 있나요?",
+            "type": "text",
+            "timestamp": "2025-03-12T21:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user17",
+            "to": "user16",
+            "content": "소희님, 제가 쓰는 매운 소스 비법 드릴게요!",
+            "type": "text",
+            "timestamp": "2025-03-12T21:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "user18",
+        "unreadCount": 1,
+        "messages": [
+          {
+            "from": "user17",
+            "to": "user18",
+            "content": "나영님, 분식 타운 배달 팁 있나요?",
+            "type": "text",
+            "timestamp": "2025-03-13T18:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user18",
+            "to": "user17",
+            "content": "준영님, 배달 앱 할인 이벤트 추천드려요!",
+            "type": "text",
+            "timestamp": "2025-03-13T18:05:00Z",
+            "read": false
+          }
+        ]
+      }
+    ],
+    "user18": [
+      {
+        "with": "user17",
+        "unreadCount": 0,
+        "messages": [
+          {
+            "from": "user17",
+            "to": "user18",
+            "content": "나영님, 분식 타운 배달 팁 있나요?",
+            "type": "text",
+            "timestamp": "2025-03-13T18:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user18",
+            "to": "user17",
+            "content": "준영님, 배달 앱 할인 이벤트 추천드려요!",
+            "type": "text",
+            "timestamp": "2025-03-13T18:05:00Z",
+            "read": true
+          }
+        ]
+      },
+      {
+        "with": "user1",
+        "unreadCount": 1,
+        "messages": [
+          {
+            "from": "user18",
+            "to": "user1",
+            "content": "민재님, 치킨이랑 떡볶이 세트 메뉴 어떠세요?",
+            "type": "text",
+            "timestamp": "2025-03-12T22:00:00Z",
+            "read": true
+          },
+          {
+            "from": "user1",
+            "to": "user18",
+            "content": "나영님, 괜찮은 아이디어네요. 검토해볼게요!",
+            "type": "text",
+            "timestamp": "2025-03-12T22:05:00Z",
             "read": false
           }
         ]

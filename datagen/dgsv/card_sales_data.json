@@ -1,0 +1,934 @@
+[
+  {
+    "date": "2025-03-01",
+    "merchant_name": "나영 분식 타운",
+    "biz_number": "1001010018",
+    "address": "서울시 중구 을지로동 89-67",
+    "approval_details": [
+      {
+        "transaction_type": "offline",
+        "supply_value": 17911,
+        "vat": 1792,
+        "total_amount": 19703,
+        "card_type": "롯데카드",
+        "approval_number": "C-A8866426",
+        "approval_datetime": "2025-03-01 11:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 12495,
+        "vat": 1250,
+        "total_amount": 13745,
+        "card_type": "삼성카드",
+        "approval_number": "C-A5730776",
+        "approval_datetime": "2025-03-01 12:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 12624,
+        "vat": 1263,
+        "total_amount": 13887,
+        "card_type": "롯데카드",
+        "approval_number": "C-A4322354",
+        "approval_datetime": "2025-03-01 13:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 13850,
+        "vat": 1386,
+        "total_amount": 15236,
+        "card_type": "신한카드",
+        "approval_number": "C-A2713617",
+        "approval_datetime": "2025-03-01 14:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 16727,
+        "vat": 1673,
+        "total_amount": 18400,
+        "card_type": "현대카드",
+        "approval_number": "C-A7091728",
+        "approval_datetime": "2025-03-01 15:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 13662,
+        "vat": 1367,
+        "total_amount": 15029,
+        "card_type": "현대카드",
+        "approval_number": "C-A2696439",
+        "approval_datetime": "2025-03-01 16:00:00"
+      }
+    ],
+    "acquisition_details": {
+      "acquisition_date": "2025-03-02",
+      "total_supply_value": 87269,
+      "total_vat": 8731,
+      "total_amount": 96000,
+      "card_company": "혼합",
+      "acquisition_number": "ACQ-0301-001"
+    },
+    "deposit_details": {
+      "deposit_date": "2025-03-04",
+      "deposit_amount": 96000,
+      "bank": "국민은행",
+      "account_number": "624-357951-02-018",
+      "deposit_reference": "DEP-0301-001"
+    }
+  },
+  {
+    "date": "2025-03-02",
+    "merchant_name": "나영 분식 타운",
+    "biz_number": "1001010018",
+    "address": "서울시 중구 을지로동 89-67",
+    "approval_details": [
+      {
+        "transaction_type": "offline",
+        "supply_value": 16891,
+        "vat": 1690,
+        "total_amount": 18581,
+        "card_type": "현대카드",
+        "approval_number": "C-B5019502",
+        "approval_datetime": "2025-03-02 11:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 10919,
+        "vat": 1092,
+        "total_amount": 12011,
+        "card_type": "현대카드",
+        "approval_number": "C-B1686490",
+        "approval_datetime": "2025-03-02 12:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 16742,
+        "vat": 1675,
+        "total_amount": 18417,
+        "card_type": "삼성카드",
+        "approval_number": "C-B2221945",
+        "approval_datetime": "2025-03-02 13:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 15669,
+        "vat": 1568,
+        "total_amount": 17237,
+        "card_type": "현대카드",
+        "approval_number": "C-B7707175",
+        "approval_datetime": "2025-03-02 14:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 11257,
+        "vat": 1126,
+        "total_amount": 12383,
+        "card_type": "삼성카드",
+        "approval_number": "C-B4152825",
+        "approval_datetime": "2025-03-02 15:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 9428,
+        "vat": 943,
+        "total_amount": 10371,
+        "card_type": "신한카드",
+        "approval_number": "C-B8936699",
+        "approval_datetime": "2025-03-02 16:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 17533,
+        "vat": 1754,
+        "total_amount": 19287,
+        "card_type": "롯데카드",
+        "approval_number": "C-B2216993",
+        "approval_datetime": "2025-03-02 17:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 10205,
+        "vat": 1021,
+        "total_amount": 11226,
+        "card_type": "신한카드",
+        "approval_number": "C-B4880014",
+        "approval_datetime": "2025-03-02 18:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": -20406,
+        "vat": -2041,
+        "total_amount": -22447,
+        "card_type": "현대카드",
+        "approval_number": "C-B8251664",
+        "approval_datetime": "2025-03-02 19:00:00"
+      }
+    ],
+    "acquisition_details": {
+      "acquisition_date": "2025-03-03",
+      "total_supply_value": 88238,
+      "total_vat": 8828,
+      "total_amount": 97066,
+      "card_company": "혼합",
+      "acquisition_number": "ACQ-0302-001"
+    },
+    "deposit_details": {
+      "deposit_date": "2025-03-05",
+      "deposit_amount": 97066,
+      "bank": "국민은행",
+      "account_number": "624-357951-02-018",
+      "deposit_reference": "DEP-0302-001"
+    }
+  },
+  {
+    "date": "2025-03-03",
+    "merchant_name": "나영 분식 타운",
+    "biz_number": "1001010018",
+    "address": "서울시 중구 을지로동 89-67",
+    "approval_details": [
+      {
+        "transaction_type": "offline",
+        "supply_value": 11533,
+        "vat": 1154,
+        "total_amount": 12687,
+        "card_type": "신한카드",
+        "approval_number": "C-C3988443",
+        "approval_datetime": "2025-03-03 11:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 17120,
+        "vat": 1712,
+        "total_amount": 18832,
+        "card_type": "삼성카드",
+        "approval_number": "C-C6258783",
+        "approval_datetime": "2025-03-03 12:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 16298,
+        "vat": 1630,
+        "total_amount": 17928,
+        "card_type": "롯데카드",
+        "approval_number": "C-C2876164",
+        "approval_datetime": "2025-03-03 13:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 10631,
+        "vat": 1064,
+        "total_amount": 11695,
+        "card_type": "롯데카드",
+        "approval_number": "C-C1036345",
+        "approval_datetime": "2025-03-03 14:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 9616,
+        "vat": 962,
+        "total_amount": 10578,
+        "card_type": "롯데카드",
+        "approval_number": "C-C4705980",
+        "approval_datetime": "2025-03-03 15:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 9142,
+        "vat": 915,
+        "total_amount": 10057,
+        "card_type": "롯데카드",
+        "approval_number": "C-C2223904",
+        "approval_datetime": "2025-03-03 16:00:00"
+      }
+    ],
+    "acquisition_details": {
+      "acquisition_date": "2025-03-04",
+      "total_supply_value": 74340,
+      "total_vat": 7437,
+      "total_amount": 81777,
+      "card_company": "혼합",
+      "acquisition_number": "ACQ-0303-001"
+    },
+    "deposit_details": {
+      "deposit_date": "2025-03-06",
+      "deposit_amount": 81777,
+      "bank": "국민은행",
+      "account_number": "624-357951-02-018",
+      "deposit_reference": "DEP-0303-001"
+    }
+  },
+  {
+    "date": "2025-03-04",
+    "merchant_name": "나영 분식 타운",
+    "biz_number": "1001010018",
+    "address": "서울시 중구 을지로동 89-67",
+    "approval_details": [
+      {
+        "transaction_type": "offline",
+        "supply_value": 9122,
+        "vat": 913,
+        "total_amount": 10035,
+        "card_type": "삼성카드",
+        "approval_number": "C-D1306276",
+        "approval_datetime": "2025-03-04 11:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 15905,
+        "vat": 1591,
+        "total_amount": 17496,
+        "card_type": "현대카드",
+        "approval_number": "C-D8229466",
+        "approval_datetime": "2025-03-04 12:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 10439,
+        "vat": 1044,
+        "total_amount": 11483,
+        "card_type": "롯데카드",
+        "approval_number": "C-D3346947",
+        "approval_datetime": "2025-03-04 13:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 15379,
+        "vat": 1539,
+        "total_amount": 16918,
+        "card_type": "롯데카드",
+        "approval_number": "C-D9024484",
+        "approval_datetime": "2025-03-04 14:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 24303,
+        "vat": 2431,
+        "total_amount": 26734,
+        "card_type": "현대카드",
+        "approval_number": "C-D4771420",
+        "approval_datetime": "2025-03-04 15:00:00"
+      }
+    ],
+    "acquisition_details": {
+      "acquisition_date": "2025-03-05",
+      "total_supply_value": 75148,
+      "total_vat": 7518,
+      "total_amount": 82666,
+      "card_company": "혼합",
+      "acquisition_number": "ACQ-0304-001"
+    },
+    "deposit_details": {
+      "deposit_date": "2025-03-07",
+      "deposit_amount": 82666,
+      "bank": "국민은행",
+      "account_number": "624-357951-02-018",
+      "deposit_reference": "DEP-0304-001"
+    }
+  },
+  {
+    "date": "2025-03-05",
+    "merchant_name": "나영 분식 타운",
+    "biz_number": "1001010018",
+    "address": "서울시 중구 을지로동 89-67",
+    "approval_details": [
+      {
+        "transaction_type": "offline",
+        "supply_value": 10910,
+        "vat": 1092,
+        "total_amount": 12002,
+        "card_type": "롯데카드",
+        "approval_number": "C-E4233202",
+        "approval_datetime": "2025-03-05 11:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 17536,
+        "vat": 1754,
+        "total_amount": 19290,
+        "card_type": "현대카드",
+        "approval_number": "C-E2291444",
+        "approval_datetime": "2025-03-05 12:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 16825,
+        "vat": 1683,
+        "total_amount": 18508,
+        "card_type": "신한카드",
+        "approval_number": "C-E5932665",
+        "approval_datetime": "2025-03-05 13:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 15587,
+        "vat": 1559,
+        "total_amount": 17146,
+        "card_type": "현대카드",
+        "approval_number": "C-E4690819",
+        "approval_datetime": "2025-03-05 14:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 14601,
+        "vat": 1461,
+        "total_amount": 16062,
+        "card_type": "삼성카드",
+        "approval_number": "C-E9928984",
+        "approval_datetime": "2025-03-05 15:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 13311,
+        "vat": 1332,
+        "total_amount": 14643,
+        "card_type": "현대카드",
+        "approval_number": "C-E2982230",
+        "approval_datetime": "2025-03-05 16:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 12199,
+        "vat": 1220,
+        "total_amount": 13419,
+        "card_type": "롯데카드",
+        "approval_number": "C-E9692813",
+        "approval_datetime": "2025-03-05 17:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 14311,
+        "vat": 1432,
+        "total_amount": 15743,
+        "card_type": "삼성카드",
+        "approval_number": "C-E5357437",
+        "approval_datetime": "2025-03-05 18:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": -39325,
+        "vat": -3933,
+        "total_amount": -43258,
+        "card_type": "삼성카드",
+        "approval_number": "C-E5713247",
+        "approval_datetime": "2025-03-05 19:00:00"
+      }
+    ],
+    "acquisition_details": {
+      "acquisition_date": "2025-03-06",
+      "total_supply_value": 75955,
+      "total_vat": 7600,
+      "total_amount": 83555,
+      "card_company": "혼합",
+      "acquisition_number": "ACQ-0305-001"
+    },
+    "deposit_details": {
+      "deposit_date": "2025-03-08",
+      "deposit_amount": 83555,
+      "bank": "국민은행",
+      "account_number": "624-357951-02-018",
+      "deposit_reference": "DEP-0305-001"
+    }
+  },
+  {
+    "date": "2025-03-06",
+    "merchant_name": "나영 분식 타운",
+    "biz_number": "1001010018",
+    "address": "서울시 중구 을지로동 89-67",
+    "approval_details": [
+      {
+        "transaction_type": "offline",
+        "supply_value": 11844,
+        "vat": 1185,
+        "total_amount": 13029,
+        "card_type": "신한카드",
+        "approval_number": "C-F7934401",
+        "approval_datetime": "2025-03-06 11:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 15166,
+        "vat": 1517,
+        "total_amount": 16683,
+        "card_type": "삼성카드",
+        "approval_number": "C-F7785577",
+        "approval_datetime": "2025-03-06 12:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 17561,
+        "vat": 1757,
+        "total_amount": 19318,
+        "card_type": "삼성카드",
+        "approval_number": "C-F6933122",
+        "approval_datetime": "2025-03-06 13:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 11227,
+        "vat": 1123,
+        "total_amount": 12350,
+        "card_type": "현대카드",
+        "approval_number": "C-F1030268",
+        "approval_datetime": "2025-03-06 14:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 11353,
+        "vat": 1136,
+        "total_amount": 12489,
+        "card_type": "신한카드",
+        "approval_number": "C-F6337289",
+        "approval_datetime": "2025-03-06 15:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 11763,
+        "vat": 1177,
+        "total_amount": 12940,
+        "card_type": "현대카드",
+        "approval_number": "C-F7073761",
+        "approval_datetime": "2025-03-06 16:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 12895,
+        "vat": 1290,
+        "total_amount": 14185,
+        "card_type": "신한카드",
+        "approval_number": "C-F6482152",
+        "approval_datetime": "2025-03-06 17:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": -15045,
+        "vat": -1505,
+        "total_amount": -16550,
+        "card_type": "삼성카드",
+        "approval_number": "C-F8791155",
+        "approval_datetime": "2025-03-06 18:00:00"
+      }
+    ],
+    "acquisition_details": {
+      "acquisition_date": "2025-03-07",
+      "total_supply_value": 76764,
+      "total_vat": 7680,
+      "total_amount": 84444,
+      "card_company": "혼합",
+      "acquisition_number": "ACQ-0306-001"
+    },
+    "deposit_details": {
+      "deposit_date": "2025-03-09",
+      "deposit_amount": 84444,
+      "bank": "국민은행",
+      "account_number": "624-357951-02-018",
+      "deposit_reference": "DEP-0306-001"
+    }
+  },
+  {
+    "date": "2025-03-07",
+    "merchant_name": "나영 분식 타운",
+    "biz_number": "1001010018",
+    "address": "서울시 중구 을지로동 89-67",
+    "approval_details": [
+      {
+        "transaction_type": "offline",
+        "supply_value": 17181,
+        "vat": 1719,
+        "total_amount": 18900,
+        "card_type": "삼성카드",
+        "approval_number": "C-G9228232",
+        "approval_datetime": "2025-03-07 11:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 10019,
+        "vat": 1002,
+        "total_amount": 11021,
+        "card_type": "롯데카드",
+        "approval_number": "C-G2446500",
+        "approval_datetime": "2025-03-07 12:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 10527,
+        "vat": 1053,
+        "total_amount": 11580,
+        "card_type": "삼성카드",
+        "approval_number": "C-G4537686",
+        "approval_datetime": "2025-03-07 13:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 9332,
+        "vat": 934,
+        "total_amount": 10266,
+        "card_type": "롯데카드",
+        "approval_number": "C-G1598625",
+        "approval_datetime": "2025-03-07 14:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 16181,
+        "vat": 1619,
+        "total_amount": 17800,
+        "card_type": "현대카드",
+        "approval_number": "C-G9741192",
+        "approval_datetime": "2025-03-07 15:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 13632,
+        "vat": 1364,
+        "total_amount": 14996,
+        "card_type": "삼성카드",
+        "approval_number": "C-G1426856",
+        "approval_datetime": "2025-03-07 16:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 699,
+        "vat": 70,
+        "total_amount": 769,
+        "card_type": "현대카드",
+        "approval_number": "C-G7920577",
+        "approval_datetime": "2025-03-07 17:00:00"
+      }
+    ],
+    "acquisition_details": {
+      "acquisition_date": "2025-03-08",
+      "total_supply_value": 77571,
+      "total_vat": 7761,
+      "total_amount": 85332,
+      "card_company": "혼합",
+      "acquisition_number": "ACQ-0307-001"
+    },
+    "deposit_details": {
+      "deposit_date": "2025-03-10",
+      "deposit_amount": 85332,
+      "bank": "국민은행",
+      "account_number": "624-357951-02-018",
+      "deposit_reference": "DEP-0307-001"
+    }
+  },
+  {
+    "date": "2025-03-08",
+    "merchant_name": "나영 분식 타운",
+    "biz_number": "1001010018",
+    "address": "서울시 중구 을지로동 89-67",
+    "approval_details": [
+      {
+        "transaction_type": "offline",
+        "supply_value": 11990,
+        "vat": 1200,
+        "total_amount": 13190,
+        "card_type": "삼성카드",
+        "approval_number": "C-H9457132",
+        "approval_datetime": "2025-03-08 11:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 17470,
+        "vat": 1747,
+        "total_amount": 19217,
+        "card_type": "삼성카드",
+        "approval_number": "C-H4337344",
+        "approval_datetime": "2025-03-08 12:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 16101,
+        "vat": 1611,
+        "total_amount": 17712,
+        "card_type": "현대카드",
+        "approval_number": "C-H4321226",
+        "approval_datetime": "2025-03-08 13:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 15834,
+        "vat": 1584,
+        "total_amount": 17418,
+        "card_type": "현대카드",
+        "approval_number": "C-H5868226",
+        "approval_datetime": "2025-03-08 14:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 9401,
+        "vat": 941,
+        "total_amount": 10342,
+        "card_type": "신한카드",
+        "approval_number": "C-H5163873",
+        "approval_datetime": "2025-03-08 15:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 12138,
+        "vat": 1214,
+        "total_amount": 13352,
+        "card_type": "현대카드",
+        "approval_number": "C-H2973565",
+        "approval_datetime": "2025-03-08 16:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 15658,
+        "vat": 1566,
+        "total_amount": 17224,
+        "card_type": "현대카드",
+        "approval_number": "C-H1241690",
+        "approval_datetime": "2025-03-08 17:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 13222,
+        "vat": 1323,
+        "total_amount": 14545,
+        "card_type": "삼성카드",
+        "approval_number": "C-H2901022",
+        "approval_datetime": "2025-03-08 18:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": -17758,
+        "vat": -1776,
+        "total_amount": -19534,
+        "card_type": "신한카드",
+        "approval_number": "C-H5455649",
+        "approval_datetime": "2025-03-08 19:00:00"
+      }
+    ],
+    "acquisition_details": {
+      "acquisition_date": "2025-03-09",
+      "total_supply_value": 94056,
+      "total_vat": 9410,
+      "total_amount": 103466,
+      "card_company": "혼합",
+      "acquisition_number": "ACQ-0308-001"
+    },
+    "deposit_details": {
+      "deposit_date": "2025-03-11",
+      "deposit_amount": 103466,
+      "bank": "국민은행",
+      "account_number": "624-357951-02-018",
+      "deposit_reference": "DEP-0308-001"
+    }
+  },
+  {
+    "date": "2025-03-09",
+    "merchant_name": "나영 분식 타운",
+    "biz_number": "1001010018",
+    "address": "서울시 중구 을지로동 89-67",
+    "approval_details": [
+      {
+        "transaction_type": "offline",
+        "supply_value": 18065,
+        "vat": 1807,
+        "total_amount": 19872,
+        "card_type": "신한카드",
+        "approval_number": "C-I9364524",
+        "approval_datetime": "2025-03-09 11:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 12415,
+        "vat": 1242,
+        "total_amount": 13657,
+        "card_type": "롯데카드",
+        "approval_number": "C-I1015320",
+        "approval_datetime": "2025-03-09 12:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 9282,
+        "vat": 929,
+        "total_amount": 10211,
+        "card_type": "롯데카드",
+        "approval_number": "C-I2934360",
+        "approval_datetime": "2025-03-09 13:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 13209,
+        "vat": 1321,
+        "total_amount": 14530,
+        "card_type": "신한카드",
+        "approval_number": "C-I3898079",
+        "approval_datetime": "2025-03-09 14:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 13771,
+        "vat": 1378,
+        "total_amount": 15149,
+        "card_type": "롯데카드",
+        "approval_number": "C-I6548406",
+        "approval_datetime": "2025-03-09 15:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 15165,
+        "vat": 1517,
+        "total_amount": 16682,
+        "card_type": "현대카드",
+        "approval_number": "C-I5075362",
+        "approval_datetime": "2025-03-09 16:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 18159,
+        "vat": 1816,
+        "total_amount": 19975,
+        "card_type": "신한카드",
+        "approval_number": "C-I2252242",
+        "approval_datetime": "2025-03-09 17:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 13202,
+        "vat": 1321,
+        "total_amount": 14523,
+        "card_type": "현대카드",
+        "approval_number": "C-I5694609",
+        "approval_datetime": "2025-03-09 18:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": -18242,
+        "vat": -1825,
+        "total_amount": -20067,
+        "card_type": "현대카드",
+        "approval_number": "C-I8970968",
+        "approval_datetime": "2025-03-09 19:00:00"
+      }
+    ],
+    "acquisition_details": {
+      "acquisition_date": "2025-03-10",
+      "total_supply_value": 95026,
+      "total_vat": 9506,
+      "total_amount": 104532,
+      "card_company": "혼합",
+      "acquisition_number": "ACQ-0309-001"
+    },
+    "deposit_details": {
+      "deposit_date": "2025-03-12",
+      "deposit_amount": 104532,
+      "bank": "국민은행",
+      "account_number": "624-357951-02-018",
+      "deposit_reference": "DEP-0309-001"
+    }
+  },
+  {
+    "date": "2025-03-10",
+    "merchant_name": "나영 분식 타운",
+    "biz_number": "1001010018",
+    "address": "서울시 중구 을지로동 89-67",
+    "approval_details": [
+      {
+        "transaction_type": "offline",
+        "supply_value": 12268,
+        "vat": 1227,
+        "total_amount": 13495,
+        "card_type": "삼성카드",
+        "approval_number": "C-J5140339",
+        "approval_datetime": "2025-03-10 11:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 11050,
+        "vat": 1105,
+        "total_amount": 12155,
+        "card_type": "삼성카드",
+        "approval_number": "C-J7834980",
+        "approval_datetime": "2025-03-10 12:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 14248,
+        "vat": 1425,
+        "total_amount": 15673,
+        "card_type": "롯데카드",
+        "approval_number": "C-J2007072",
+        "approval_datetime": "2025-03-10 13:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 15518,
+        "vat": 1552,
+        "total_amount": 17070,
+        "card_type": "현대카드",
+        "approval_number": "C-J8311980",
+        "approval_datetime": "2025-03-10 14:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 9183,
+        "vat": 919,
+        "total_amount": 10102,
+        "card_type": "신한카드",
+        "approval_number": "C-J6645610",
+        "approval_datetime": "2025-03-10 15:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 15043,
+        "vat": 1505,
+        "total_amount": 16548,
+        "card_type": "신한카드",
+        "approval_number": "C-J1449875",
+        "approval_datetime": "2025-03-10 16:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 16401,
+        "vat": 1641,
+        "total_amount": 18042,
+        "card_type": "삼성카드",
+        "approval_number": "C-J2088053",
+        "approval_datetime": "2025-03-10 17:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 11887,
+        "vat": 1189,
+        "total_amount": 13076,
+        "card_type": "현대카드",
+        "approval_number": "C-J9155753",
+        "approval_datetime": "2025-03-10 18:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": 9488,
+        "vat": 949,
+        "total_amount": 10437,
+        "card_type": "현대카드",
+        "approval_number": "C-J3459853",
+        "approval_datetime": "2025-03-10 19:00:00"
+      },
+      {
+        "transaction_type": "offline",
+        "supply_value": -35089,
+        "vat": -3509,
+        "total_amount": -38598,
+        "card_type": "신한카드",
+        "approval_number": "C-J7839550",
+        "approval_datetime": "2025-03-10 20:00:00"
+      }
+    ],
+    "acquisition_details": {
+      "acquisition_date": "2025-03-11",
+      "total_supply_value": 79997,
+      "total_vat": 8003,
+      "total_amount": 88000,
+      "card_company": "혼합",
+      "acquisition_number": "ACQ-0310-001"
+    },
+    "deposit_details": {
+      "deposit_date": "2025-03-13",
+      "deposit_amount": 88000,
+      "bank": "국민은행",
+      "account_number": "624-357951-02-018",
+      "deposit_reference": "DEP-0310-001"
+    }
+  }
+]

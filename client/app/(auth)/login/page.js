@@ -18,7 +18,6 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const { toast } = useToast();
   const { login, isAuthenticated } = useAuthStore();
-
   useEffect(() => {
     if (isAuthenticated) {
       router.push("/dashboard");
@@ -29,6 +28,8 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+
+    console.log(`Logging in user ${userId}`);
 
     try {
       const response = await api.post("/login", { userId, password });
@@ -60,7 +61,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center  min-h-screen pt-20 bg-gray-100">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-md p-8 bg-white rounded-lg shadow-md"

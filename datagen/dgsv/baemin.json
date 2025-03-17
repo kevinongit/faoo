@@ -1,0 +1,350 @@
+{
+  "merchant_info": {
+    "bid": "user18",
+    "bpassword": "user18",
+    "ssn": "950328-2901234",
+    "name": "곽나영",
+    "en_name": "Kwak Na-young",
+    "kid": "user18",
+    "password": "user18",
+    "biz_number": "1001010018",
+    "biz_number_dash": "100-10-10018",
+    "merchant_name": "나영 분식 타운",
+    "merchant_address": "서울시 중구 을지로동 89-67",
+    "merchant_zipcode": "04551",
+    "smb_sector": "분식",
+    "smb_sector_en": "bunsik",
+    "deposit_bank": "국민은행",
+    "account_number": "624-357951-02-018"
+  },
+  "daily_sales_data": [
+    {
+      "date": "2025-03-01",
+      "daily_sales": [
+        {
+          "amount": 15724,
+          "card_type": "삼성카드",
+          "approval_number": "B-A7731889",
+          "approval_datetime": "2025-03-01 12:00:00"
+        },
+        {
+          "amount": 14292,
+          "card_type": "신한카드",
+          "approval_number": "B-A3442557",
+          "approval_datetime": "2025-03-01 13:00:00"
+        },
+        {
+          "amount": -14656,
+          "card_type": "신한카드",
+          "approval_number": "B-A9347632",
+          "approval_datetime": "2025-03-01 14:00:00"
+        }
+      ],
+      "total_sales_amount": 15360,
+      "settlement_amount": 15360,
+      "payment_status": "paid",
+      "payment_due_date": "2025-03-08",
+      "settlement_reference": "B-SET-0308-001"
+    },
+    {
+      "date": "2025-03-02",
+      "daily_sales": [
+        {
+          "amount": 16750,
+          "card_type": "삼성카드",
+          "approval_number": "B-B9963139",
+          "approval_datetime": "2025-03-02 12:00:00"
+        },
+        {
+          "amount": 13920,
+          "card_type": "현대카드",
+          "approval_number": "B-B4735536",
+          "approval_datetime": "2025-03-02 13:00:00"
+        },
+        {
+          "amount": 18765,
+          "card_type": "삼성카드",
+          "approval_number": "B-B9466079",
+          "approval_datetime": "2025-03-02 14:00:00"
+        },
+        {
+          "amount": -33905,
+          "card_type": "삼성카드",
+          "approval_number": "B-B8649187",
+          "approval_datetime": "2025-03-02 15:00:00"
+        }
+      ],
+      "total_sales_amount": 15530,
+      "settlement_amount": 15530,
+      "payment_status": "paid",
+      "payment_due_date": "2025-03-09",
+      "settlement_reference": "B-SET-0309-001"
+    },
+    {
+      "date": "2025-03-03",
+      "daily_sales": [
+        {
+          "amount": 12068,
+          "card_type": "삼성카드",
+          "approval_number": "B-C3693377",
+          "approval_datetime": "2025-03-03 12:00:00"
+        },
+        {
+          "amount": 14533,
+          "card_type": "삼성카드",
+          "approval_number": "B-C8165873",
+          "approval_datetime": "2025-03-03 13:00:00"
+        },
+        {
+          "amount": 19616,
+          "card_type": "롯데카드",
+          "approval_number": "B-C9807025",
+          "approval_datetime": "2025-03-03 14:00:00"
+        },
+        {
+          "amount": -33133,
+          "card_type": "삼성카드",
+          "approval_number": "B-C4917066",
+          "approval_datetime": "2025-03-03 15:00:00"
+        }
+      ],
+      "total_sales_amount": 13084,
+      "settlement_amount": 13084,
+      "payment_status": "paid",
+      "payment_due_date": "2025-03-10",
+      "settlement_reference": "B-SET-0310-001"
+    },
+    {
+      "date": "2025-03-04",
+      "daily_sales": [
+        {
+          "amount": 13438,
+          "card_type": "롯데카드",
+          "approval_number": "B-D9268088",
+          "approval_datetime": "2025-03-04 12:00:00"
+        },
+        {
+          "amount": 15791,
+          "card_type": "현대카드",
+          "approval_number": "B-D2110318",
+          "approval_datetime": "2025-03-04 13:00:00"
+        },
+        {
+          "amount": 15049,
+          "card_type": "롯데카드",
+          "approval_number": "B-D8797961",
+          "approval_datetime": "2025-03-04 14:00:00"
+        },
+        {
+          "amount": -31052,
+          "card_type": "롯데카드",
+          "approval_number": "B-D2937819",
+          "approval_datetime": "2025-03-04 15:00:00"
+        }
+      ],
+      "total_sales_amount": 13226,
+      "settlement_amount": 13226,
+      "payment_status": "pending",
+      "payment_due_date": "2025-03-11",
+      "settlement_reference": "B-SET-0311-001"
+    },
+    {
+      "date": "2025-03-05",
+      "daily_sales": [
+        {
+          "amount": 10720,
+          "card_type": "롯데카드",
+          "approval_number": "B-E9994971",
+          "approval_datetime": "2025-03-05 12:00:00"
+        },
+        {
+          "amount": 10919,
+          "card_type": "신한카드",
+          "approval_number": "B-E5403663",
+          "approval_datetime": "2025-03-05 13:00:00"
+        },
+        {
+          "amount": 13312,
+          "card_type": "신한카드",
+          "approval_number": "B-E2062352",
+          "approval_datetime": "2025-03-05 14:00:00"
+        },
+        {
+          "amount": -21583,
+          "card_type": "삼성카드",
+          "approval_number": "B-E8501289",
+          "approval_datetime": "2025-03-05 15:00:00"
+        }
+      ],
+      "total_sales_amount": 13368,
+      "settlement_amount": 13368,
+      "payment_status": "pending",
+      "payment_due_date": "2025-03-12",
+      "settlement_reference": "B-SET-0312-001"
+    },
+    {
+      "date": "2025-03-06",
+      "daily_sales": [
+        {
+          "amount": 19831,
+          "card_type": "현대카드",
+          "approval_number": "B-F9146018",
+          "approval_datetime": "2025-03-06 12:00:00"
+        },
+        {
+          "amount": 14025,
+          "card_type": "롯데카드",
+          "approval_number": "B-F1922130",
+          "approval_datetime": "2025-03-06 13:00:00"
+        },
+        {
+          "amount": -20346,
+          "card_type": "현대카드",
+          "approval_number": "B-F9208086",
+          "approval_datetime": "2025-03-06 14:00:00"
+        }
+      ],
+      "total_sales_amount": 13510,
+      "settlement_amount": 13510,
+      "payment_status": "pending",
+      "payment_due_date": "2025-03-13",
+      "settlement_reference": "B-SET-0313-001"
+    },
+    {
+      "date": "2025-03-07",
+      "daily_sales": [
+        {
+          "amount": 18643,
+          "card_type": "삼성카드",
+          "approval_number": "B-G6989506",
+          "approval_datetime": "2025-03-07 12:00:00"
+        },
+        {
+          "amount": 12319,
+          "card_type": "현대카드",
+          "approval_number": "B-G8496944",
+          "approval_datetime": "2025-03-07 13:00:00"
+        },
+        {
+          "amount": 10758,
+          "card_type": "삼성카드",
+          "approval_number": "B-G8505176",
+          "approval_datetime": "2025-03-07 14:00:00"
+        },
+        {
+          "amount": -28067,
+          "card_type": "신한카드",
+          "approval_number": "B-G7131976",
+          "approval_datetime": "2025-03-07 15:00:00"
+        }
+      ],
+      "total_sales_amount": 13653,
+      "settlement_amount": 13653,
+      "payment_status": "pending",
+      "payment_due_date": "2025-03-14",
+      "settlement_reference": "B-SET-0314-001"
+    },
+    {
+      "date": "2025-03-08",
+      "daily_sales": [
+        {
+          "amount": 13548,
+          "card_type": "신한카드",
+          "approval_number": "B-H5562588",
+          "approval_datetime": "2025-03-08 12:00:00"
+        },
+        {
+          "amount": 13256,
+          "card_type": "신한카드",
+          "approval_number": "B-H9009106",
+          "approval_datetime": "2025-03-08 13:00:00"
+        },
+        {
+          "amount": -10250,
+          "card_type": "롯데카드",
+          "approval_number": "B-H5276873",
+          "approval_datetime": "2025-03-08 14:00:00"
+        }
+      ],
+      "total_sales_amount": 16554,
+      "settlement_amount": 16554,
+      "payment_status": "pending",
+      "payment_due_date": "2025-03-15",
+      "settlement_reference": "B-SET-0315-001"
+    },
+    {
+      "date": "2025-03-09",
+      "daily_sales": [
+        {
+          "amount": 18104,
+          "card_type": "신한카드",
+          "approval_number": "B-I4915953",
+          "approval_datetime": "2025-03-09 12:00:00"
+        },
+        {
+          "amount": 16771,
+          "card_type": "삼성카드",
+          "approval_number": "B-I1584994",
+          "approval_datetime": "2025-03-09 13:00:00"
+        },
+        {
+          "amount": 12181,
+          "card_type": "삼성카드",
+          "approval_number": "B-I7434855",
+          "approval_datetime": "2025-03-09 14:00:00"
+        },
+        {
+          "amount": -30331,
+          "card_type": "신한카드",
+          "approval_number": "B-I1966760",
+          "approval_datetime": "2025-03-09 15:00:00"
+        }
+      ],
+      "total_sales_amount": 16725,
+      "settlement_amount": 16725,
+      "payment_status": "pending",
+      "payment_due_date": "2025-03-16",
+      "settlement_reference": "B-SET-0316-001"
+    },
+    {
+      "date": "2025-03-10",
+      "daily_sales": [
+        {
+          "amount": 17977,
+          "card_type": "롯데카드",
+          "approval_number": "B-J2104150",
+          "approval_datetime": "2025-03-10 12:00:00"
+        },
+        {
+          "amount": 11115,
+          "card_type": "신한카드",
+          "approval_number": "B-J1071192",
+          "approval_datetime": "2025-03-10 13:00:00"
+        },
+        {
+          "amount": 19951,
+          "card_type": "삼성카드",
+          "approval_number": "B-J1669833",
+          "approval_datetime": "2025-03-10 14:00:00"
+        },
+        {
+          "amount": 10811,
+          "card_type": "롯데카드",
+          "approval_number": "B-J1786059",
+          "approval_datetime": "2025-03-10 15:00:00"
+        },
+        {
+          "amount": -45774,
+          "card_type": "롯데카드",
+          "approval_number": "B-J9765419",
+          "approval_datetime": "2025-03-10 16:00:00"
+        }
+      ],
+      "total_sales_amount": 14080,
+      "settlement_amount": 14080,
+      "payment_status": "pending",
+      "payment_due_date": "2025-03-17",
+      "settlement_reference": "B-SET-0317-001"
+    }
+  ]
+}

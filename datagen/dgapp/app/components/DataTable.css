@@ -1,0 +1,33 @@
+.data-table {
+    width: 100%;
+    min-width: 900px; /* 테이블 최소 너비를 넓게 설정 */
+    border-collapse: collapse;
+  }
+  
+  .data-table th,
+  .data-table td {
+    padding: 12px 24px; /* 좌우 패딩 증가로 필드 너비 확장 */
+    border: 1px solid #ddd;
+  }
+  
+  .data-table th {
+    background-color: #f4f4f4;
+    font-weight: 600;
+    text-align: left;
+  }
+  
+  .data-table td {
+    text-align: left;
+  }
+  
+  .data-table td.text-right {
+    text-align: right; /* 금액 필드 우측 정렬 */
+  }
+  
+  .data-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .data-table tr:hover {
+    background-color: #f1f1f1;
+  }

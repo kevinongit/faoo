@@ -2,9 +2,12 @@
 import axios from "axios";
 import { useAuthStore } from "./store/authStore";
 
+const SERVER_URL = "http://localhost:5100";
 const api = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_BASE_URL}:5100/api`,
+  baseURL: `${SERVER_URL}/api`,
 });
+
+console.log(`API URL: ${SERVER_URL}/api`);
 
 api.interceptors.request.use(
   (config) => {

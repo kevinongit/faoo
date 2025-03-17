@@ -1,0 +1,18 @@
+{
+  "name": "bapp1",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "go": "electron .",
+    "start": "electron .",
+    "prestart": "cd next && npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "electron": "^35.0.1"
+  }
+}
