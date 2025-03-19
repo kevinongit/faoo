@@ -9,20 +9,24 @@ const Calendar = ({dailySales}) => {
 
   // ✅ 이전 달 & 다음 달 변경 시 Zustand 상태 업데이트
   const handlePrevMonth = () => {
-    if (currentMonth === 1) {
+    const currentMonthNum = parseInt(currentMonth, 10);
+    const currentYearNum = parseInt(currentYear, 10);
+    if (currentMonthNum === 1) {
       setCurrentMonth(12);
-      setCurrentYear(currentYear - 1);
+      setCurrentYear(currentYearNum - 1);
     } else {
-      setCurrentMonth(currentMonth - 1);
+      setCurrentMonth(currentMonthNum - 1);
     }
   };
 
   const handleNextMonth = () => {
-    if (currentMonth === 12) {
+    const currentMonthNum = parseInt(currentMonth, 10);
+    const currentYearNum = parseInt(currentYear, 10);
+    if (currentMonthNum === 12) {
       setCurrentMonth(1);
-      setCurrentYear(currentYear + 1);
+      setCurrentYear(currentYearNum + 1);
     } else {
-      setCurrentMonth(currentMonth + 1);
+      setCurrentMonth(currentMonthNum + 1);
     }
   };
 
@@ -40,7 +44,7 @@ const Calendar = ({dailySales}) => {
           ◀
         </button>
         <h2 className="text-lg font-bold text-center">
-          {currentYear}년 {currentMonth}월
+          {currentYear}년 {parseInt(currentMonth, 10)}월
         </h2>
         <button
           onClick={handleNextMonth}

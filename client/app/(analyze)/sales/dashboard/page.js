@@ -5,6 +5,8 @@ import {Card, CardContent} from "@/components/ui/card";
 import {LucideUser, LucideSun, LucideTrendingUp, LucideTrendingDown, LucideCalendar} from "lucide-react";
 import Calendar from "@/components/ui/Calendar";
 import GNB from "@/components/GNB";
+import {useAuthStore} from "@/lib/store/authStore";
+import {useRouter} from "next/navigation";
 
 const date = new Date();
 const currentYear = date.getFullYear();
@@ -28,7 +30,18 @@ export default function SalesSummary() {
     error
   } = useCalendarStore();
 
-  const business_number = "1111100001"; // 사업자 번호 (예제)
+  const {user, isAuthenticated} = useAuthStore();
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/login");
+    }
+  }, []);
+
+  console.log("🔑 User:", user);
+  const business_number = user?.business_number; //"1111100001"; // 사업자 번호
   // ✅ 페이지가 로드될 때 두 개의 API 호출
   useEffect(() => {
     fetchMonthlySales(business_number);
@@ -126,13 +139,13 @@ export default function SalesSummary() {
   return (
     <div className="flex flex-col gap-6 p-4 bg-gray-50 min-h-screen items-center flex-grow pb-16">
       {/* 상단 변화량 표시 */}
-      <div className="w-full flex flex-col md:flex-row justify-center items-center bg-blue-100 text-gray-900 py-3 px-5 rounded-lg shadow-md text-center md:text-left">
+      <div className="w-full flex flex-col md:flex-row justify-center items-center bg-blue-100 text-gray-900 py-3 px-5 rounded-lg shadow-md text-center md:text-left h-[60px]">
         {isLoading ? (
-          <p className="text-gray-500">⏳ 매출 데이터 로딩 중...</p>
+          <p className="text-gray-500 flex items-center justify-center h-full">⏳ 매출 데이터 로딩 중...</p>
         ) : error ? (
-          <p className="text-red-500">❌ 오류 발생: {error}</p>
+          <p className="text-red-500 flex items-center justify-center h-full">❌ 오류 발생: {error}</p>
         ) : (
-          <p className="text-sm md:text-base font-semibold flex flex-wrap justify-center md:justify-start">
+          <p className="text-sm md:text-base font-semibold flex flex-wrap justify-center md:justify-start items-center h-full">
             <span className="font-bold ml-1">📅 {formattedDate}</span> 매출 금액은
             <span className="text-yellow-600 font-bold mx-1">{todaySales.toLocaleString()}원</span> / 어제 매출까지{" "}
             <span className={`ml-1 ${diffColor} font-bold flex items-center`}>
