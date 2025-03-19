@@ -10,7 +10,7 @@ async function fetchUsersAndTrends() {
     ]);
     const users = await usersRes.json();
     const trends = await trendsRes.json();
-    console.log("Fetched users and trends:", { users, trends });
+    // console.log("Fetched users and trends:", { users, trends });
     return { users, trends };
   } catch (error) {
     console.error("Error fetching users or trends:", error);

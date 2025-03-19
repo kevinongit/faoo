@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useDataStore } from "./store/useDataStore";
 import DataTable from "./components/DataTable";
 import { Button } from "./components/Button";
+import Loading from "./components/Loading";
 import {
   Select,
   SelectContent,
@@ -15,7 +16,7 @@ import { Input } from "./components/Input";
 import { saveDataToMongo } from "./actions/mongoActions";
 
 export default function GeneratePage({ users = [], trends = [] }) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState({ loading: false, text: "" });
   const [businessNumber, setBusinessNumber] = useState("");
   const [durationUnit, setDurationUnit] = useState("d");
   const [durationCount, setDurationCount] = useState("1");
@@ -35,7 +36,7 @@ export default function GeneratePage({ users = [], trends = [] }) {
       alert("Please fill all fields");
       return;
     }
-    setLoading(true);
+    setLoading({ loading: true, text: "" });
     try {
       const genDuration = `${durationCount}${durationUnit}`;
       const fullRevenueTrend = `${revenueTrend}_${trendPercentage}`;
@@ -55,20 +56,38 @@ export default function GeneratePage({ users = [], trends = [] }) {
     } catch (error) {
       console.error("Error generating data:", error);
     }
-    setLoading(false);
+    setLoading({ loading: false, text: "" });
   };
 
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
   const handleSaveToMongo = async () => {
-    setLoading(true);
+    setLoading({ loading: true, text: "Data saving in progress..." });
+    await delay(1000);
+
     try {
       console.log("Saving data to MongoDB:", data);
       await saveDataToMongo(data);
-      alert("Data successfully saved to MongoDB");
+
+      setLoading({ loading: true, text: "Data successfully saved" });
+      await delay(1000);
+
+      setLoading({ loading: true, text: "Data analysis in progress..." });
+      const response = await fetch("http://localhost:3800/datagen");
+
+      const jsonData = await response.json();
+      console.log("Data analysis completed:", jsonData);
+
+      await delay(3000);
+      setLoading({ loading: true, text: "Data analysis completed" });
+
+      await delay(1000);
+      setLoading({ loading: false, text: "" });
     } catch (error) {
       console.error("Error saving to MongoDB:", error);
       alert("Failed to save data");
     }
-    setLoading(false);
+    setLoading({ loading: false, text: "" });
   };
 
   const toggleSection = (section) => {
@@ -99,6 +118,8 @@ export default function GeneratePage({ users = [], trends = [] }) {
 
   return (
     <div className="container mx-auto p-6 max-w-4xl">
+      <Loading loading={loading.loading} size={150} color="red" text={loading.text} />
+
       <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">데이터 생성</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -179,10 +200,10 @@ export default function GeneratePage({ users = [], trends = [] }) {
         </div>
         <Button
           onClick={generateData}
-          disabled={loading}
+          disabled={loading.loading}
           className="mt-4 w-full bg-primary hover:bg-blue-600"
         >
-          {loading ? "Generating..." : "Generate Data"}
+          {loading.loading ? "Generating..." : "Generate Data"}
         </Button>
 
         {data && (
@@ -223,10 +244,10 @@ export default function GeneratePage({ users = [], trends = [] }) {
             )}
             <Button
               onClick={handleSaveToMongo}
-              disabled={loading}
+              disabled={loading.loading}
               className="mt-4 w-full bg-secondary hover:bg-purple-700"
             >
-              {loading ? "Saving..." : "데이터 수집"}
+              {loading.loading ? "Saving..." : "데이터 수집"}
             </Button>
           </div>
         )}

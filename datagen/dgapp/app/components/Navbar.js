@@ -22,6 +22,17 @@ export default function Navbar() {
           </Link>
         </li>
         <li>
+          <Link href="/temporary" passHref>
+            <Button
+              className={`px-4 py-2 rounded-md ${
+                pathname === "/temporary" ? "bg-blue-700" : "hover:bg-blue-600"
+              }`}
+            >
+              비교군 데이터 생성
+            </Button>
+          </Link>
+        </li>
+        <li>
           <Link href="/query" passHref>
             <Button
               className={`px-4 py-2 rounded-md ${

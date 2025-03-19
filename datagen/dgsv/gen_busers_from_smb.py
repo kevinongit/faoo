@@ -63,6 +63,9 @@ def transform_users_to_mongo_format(users):
                 else "02-1234-5678"
             ),
             "mailReceiveAddress": "직장",
+            "smb_sector": user.get("smb_sector", "미등록 업종"),
+            "smb_sector_en": user.get("smb_sector_en", "미등록 업종"),
+            "zone_nm": user.get("merchant_address", "지역 없음").split(" ")[1].strip(),
             "business_number": user.get("business_number", "미등록 사업자 번호"),
             "business_name": user.get("merchant_name", "미등록 회사"),
         }

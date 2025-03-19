@@ -4,7 +4,8 @@ import { connectToDatabase } from "../lib/mongodb";
 
 export async function saveDataToMongo(data) {
   try {
-    const { db } = await connectToDatabase();
+    const { client } = await connectToDatabase();
+    const db = client.db("originalData");
     const collection = db.collection("sales_data");
     await collection.insertOne({ ...data, createdAt: new Date() });
     return { success: true };

@@ -4,7 +4,9 @@ import json
 import random
 from datetime import datetime, timedelta
 import numpy as np
-
+import secrets
+from pymongo import MongoClient
+from tqdm import tqdm
 app = Flask(__name__)
 CORS(app)
 
@@ -24,7 +26,7 @@ DELIVERY_FEE_RATE = 0.10  # 배달 앱 수수료 10%
 def generate_transaction_time(base_date, hour_range=(11, 20)):
     peak_hours = [11, 12, 13, 17, 18, 19, 20]
     regular_hours = [h for h in range(hour_range[0], hour_range[1] + 1) if h not in peak_hours]
-    hour = random.choices(peak_hours + regular_hours, 
+    hour = random.choices(peak_hours + regular_hours,
                          weights=[0.15]*len(peak_hours) + [0.05]*len(regular_hours), k=1)[0]
     minute = random.randint(0, 59)
     second = random.randint(0, 59)
@@ -36,7 +38,7 @@ def generate_variable_amount(base_amount, min_factor=0.7, max_factor=1.3):
 
 # Parse duration
 def parse_duration(duration_str):
-    print(f"duration_str: {duration_str}")
+    # print(f"duration_str: {duration_str}")
     unit = duration_str[-1].lower()
     count = int(duration_str[:-1])
     if unit == 'd':
@@ -77,17 +79,18 @@ def get_trend_factor(day, total_days, trend_type, percentage):
     return 1
 
 # Generate daily sales data
-def generate_sales_data(user, duration_days, weekday_avg_revenue, trend_type, percentage):
-    today = datetime(2025, 3, 10)
+def generate_sales_data(user, duration_days, weekday_avg_revenue, trend_type, percentage, is_compare=False):
+    # today = datetime(2025, 3, 10)
+    today = datetime.now() - timedelta(days=1)
     start_date = today - timedelta(days=duration_days - 1)
     sector = next(s for s in SECTOR_RATIOS if s["smb_sector"] == user["smb_sector_en"])
-    
+
     total_weekday_avg = weekday_avg_revenue / sector["card_ratio"]
     weekend_boost = random.uniform(1.1, 1.3)
     data = {"card_sales": [], "baemin": [], "coupangeats": [], "yogiyo": [], "cash_receipts": [], "tax_invoices": []}
-    
+
     daily_noise = np.random.normal(1, 0.1, duration_days)
-    
+
     for day in range(duration_days):
         current_date = start_date + timedelta(days=day)
         is_weekend = current_date.weekday() >= 5
@@ -95,15 +98,15 @@ def generate_sales_data(user, duration_days, weekday_avg_revenue, trend_type, pe
         trend_factor = get_trend_factor(day, duration_days - 1, trend_type, percentage)
         noise_factor = max(0.8, min(1.2, daily_noise[day]))
         daily_total_sales = int(base_sales * trend_factor * noise_factor)
-        
+
         offline_sales = int(daily_total_sales * sector["offline_ratio"])
         online_sales = daily_total_sales - offline_sales
         offline_card_sales = int(offline_sales * sector["card_ratio"])
         cash_sales = offline_sales - offline_card_sales
         delivery_sales = int(online_sales * sector["delivery_platform_ratio"])
         per_platform_sales = delivery_sales // 3
-        print(f"day: {day}, current_date: {current_date}, daily_total_sales: {daily_total_sales}, offline_sales: {offline_sales}, online_sales: {online_sales}, offline_card_sales: {offline_card_sales}, cash_sales: {cash_sales}, delivery_sales: {delivery_sales}, per_platform_sales: {per_platform_sales}")
-        
+        # print(f"day: {day}, current_date: {current_date}, daily_total_sales: {daily_total_sales}, offline_sales: {offline_sales}, online_sales: {online_sales}, offline_card_sales: {offline_card_sales}, cash_sales: {cash_sales}, delivery_sales: {delivery_sales}, per_platform_sales: {per_platform_sales}")
+
         # 카드 거래
         card_txn_count = random.randint(5, 15)
         card_total = offline_card_sales + online_sales
@@ -140,17 +143,21 @@ def generate_sales_data(user, duration_days, weekday_avg_revenue, trend_type, pe
                 "net_amount": sum(t["net_amount"] for t in card_txns),  # 실수령액
                 "card_company": "혼합",
                 "acquisition_number": f"ACQ-{current_date.strftime('%m%d')}-001"
-            },
-            "deposit_details": {
-                "deposit_date": (current_date + timedelta(days=3)).strftime("%Y-%m-%d"),
-                "deposit_amount": sum(t["net_amount"] for t in card_txns),  # 수수료 제외 입금액
-                "fee": sum(t["fee"] for t in card_txns),  # 입금 시 수수료 명시
-                "bank": user["deposit_bank"],
-                "account_number": user["account_number"],
-                "deposit_reference": f"DEP-{current_date.strftime('%m%d')}-001"
             }
         })
-        
+
+        if is_compare == False:
+            data["card_sales"].append({
+                "deposit_details": {
+                    "deposit_date": (current_date + timedelta(days=3)).strftime("%Y-%m-%d"),
+                    "deposit_amount": sum(t["net_amount"] for t in card_txns),  # 수수료 제외 입금액
+                    "fee": sum(t["fee"] for t in card_txns),  # 입금 시 수수료 명시
+                    "bank": user["deposit_bank"],
+                    "account_number": user["account_number"],
+                        "deposit_reference": f"DEP-{current_date.strftime('%m%d')}-001"
+                }
+            })
+
         # 배달 플랫폼
         for platform, due_days in [("baemin", 7), ("coupangeats", 3), ("yogiyo", 1)]:
             txns = []
@@ -178,11 +185,11 @@ def generate_sales_data(user, duration_days, weekday_avg_revenue, trend_type, pe
                 "payment_due_date": (current_date + timedelta(days=due_days)).strftime("%Y-%m-%d"),
                 "settlement_reference": f"{platform[:2].upper()}-SET-{current_date.strftime('%m%d')}-001"
             })
-        
+
         # 현금영수증
         cash_txn_count = random.randint(0, 4) if cash_sales > 0 else 0
         cash_txns = []
-        print(f"cash_txn_count: {cash_txn_count}")
+        # print(f"cash_txn_count: {cash_txn_count}")
         for _ in range(cash_txn_count):
             amount = generate_variable_amount(cash_sales // (cash_txn_count or 1))
             approval_time = generate_transaction_time(current_date)
@@ -201,7 +208,7 @@ def generate_sales_data(user, duration_days, weekday_avg_revenue, trend_type, pe
             "issued_count": len(cash_txns),
             "non_issued_count": max(0, cash_txn_count - len(cash_txns))
         })
-        
+
         # 세금계산서
         if duration_days >= 5 and random.random() < sector["tax_invoice_issuance_rate"]:
             amount = generate_variable_amount(50000, 0.8, 1.5)
@@ -232,9 +239,17 @@ def generate_sales_data(user, duration_days, weekday_avg_revenue, trend_type, pe
                 "total_issued_amount": 0,
                 "issued_count": 0
             })
-    
+
     # 최상위 merchant_info 생성 및 각 섹션 데이터 구성
-    merchant_info = {key: user[key] for key in ["bid", "merchant_name", "business_number", "business_number_dash", "merchant_address", "merchant_zipcode", "smb_sector", "smb_sector_en", "deposit_bank", "account_number"]}
+    merchant_info = {}
+
+    if is_compare:
+        merchant_info = {key: user[key] for key in ["merchant_name", "business_number", "merchant_address", "smb_sector", "smb_sector_en"]}
+        merchant_info["zone_nm"] = user["merchant_address"].split(" ")[1].strip()
+    else:
+        merchant_info = {key: user[key] for key in ["bid", "merchant_name", "business_number", "business_number_dash", "merchant_address", "merchant_zipcode", "smb_sector", "smb_sector_en", "deposit_bank", "account_number"]}
+        merchant_info["zone_nm"] = user["merchant_address"].split(" ")[1].strip()
+
     return {
         "merchant_info": merchant_info,
         "card_sales_data": {"merchant_info": merchant_info, "daily_sales_data": data["card_sales"]},
@@ -252,22 +267,73 @@ def generate_data():
     gen_duration = data.get("gen_duration")
     weekday_avg_revenue = data.get("weekday_avg_revenue")
     revenue_trend = data.get("revenue_trend")
-    
+
     if not all([business_number, gen_duration, weekday_avg_revenue, revenue_trend]):
         return jsonify({"error": "Missing required fields"}), 400
-    
+
     user = next((u for u in SMB_USERS if u["business_number"] == business_number), None)
     if not user:
         return jsonify({"error": "Business number not found"}), 404
-    
+
     try:
         duration_days = parse_duration(gen_duration)
         trend_type, percentage = parse_trend(revenue_trend)
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
-    
+
     result = generate_sales_data(user, duration_days, weekday_avg_revenue, trend_type, percentage)
     return jsonify(result)
+
+@app.route('/gen-data-temporary', methods=['POST'])
+def generate_compare_data():
+    data = request.json
+    business_number = data.get("business_number")
+    gen_duration = data.get("gen_duration")
+    weekday_avg_revenue = data.get("weekday_avg_revenue")
+
+    user = next((u for u in SMB_USERS if u["business_number"] == business_number), None)
+
+    random_number = f"10010{secrets.randbelow(100000):05}"
+
+    result_list = []
+    print(f"총 100 개의 데이터를 생성 중...")
+    for idx in tqdm(range(0, 100, 1)):
+        user_copy = {}
+        user_copy["business_number"] = f"10010{random_number}"
+        user_copy["merchant_name"] = f"가맹점{random_number}"
+        user_copy["merchant_address"] = user["merchant_address"]
+        user_copy["smb_sector"] = user["smb_sector"]
+        user_copy["smb_sector_en"] = user["smb_sector_en"]
+
+        trend_list = ["slow_increase", "slow_decrease", "increase_up_down_up", "descrease_down_up_down"]
+        revenue_trend = random.choice(trend_list) + "_" + str(random.randint(1, 100))
+
+        randomized_revenue = weekday_avg_revenue + random.randint(
+            -int(weekday_avg_revenue * 0.2),  # -20%
+            int(weekday_avg_revenue * 0.2)   # +20%
+        )
+
+        try:
+            duration_days = parse_duration(gen_duration)
+            trend_type, percentage = parse_trend(revenue_trend)
+        except ValueError as e:
+            return jsonify({"error": str(e)}), 400
+
+        result = generate_sales_data(user_copy, duration_days, randomized_revenue, trend_type, percentage, True)
+        result_list.append(result)
+
+    # MongoDB 연결
+    client = MongoClient('mongodb://localhost:27017/')
+    db = client['originalData']
+    collection = db['sales_data']
+
+    print(f"총 {len(result_list)}개의 데이터를 삽입 중...")
+    for idx in tqdm(range(0, len(result_list), 5)):
+        batch = result_list[idx:idx+5]
+        collection.insert_many(batch)
+    client.close()
+
+    return jsonify({"message": "정상 처리되었습니다."})
 
 @app.route('/users', methods=['GET'])
 def get_users():
