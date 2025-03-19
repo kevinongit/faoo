@@ -2,12 +2,12 @@
 
 import { Chart } from "react-google-charts";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import useSaleDataStore from "../../lib/store/saleDataStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuthStore } from "@/lib/store/authStore";
-import ProtectedRoute from "@/components/ProtectedRoute";
 import GNB from "@/components/GNB";
+// import { useLocation } from 'react-router-dom';
 
 export default function SalesDashboard() {
   const router = useRouter();
@@ -16,77 +16,35 @@ export default function SalesDashboard() {
   const [chartlast7Data, setChartlast7Data] = useState([[]]);
   const [chartTableData, setChartTableData] = useState([[]]);
   const [weekOffset, setWeekOffset] = useState(0);
+  const [saleListTarget, setSaleListTarget] = useState([]);
+  const [saleListType, setSaleListType] = useState(0);
+  // const [bweekOffset, setBWeekOffset] = useState(false);
+  // const baseDt = useLocation().state?.date || new Date();
+
+  const searchParams = useSearchParams();
+  let param_date = searchParams.get("date");
+  let base_date = new Date();
+
+  if (param_date && /^\d{4}-\d{2}-\d{2}$/.test(param_date)) {
+    base_date = new Date(param_date);
+  }else{
+    base_date = new Date();
+    base_date.setDate(base_date.getDate() - 1);
+  }
 
   // 어제 날짜 계산
   const day_nm = ["일", "월", "화", "수", "목", "금", "토"];
-  const now = new Date();
-  now.setDate(now.getDate() - 1);
-  const yesterday = now.getFullYear() + String(now.getMonth() + 1).padStart(2, "0") + String(now.getDate()).padStart(2, "0");
-
-  const getLast7day = () => {
-    const base = new Date();
-    base.setDate(base.getDate() - 1);
-
-    const result = [{
-      date: base.getFullYear() + String(base.getMonth() + 1).padStart(2, "0") + String(base.getDate()).padStart(2, "0"),
-      dayNm: day_nm[base.getDay()]
-    }];
-
-    for (let i=6; i>0; i--) {
-      base.setDate(base.getDate() - 1);
-
-      result.push({
-        date: base.getFullYear() + String(base.getMonth() + 1).padStart(2, "0") + String(base.getDate()).padStart(2, "0"),
-        dayNm: day_nm[base.getDay()]
-      })
-    }
-
-    return result;
-  }
-
-  const last7days = getLast7day();
-
-  // 주별 시작 날짜와 종료 날짜 계산
-  const getWeekRange = (offset = 0) => {
-    const today = new Date();
-    today.setDate(today.getDate() + offset * 7);
-
-    // 🔹 월요일 시작으로 변경
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay() + 1);
-
-    // 🔹 일요일로 끝나도록 변경
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
-
-    // 🔹 시작부터 끝까지 모든 날짜 생성
-    const allDates = [];
-    for (let d = new Date(startOfWeek); d <= endOfWeek; d.setDate(d.getDate() + 1)) {
-      allDates.push({
-        dt: d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0"),
-        nm: day_nm[d.getDay()]
-      });
-    }
-
-    return {
-      start: allDates[0].dt, // 주 시작일 (월요일)
-      end: allDates[allDates.length - 1].dt, // 주 종료일 (일요일)
-      allDates, // 주 전체 날짜 배열 (yyyyMMdd 형식)
-    };
-  };
-
-  const { start, end, allDates } = getWeekRange(weekOffset);
+  const base_date_str = base_date.getFullYear() + String(base_date.getMonth() + 1).padStart(2, "0") + String(base_date.getDate()).padStart(2, "0");
 
   useEffect(() => {
     if (user?.business_number) {
-      fetchData(user.business_number);
-      fetchWeekData(user.business_number, start.replaceAll(".", ""));
+      fetchData(user.business_number, base_date_str);
     }
   }, [isAuthenticated, user]);
 
   useEffect(() => {
     if (user?.business_number) {
-      fetchWeekData(user.business_number, start.replaceAll(".", ""));
+      fetchWeekData(user.business_number, base_date_str, weekOffset);
     }
   }, [weekOffset, user]);
 
@@ -94,12 +52,12 @@ export default function SalesDashboard() {
     if (last7daySales) {
       const formattedData = [
         ["요일", "매출", { role: "style" }, { role: "tooltip", type: "string" }],
-        ...last7days.sort((x,y) => Number(x.date) - Number(y.date)).map((item, idx) => [
-          item.dayNm, // 요일 표시
-          Number(last7daySales.find(x => x.sale_date == item.date)?.sum_amt || 0) / 10000,
-          item.date === yesterday ? "#1E88E5" : "#FFE082", // 현재 요일이면 파란색, 아니면 회색
-          `${item.date.replace(/^(\d{4})(\d{2})(\d{2})$/, "$2.$3")}일: ${Number(last7daySales.find(x => x.sale_date == item.date)?.sum_amt || 0).toLocaleString()} 원`, // 툴팁 (원 단위 금액)
-        ]),
+        ...last7daySales.sort((x,y) => Number(x.sale_date) - Number(y.sale_date)).map((item, idx) => [
+          day_nm[new Date(item.sale_date.replace(/^(\d{4})(\d{2})(\d{2})$/, "$1-$2-$3")).getDay()], // 요일 표시
+          item.sum_amt ? Number(item.sum_amt) / 10000 : null,
+          item.sale_date === base_date_str ? "#1E88E5" : "#FFE082", // 현재 요일이면 파란색, 아니면 회색
+          item.sum_amt ? `${item.sale_date.replace(/^(\d{4})(\d{2})(\d{2})$/, "$2.$3")}일: ${Number(item.sum_amt).toLocaleString()} 원` : null, // 툴팁 (원 단위 금액)
+        ])
       ];
 
       setChartlast7Data(formattedData);
@@ -107,40 +65,70 @@ export default function SalesDashboard() {
   }, [last7daySales]);
 
   useEffect(() => {
+    console.log("weekSalesData 업데이트됨:", weekSalesData);
     if (weekSalesData) {
       const formattedData = [
         ["날짜", "기준", { role: "tooltip", type: "string" },
           "지난주", { role: "tooltip", type: "string" },
           "이전년도", { role: "tooltip", type: "string" }],
-        ...allDates.map((item, idx) => {
-          const dateLabel = item.dt.replace(/^(\d{4})(\d{2})(\d{2})$/, "$2.$3") + `(${item.nm})`;
+        ...weekSalesData.map((item, idx) => {
+          const base_date = item.base.sale_date.replace(/^(\d{4})(\d{2})(\d{2})$/, "$2.$3");
+          const day = day_nm[new Date(item.base.sale_date.replace(/^(\d{4})(\d{2})(\d{2})$/, "$1-$2-$3")).getDay()]; // 요일 표시
+          const dateLabel = base_date + `(${day})`;
 
-          const baseWeekValue = weekSalesData.base_week.find(x => x.sale_date == item.dt)?.sum_amt || null;
-          const prevWeekValue = weekSalesData.result_7day[idx]?.sum_amt || null;
-          const prevYearValue = weekSalesData.result_prevYear[idx]?.sum_amt || null;
+          const prev7day_date = item.prev7day.sale_date.replace(/^(\d{4})(\d{2})(\d{2})$/, "$2.$3");
+          const prevYear_date = item.prevYear.sale_date.replace(/^(\d{4})(\d{2})(\d{2})$/, "$2.$3");
 
           return [
             dateLabel,
-            baseWeekValue !== null ? baseWeekValue / 10000 : idx == 0 ? 0 : null, // 금주 데이터
-            baseWeekValue !== null ? `${dateLabel} : ${Number(baseWeekValue).toLocaleString()} 원` : null, // 금주 Tooltip
+            item.base.sum_amt !== null ? item.base.sum_amt / 10000 : 0,
+            `${dateLabel} : ${Number(item.base.sum_amt || 0).toLocaleString()} 원`,
 
-            prevWeekValue !== null ? prevWeekValue / 10000 : null, // 지난주 데이터
-            prevWeekValue !== null ? `지난주(${weekSalesData.result_7day[idx]?.sale_date.replace(/^(\d{4})(\d{2})(\d{2})$/, "$2.$3")}) : ${Number(prevWeekValue).toLocaleString()} 원` : null, // 지난주 Tooltip
+            item.prev7day.sum_amt !== null ? item.prev7day.sum_amt / 10000 : 0,
+            `지난주(${prev7day_date}) : ${Number(item.prev7day.sum_amt || 0).toLocaleString()} 원`,
 
-            prevYearValue !== null ? prevYearValue / 10000 : null, // 전년 동일주 데이터
-            prevYearValue !== null ? `이전년도(${weekSalesData.result_prevYear[idx]?.sale_date.replace(/^(\d{4})(\d{2})(\d{2})$/, "$2.$3")}) : ${Number(prevYearValue).toLocaleString()} 원` : null, // 전년 동일주 Tooltip
-          ];
+            item.prevYear.sum_amt !== null ? item.prevYear.sum_amt / 10000 : 0,
+            `이전년도(${prevYear_date}) : ${Number(item.prevYear.sum_amt || 0).toLocaleString()} 원`,
+          ]
         })
       ];
 
       setChartTableData(formattedData);
+
+      const targetList = weekSalesData.map(x => {
+        if (saleListType === 1) {
+          return x.prev7day;
+        }else if (saleListType === 2) {
+          return x.prevYear;
+        }else{
+          return x.base;
+        }
+      });
+
+      setSaleListTarget(targetList);
     }
   }, [weekSalesData]);
+
+  useEffect(() => {
+    if (weekSalesData) {
+      const targetList = weekSalesData.map(x => {
+        if (saleListType === 1) {
+          return x.prev7day;
+        }else if (saleListType === 2) {
+          return x.prevYear;
+        }else{
+          return x.base;
+        }
+      });
+
+      setSaleListTarget(targetList);
+    }
+  }, [saleListType]);
 
   // 📌 Google Chart 옵션
   const last7_options = {
     legend: "none",
-    vAxis: { format: "short", minValue: 0 },
+    vAxis: { format: "#,###", minValue: 0 },
     chartArea: { width: "87%", height: "75%" },
     bar: { groupWidth: "40%" }, // 막대 너비 조정
     colors: ["#1E88E5"]
@@ -149,7 +137,7 @@ export default function SalesDashboard() {
   // Google Chart 옵션
   const week_options = {
     legend: { position: "top", alignment: "center" },
-    vAxis: { format: "short" },
+    vAxis: { format: "#,###", minValue: 0, viewWindow: { min: 0 }},
     chartArea: { width: "87%", height: "75%" },
     colors: ["#4285F4", "#FBBC05", "#34A853"], // 금주(파랑), 지난주(노랑), 이전년도(초록)
     lineWidth: 3,
@@ -158,7 +146,7 @@ export default function SalesDashboard() {
   };
 
   return (
-    <ProtectedRoute>
+    <>
       <div className="container mx-auto p-3 pt-0 pb-20">
         <div className="relative flex items-center justify-center mb-4">
           {/* 🔹 둥근 이전 버튼 (왼쪽 정렬) */}
@@ -179,17 +167,16 @@ export default function SalesDashboard() {
           <CardHeader className="flex p-0 justify-between items-start">
             {/* 제목 */}
             <CardTitle className="text-2xl sm:text-3xl font-semibold text-gray-800">
-              <span className="text-[15px] font-extrabold">어제 매출 금액은</span>{" "}
-              <span className="text-red-500 font-extrabold">
-                {last7daySales && Number(last7daySales.find(x => x.sale_date == yesterday)?.sum_amt || 0).toLocaleString()}원
-              </span>{" "}
-              <span className="text-[15px] font-extrabold">이에요</span>
-              <div className="text-left -mt-6">
-                <span className="text-[10px] font-extrabold">(날짜: {yesterday.replace(/^(\d{4})(\d{2})(\d{2})$/, "$1.$2.$3")})</span>
+              <span className="text-[15px] font-extrabold">{base_date_str.replace(/^(\d{4})(\d{2})(\d{2})$/, "$1.$2.$3")}일 매출 금액은</span>{" "}
+              <div className="text-left -mt-1">
+                <span className="text-red-500 font-extrabold">
+                  {last7daySales && Number(last7daySales.find(x => x.sale_date == base_date_str)?.sum_amt || 0).toLocaleString()}원
+                </span>{" "}
+                <span className="text-[15px] font-extrabold">이에요</span>
               </div>
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 pb-1">
+          <CardContent className="p-0 -mt-5 pb-1">
             <div className="relative top-4 flex flex-col items-center">
               <Chart chartType="ColumnChart" width="100%" height="250px" data={chartlast7Data} options={last7_options} />
               <div className="absolute right-2 -top-1 text-gray-500 text-[9px]">
@@ -211,14 +198,16 @@ export default function SalesDashboard() {
             <CardTitle className="flex-grow text-center text-lg sm:text-xl font-semibold text-gray-800">
               주간 매출 비교
             </CardTitle>
+
+            {/*className={`px-4 py-1 rounded-lg text-white`} ${
+            bweekOffset
+             ? "bg-blue-500 hover:bg-blue-600" // 활성화 스타일
+             : "bg-gray-300 cursor-not-allowed" // 비활성화 스타일
+            } */}
             <button
-              className={`px-4 py-1 rounded-lg text-white ${
-                weekOffset >= 0
-                  ? "bg-gray-300 cursor-not-allowed" // 비활성화 스타일
-                  : "bg-blue-500 hover:bg-blue-600" // 활성화 스타일
-              }`}
+              className="px-4 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
               onClick={() => setWeekOffset((prev) => prev + 1)}
-              disabled={weekOffset >= 0} // 비활성화 조건
+              // disabled={!bweekOffset} // 비활성화 조건
             >
               다음주
             </button>
@@ -255,16 +244,50 @@ export default function SalesDashboard() {
 
         {/* ✅ 최근 7일 매출 리스트 */}
         <Card className="shadow-md border border-gray-300 rounded-lg">
-          <CardHeader>
-            <CardTitle className="text-lg sm:text-xl text-gray-800 font-bold">
-              📅 주간 매출 내역
-              <span className="text-[14px] font-extrabold">
-                <br/>
-                (기간 : {start.replace(/^(\d{4})(\d{2})(\d{2})$/, "$1.$2.$3")} ~ {end.replace(/^(\d{4})(\d{2})(\d{2})$/, "$1.$2.$3")})
-              </span>
-            </CardTitle>
+          <CardHeader className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-lg sm:text-xl text-gray-800 font-bold flex items-center">
+                📅 주간 매출 내역
+                <span className="text-[14px] font-extrabold ml-2">
+                  (기간 :
+                  {saleListTarget &&
+                    saleListTarget.length > 0 &&
+                    saleListTarget[0].sale_date.replace(/^(\d{4})(\d{2})(\d{2})$/, "$1.$2.$3") +
+                      " ~ " +
+                      saleListTarget[saleListTarget.length - 1].sale_date.replace(/^(\d{4})(\d{2})(\d{2})$/, "$1.$2.$3")}
+                  )
+                </span>
+              </CardTitle>
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                className={`px-3 py-1 text-xs rounded-md transition border ${
+                  saleListType === 0 ? "bg-blue-500 text-white border-blue-600" : "bg-blue-50 text-blue-600 border-blue-300"
+                }`}
+                onClick={() => setSaleListType(0)}
+              >
+                기준
+              </button>
+              <button
+                className={`px-3 py-1 text-xs rounded-md transition border ${
+                  saleListType === 1 ? "bg-yellow-500 text-white border-yellow-600" : "bg-yellow-50 text-yellow-600 border-yellow-300"
+                }`}
+                onClick={() => setSaleListType(1)}
+              >
+                지난주
+              </button>
+              <button
+                className={`px-3 py-1 text-xs rounded-md transition border ${
+                  saleListType === 2 ? "bg-green-500 text-white border-green-600" : "bg-green-50 text-green-600 border-green-300"
+                }`}
+                onClick={() => setSaleListType(2)}
+              >
+                이전년도
+              </button>
+            </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="-mt-5">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -274,8 +297,8 @@ export default function SalesDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {weekSalesData && weekSalesData.base_week &&
-                    weekSalesData.base_week.sort((x,y) => Number(y.sale_date) - Number(x.sale_date)).map((item, index) => (
+                  {saleListTarget && saleListTarget.length > 0 &&
+                    saleListTarget.map((item, index) => (
                       <tr key={index} className={`border-b hover:bg-gray-100 transition ${index % 2 === 0 ? '' : 'bg-gray-50'}`}>
                         <td className="p-3 text-left pl-8">
                           {item.sale_date.replace(/^(\d{4})(\d{2})(\d{2})$/, "$1.$2.$3")}
@@ -294,6 +317,6 @@ export default function SalesDashboard() {
       </div>
 
       <GNB />
-    </ProtectedRoute>
+    </>
   );
 }
