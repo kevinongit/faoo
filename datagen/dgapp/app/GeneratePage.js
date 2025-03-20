@@ -99,6 +99,8 @@ export default function GeneratePage({ users = [], trends = [] }) {
 
   const renderAccordionSection = (title, data) => {
     const recordCount = Array.isArray(data) ? data.length : data ? 1 : 0;
+
+    console.log("renderAccordionSection", title, data);
     return (
       <div className="mb-4">
         <button
@@ -212,21 +214,30 @@ export default function GeneratePage({ users = [], trends = [] }) {
             {renderAccordionSection("Merchant Info", [data.merchant_info])}
             {renderAccordionSection(
               "Approval Details",
-              data.card_sales_data.daily_sales_data.flatMap(
-                (item) => item.approval_details
-              )
+              data.card_sales_data.daily_sales_data.reduce((acc, item) => {
+                if (item.approval_details && item.approval_details.length > 0) {
+                  acc.push(...item.approval_details);
+                }
+                return acc;
+              }, [])
             )}
             {renderAccordionSection(
               "Acquisition Details",
-              data.card_sales_data.daily_sales_data.map(
-                (item) => item.acquisition_details
-              )
+              data.card_sales_data.daily_sales_data.reduce((acc, item) => {
+                if (item.acquisition_details && item.acquisition_details.length > 0) {
+                  acc.push(...item.acquisition_details);
+                }
+                return acc;
+              }, [])
             )}
             {renderAccordionSection(
               "Deposit Details",
-              data.card_sales_data.daily_sales_data.map(
-                (item) => item.deposit_details
-              )
+              data.card_sales_data.daily_sales_data.reduce((acc, item) => {
+                if (item.deposit_details && item.deposit_details.length > 0) {
+                  acc.push(...item.deposit_details);
+                }
+                return acc;
+              }, [])
             )}
             {renderAccordionSection("Baemin", data.baemin.daily_sales_data)}
             {renderAccordionSection(

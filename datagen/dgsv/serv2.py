@@ -299,7 +299,7 @@ def generate_compare_data():
     print(f"총 100 개의 데이터를 생성 중...")
     for idx in tqdm(range(0, 100, 1)):
         user_copy = {}
-        user_copy["business_number"] = f"10010{random_number}"
+        user_copy["business_number"] = random_number
         user_copy["merchant_name"] = f"가맹점{random_number}"
         user_copy["merchant_address"] = user["merchant_address"]
         user_copy["smb_sector"] = user["smb_sector"]
