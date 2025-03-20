@@ -128,7 +128,7 @@ def generate_sales_data(user, duration_days, weekday_avg_revenue, trend_type, pe
                 "approval_number": f"{chr(65+day)}{random.randint(100000000, 999999999)}",
                 "approval_datetime": approval_time.strftime("%Y-%m-%d %H:%M:%S")
             })
-        data["card_sales"].append({
+        tempObj = {
             "date": current_date.strftime("%Y-%m-%d"),
             "merchant_name": user["merchant_name"],
             "business_number": user["business_number"],
@@ -144,19 +144,19 @@ def generate_sales_data(user, duration_days, weekday_avg_revenue, trend_type, pe
                 "card_company": "혼합",
                 "acquisition_number": f"ACQ-{current_date.strftime('%m%d')}-001"
             }
-        })
+        }
 
         if is_compare == False:
-            data["card_sales"].append({
-                "deposit_details": {
-                    "deposit_date": (current_date + timedelta(days=3)).strftime("%Y-%m-%d"),
+            tempObj["deposit_details"] = {
+                "deposit_date": (current_date + timedelta(days=3)).strftime("%Y-%m-%d"),
                     "deposit_amount": sum(t["net_amount"] for t in card_txns),  # 수수료 제외 입금액
                     "fee": sum(t["fee"] for t in card_txns),  # 입금 시 수수료 명시
                     "bank": user["deposit_bank"],
                     "account_number": user["account_number"],
                         "deposit_reference": f"DEP-{current_date.strftime('%m%d')}-001"
-                }
-            })
+            }
+
+        data["card_sales"].append(tempObj)
 
         # 배달 플랫폼
         for platform, due_days in [("baemin", 7), ("coupangeats", 3), ("yogiyo", 1)]:

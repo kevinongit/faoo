@@ -59,7 +59,7 @@ def get_baemin_data(baemin):
 
         return transformed_data
     except Exception as e:
-        print(f"Error fetching data: {e}")
+        print(f"Error get_baemin_data data: {e}")
         return []
 
 # 카드 판매 데이터 조회
@@ -89,7 +89,7 @@ def get_card_sales_data(card):
 
         return transformed_data
     except Exception as e:
-        print(f"Error fetching data: {e}")
+        print(f"Error get_card_sales_data data: {e}")
         return []
 
 # 쿠팡이츠 데이터 조회
@@ -119,7 +119,7 @@ def get_coupangeats_data(coupangeats):
 
         return transformed_data
     except Exception as e:
-        print(f"Error fetching data: {e}")
+        print(f"Error get_coupangeats_data data: {e}")
         return []
 
 
@@ -150,7 +150,7 @@ def get_hometax_cash_data(hometax):
 
         return transformed_data
     except Exception as e:
-        print(f"Error fetching data: {e}")
+        print(f"Error get_hometax_cash_data data: {e}")
         return []
 
 # 요기요 데이터 조회
@@ -180,7 +180,7 @@ def get_yogiyo_data(yogiyo):
 
         return transformed_data
     except Exception as e:
-        print(f"Error fetching data: {e}")
+        print(f"Error get_yogiyo_data data: {e}")
         return []
 
 if __name__ == "__main__":
@@ -201,14 +201,15 @@ if __name__ == "__main__":
 
     if offline_data:
         print(f"offlin 총 {len(offline_data)}개의 데이터를 삽입 중...")
-
-        for idx in tqdm(range(0, len(offline_data), 100)):
-            batch = offline_data[idx:idx+100]
+        for idx in tqdm(range(0, len(offline_data), 10000), file=sys.stdout):
+            batch = offline_data[idx:idx+10000]
             client["chart_data"]["sales_offline_info"].insert_many(batch)
+
     if online_data:
         print(f"online 총 {len(online_data)}개의 데이터를 삽입 중...")
-        for idx in tqdm(range(0, len(online_data), 100)):
-            batch = online_data[idx:idx+100]
+        for idx in tqdm(range(0, len(online_data), 10000), file=sys.stdout):
+            batch = online_data[idx:idx+10000]
+            client["chart_data"]["sales_online_info"].insert_many(batch)
 
     # 한번에 업데이트 처리
     update_operations = []
