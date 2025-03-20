@@ -1,18 +1,18 @@
 const express = require("express");
 const router = express.Router();
 const { MongoClient } = require("mongodb");
-const { MONGO_SALES_URI } = process.env;
+const { MONGODB_URI } = process.env;
 const logger = require("../middleware/logger");
 
 // MongoDB 클라이언트 연결 함수
-async function connectToDatabase() {
-  const client = new MongoClient(MONGO_SALES_URI);
+async function connectToDatabase(dbName) {
+  const client = new MongoClient(MONGODB_URI);
   await client.connect();
-  return client.db();
+  return client.db(dbName);
 }
 
 async function getSalesData(business_number, start_date, end_date) {
-  const db = await connectToDatabase();
+  const db = await connectToDatabase("chart_data");
   const off_collection = db.collection("sales_offline_info");
   const on_collection = db.collection("sales_online_info");
 
