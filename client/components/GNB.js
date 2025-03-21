@@ -1,13 +1,14 @@
 // components/GNB.js
-import {Home, Gift, Package, Gauge, MoreHorizontal} from "lucide-react";
+import { Home, Gift, Package, Gauge, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 
 const menuItems = [
-  {icon: Home, label: "홈", href: "/dashboard"},
-  {icon: Gift, label: "혜택", href: "/benefits"},
-  {icon: Package, label: "상품", href: "/products"},
-  {icon: Gauge, label: "매출", href: "/sales/dashboard"},
-  {icon: MoreHorizontal, label: "전체", href: "/menu"}
+  // {icon: Home, label: "홈", href: "/dashboard"},
+  { icon: Home, label: "홈", href: "/sweet-home" },
+  { icon: Gift, label: "혜택", href: "/benefits" },
+  { icon: Package, label: "상품", href: "/products" },
+  { icon: Gauge, label: "매출", href: "/sales/dashboard" },
+  { icon: MoreHorizontal, label: "전체", href: "/menu" },
 ];
 
 export default function GNB() {
@@ -18,7 +19,8 @@ export default function GNB() {
           <Link
             key={index}
             href={item.href}
-            className="flex flex-col items-center">
+            className="flex flex-col items-center"
+          >
             <item.icon className="h-6 w-6 mb-1" />
             <span className="text-xs">{item.label}</span>
           </Link>

@@ -1,15 +1,16 @@
 // components/ProtectedRoute.js
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 
 export default function ProtectedRoute({ children }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { isAuthenticated } = useAuthStore();
   const [isMounted, setIsMounted] = useState(false);
 
-  console.log("ProtectedRoute", { isAuthenticated, isMounted });
+  console.log("ProtectedRoute", { isAuthenticated, isMounted, pathname });
   useEffect(() => {
     setIsMounted(true);
     if (!isAuthenticated) {
