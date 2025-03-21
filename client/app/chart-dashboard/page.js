@@ -7,6 +7,7 @@ import useSaleDataStore from "../../lib/store/saleDataStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuthStore } from "@/lib/store/authStore";
 import GNB from "@/components/GNB";
+import Loading from "@/components/Loading";
 // import { useLocation } from 'react-router-dom';
 
 export default function SalesDashboard() {
@@ -144,6 +145,18 @@ export default function SalesDashboard() {
     curveType: "function",
     pointSize: 5
   };
+
+  if (!last7daySales || !weekSalesData) {
+    return (
+      <>
+        <div className="container mx-auto p-3 pt-0 pb-20">
+          <div className="relative flex items-center justify-center mb-4">
+            <Loading loading={true} size={150} color="blue" text="데이터를 불러오는 중..." />
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
