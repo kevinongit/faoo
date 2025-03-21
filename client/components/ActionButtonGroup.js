@@ -12,36 +12,36 @@ export default function ActionButtonGroup() {
         className="flex flex-col items-center m-2"
       >
         <div className="flex items-center justify-center w-12 h-12 bg-gray-200 rounded-full shadow-md">
-          <Store className="h-6 w-6 text-gray-600" />
+          <Store className="w-6 h-6 text-gray-600" />
         </div>
-        <span className="text-xs mt-2 text-gray-600">소상공인</span>
+        <span className="mt-2 text-xs text-gray-600">소상공인</span>
       </button>
       <button
-        onClick={() => router.push("/auto-transfer")}
+        onClick={() => router.push("/simple-pnl")}
         className="flex flex-col items-center m-2"
       >
         <div className="flex items-center justify-center w-12 h-12 bg-gray-200 rounded-full shadow-md">
-          <CreditCard className="h-6 w-6 text-gray-600" />
+          <CreditCard className="w-6 h-6 text-gray-600" />
         </div>
-        <span className="text-xs mt-2 text-gray-600">자동이체 등록</span>
+        <span className="mt-2 text-xs text-gray-600">간편 손익계산</span>
       </button>
       <button
         onClick={() => router.push("/card-history")}
         className="flex flex-col items-center m-2"
       >
         <div className="flex items-center justify-center w-12 h-12 bg-gray-200 rounded-full shadow-md">
-          <CreditCard className="h-6 w-6 text-gray-600" />
+          <CreditCard className="w-6 h-6 text-gray-600" />
         </div>
-        <span className="text-xs mt-2 text-gray-600">카드이용내역</span>
+        <span className="mt-2 text-xs text-gray-600">카드이용내역</span>
       </button>
       <button
         onClick={() => router.push("/recent-history")}
         className="flex flex-col items-center m-2"
       >
         <div className="flex items-center justify-center w-12 h-12 bg-gray-200 rounded-full shadow-md">
-          <PieChart className="h-6 w-6 text-gray-600" />
+          <PieChart className="w-6 h-6 text-gray-600" />
         </div>
-        <span className="text-xs mt-2 text-gray-600">최근조회</span>
+        <span className="mt-2 text-xs text-gray-600">최근조회</span>
       </button>
     </div>
   );

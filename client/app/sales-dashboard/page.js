@@ -1,13 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
-import useSalesStore from "../../lib/store/salesStore";
+import useSalesStore from "@/lib/store/salesStore";
+import { useAuthStore } from "@/lib/store/authStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, BarChart } from "@/components/MyChart";
 import { useMediaQuery } from "@/components/ui/hooks/useMediaQuery";
 
 export default function SalesDashboard() {
+  const { user } = useAuthStore();
   const { salesData, isLoading, error, fetchSalesData } = useSalesStore();
-  const [businessNumber, setBusinessNumber] = useState("1111100001");
+  // const [businessNumber, setBusinessNumber] = useState("1111100001");
   const isMobile = useMediaQuery("(max-width: 768px)");
   const xAxisTickFormatter = (value) => {
     if (typeof value === "string") {
@@ -18,23 +20,23 @@ export default function SalesDashboard() {
   };
 
   useEffect(() => {
-    fetchSalesData(businessNumber);
-  }, [businessNumber]);
+    fetchSalesData(user.business_number);
+  }, [user.business_number]);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!salesData) return null;
-
+  console.log("*salesData", salesData);
   return (
-    <div className="container mx-auto p-2 sm:p-4">
-      <h1 className="text-xl sm:text-2xl font-bold mb-4">Sales Dashboard</h1>
+    <div className="container p-2 mx-auto sm:p-4">
+      <h1 className="mb-4 text-xl font-bold sm:text-2xl">Sales Dashboard</h1>
 
       <Card className="mb-4">
         <CardHeader>
           <CardTitle className="text-lg sm:text-xl">Total Sales</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-2xl sm:text-3xl font-bold">
+          <p className="text-2xl font-bold sm:text-3xl">
             {salesData.totalSales.toLocaleString()} KRW
           </p>
         </CardContent>
@@ -80,7 +82,7 @@ export default function SalesDashboard() {
           <div className="space-y-2">
             {salesData.topProducts.map((product, index) => (
               <Card key={index}>
-                <CardContent className="p-2 flex justify-between items-center">
+                <CardContent className="flex items-center justify-between p-2">
                   <span className="font-medium">{product.name}</span>
                   <span>{product.sales.toLocaleString()} KRW</span>
                 </CardContent>
