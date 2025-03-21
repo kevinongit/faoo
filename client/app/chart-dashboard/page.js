@@ -7,6 +7,7 @@ import useSaleDataStore from "../../lib/store/saleDataStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuthStore } from "@/lib/store/authStore";
 import GNB from "@/components/GNB";
+import Loading from "@/components/Loading";
 // import { useLocation } from 'react-router-dom';
 
 export default function SalesDashboard() {
@@ -145,6 +146,18 @@ export default function SalesDashboard() {
     pointSize: 5
   };
 
+  if (!last7daySales || !weekSalesData) {
+    return (
+      <>
+        <div className="container mx-auto p-3 pt-0 pb-20">
+          <div className="relative flex items-center justify-center mb-4">
+            <Loading loading={true} size={150} color="blue" text="데이터를 불러오는 중..." />
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <div className="container mx-auto p-3 pt-0 pb-20">
@@ -233,7 +246,7 @@ export default function SalesDashboard() {
               <div className="ml-0 mt-3">
                 <button
                   className="inline-flex items-center px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-blue-500 text-sm font-medium transition border border-gray-300"
-                  onClick={() => router.push("/sales-compare")}
+                  onClick={() => router.push(`/sales-compare?month=${base_date_str.substring(0, 6)}`)}
                 >
                   매출 분석 보러가기 <span className="ml-1">→</span>
                 </button>

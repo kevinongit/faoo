@@ -1,15 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuthStore } from "@/lib/store/authStore";
-import ProtectedRoute from "@/components/ProtectedRoute";
 import useSaleCompareStore from "../../lib/store/saleCompareStore";
 import GNB from "@/components/GNB";
 import { useEffect, useState, useRef } from "react";
 import * as d3 from "d3";
 import { Chart } from "react-google-charts";
-
+import Loading from "@/components/Loading";
 export default function SaleCompareDashboard() {
   const router = useRouter();
   const { user, isAuthenticated } = useAuthStore();
@@ -18,9 +17,15 @@ export default function SaleCompareDashboard() {
 
   const ref = useRef(null);
 
+  const searchParams = useSearchParams();
+  let month = searchParams.get("month");
+  if (!month) {
+    month = new Date().getFullYear() + String(new Date().getMonth() + 1).padStart(2, "0");
+  }
+
   useEffect(() => {
     if (user?.business_number) {
-      fetchData(user.business_number);
+      fetchData(user.business_number, month);
     }
   }, [user]);
 
@@ -67,7 +72,7 @@ export default function SaleCompareDashboard() {
       const columnChartData = [
         ["가게", "평균 매출", { role: "style" }, { role: "annotation" }],
         ["우리가게", Math.floor(Number(rankData.monthAmt) / 10000), "color: #5A48EE; opacity: 0.9", `${Math.floor(Number(rankData.monthAmt) / 10000).toLocaleString()}\n만원`],
-        [rankData.where_nm, Math.floor(Number(rankData.monthInfo.totalAvg) / 10000), "color: #C2B7F4; opacity: 0.9", `${Math.floor(Number(rankData.monthInfo.totalAvg) / 10000).toLocaleString()}\n만원`],
+        [rankData.zone_nm, Math.floor(Number(rankData.monthInfo.totalAvg) / 10000), "color: #C2B7F4; opacity: 0.9", `${Math.floor(Number(rankData.monthInfo.totalAvg) / 10000).toLocaleString()}\n만원`],
       ];
 
       setMonthChartData(columnChartData);
@@ -90,8 +95,20 @@ export default function SaleCompareDashboard() {
     },
   };
 
+  if (!rankData || !rankData.monthInfo || !rankData.monthInfo.rankList) {
+    return (
+      <>
+        <div className="container mx-auto p-3 pt-0 pb-20">
+          <div className="relative flex items-center justify-center mb-4">
+            <Loading loading={true} size={150} color="blue" text="데이터를 불러오는 중..." />
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
-    <ProtectedRoute>
+    <>
       <div className="container mx-auto p-3 pt-0 pb-20">
         <div className="relative flex items-center justify-center mb-4">
           {/* 🔹 둥근 이전 버튼 (왼쪽 정렬) */}
@@ -111,7 +128,7 @@ export default function SaleCompareDashboard() {
         <Card className="mb-6 mt-7 shadow-md border border-gray-300 rounded-lg p-5 relative">
           <CardHeader className="flex p-0 justify-between items-start">
             <CardTitle className="text-lg sm:text-xl text-gray-800 font-bold mb-5">
-              {`${Number(rankData.base_month)}월 ${rankData.where_nm} ${rankData.kind_nm} 매출 비교`}
+              {`${Number(rankData.base_month)}월 ${rankData.zone_nm} ${rankData.smb_sector} 매출 비교`}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0 pb-1">
@@ -124,15 +141,15 @@ export default function SaleCompareDashboard() {
               {/* 🔹 텍스트 영역 */}
               <div className="flex-1 flex flex-col items-center relative">
                 {/* 🔹 상위 % 스타일 적용 (자연스럽게 배치) */}
-                <div className="absolute top-[-20px] left-1/2 transform -translate-x-1/2 px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-sm font-bold shadow-sm border border-blue-300 mb-5 mt-[-30px]">
+                <div className="absolute top-[-12px] left-1/2 transform -translate-x-1/2 px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-sm font-bold shadow-sm border border-blue-300 mb-5 mt-[-30px]">
                   {`상위 ${rankData?.monthInfo?.percentileRank || ""}%`}
                 </div>
 
                 {/* 🔹 설명 텍스트 (가운데 정렬) */}
-                <p className="text-[13px] text-gray-700 font-medium leading-tight text-center">
+                <p className="text-[13px] -mt-2 text-gray-700 font-medium leading-tight text-center">
                   우리가게는
                   <br />
-                  <span className="font-semibold text-[15px] text-black">{rankData.where_nm}{" "}{rankData.kind_nm}</span> 중에서
+                  <span className="font-semibold text-[15px] text-black">{rankData.zone_nm}{" "}{rankData.smb_sector}</span> 중에서
                   <br />
                   <span className="font-semibold text-[15px] text-blue-500">{Number(rankData.base_month)}월</span>{" "}
                   상위 <span className="text-red-500 text-[15px] font-bold">{rankData?.monthInfo?.percentileRank || ""}%</span> 수준이에요.
@@ -145,7 +162,7 @@ export default function SaleCompareDashboard() {
         <Card className="mb-6 mt-7 shadow-md border border-gray-300 rounded-lg p-5 pt-7 relative">
           <CardHeader className="flex p-0 justify-between items-start">
             <CardTitle className="text-lg sm:text-xl font-semibold text-purple-700">
-              {`${rankData.where_nm} ${rankData.kind_nm}의 ${Number(rankData.base_month)}월 평균 매출액${rankData.compareStr}`}
+              {`${rankData.zone_nm} ${rankData.smb_sector}의 ${Number(rankData.base_month)}월 평균 매출액${rankData.compareStr}`}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0 pb-1">
@@ -191,6 +208,6 @@ export default function SaleCompareDashboard() {
       </div>
 
       <GNB />
-    </ProtectedRoute>
+    </>
   );
 }

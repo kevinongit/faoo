@@ -1,163 +1,71 @@
 const express = require("express");
 const router = express.Router();
 const { MongoClient } = require("mongodb");
-const { MONGO_SALES_URI } = process.env;
+const { MONGODB_URI } = process.env;
 const logger = require("../middleware/logger");
 
 // MongoDB 클라이언트 연결 함수
-async function connectToDatabase() {
-  const client = new MongoClient(MONGO_SALES_URI);
+async function connectToDatabase(dbName) {
+  const client = new MongoClient(MONGODB_URI);
   await client.connect();
-  return client.db();
+  return client.db(dbName);
+}
+// MongoDB 클라이언트 연결 함수
+async function connectToDB() {
+  const client = new MongoClient(MONGODB_URI);
+  await client.connect();
+  return client;
 }
 
 router.post("/salesRanking", async (req, res) => {
   try {
     const results = {};
-    const { business_number } = req.body;
+    const { business_number, month } = req.body;
 
-    const db = await connectToDatabase();
-    const business_collection = db.collection("business_info");
-    const off_collection = db.collection("sales_offline_info");
-    const on_collection = db.collection("sales_online_info");
-    const business_info = await business_collection.findOne({ business_number: business_number});
-
-    let now = new Date();
-    now.setMonth(now.getMonth() - 1);
+    const client = await connectToDB();
+    const user_collection = client.db("fidb").collection("users");
+    const off_collection = client.db("chart_data").collection("sales_offline_info");
+    const on_collection = client.db("chart_data").collection("sales_online_info");
+    const user_info = await user_collection.findOne({ business_number: business_number});
 
     // 지난달 1일부터 해당 지역구의 동일업종의 모든 매출데이터를 가져와서 집계를 별도처리
-    let base_date = now.getFullYear() + String(now.getMonth() + 1).padStart(2, "0") + "01";
-
-    const off_array = await off_collection.find({ where_cd: business_info.where_cd, kind_cd: business_info.kind_cd, sale_date: {
-      $gte: base_date
+    const off_array = await off_collection.find({ smb_sector: user_info.smb_sector, zone_nm: user_info.zone_nm, sale_date: {
+      $gte: month + "01",
+      $lte: month + "31"
     }}).toArray();
 
-    const on_array = await on_collection.find({ where_cd: business_info.where_cd, kind_cd: business_info.kind_cd, sale_date: {
-      $gte: base_date
+    const on_array = await on_collection.find({ smb_sector: user_info.smb_sector, zone_nm: user_info.zone_nm, sale_date: {
+      $gte: month + "01",
+      $lte: month + "31"
     }}).toArray();
 
     const all_array = off_array.concat(on_array);
 
-    now = new Date();
-    now.setMonth(now.getMonth() - 1);
-    const prevMonth = now.getFullYear() + String(now.getMonth() + 1).padStart(2, "0");
-
-    now = new Date();
-    now.setDate(now.getDate() - 1);
-    const prevDay = now.getFullYear() + String(now.getMonth() + 1).padStart(2, "0") + String(now.getDate()).padStart(2, "0");
-
-    now.setDate(now.getDate() - 6);
-    const prevWeek = now.getFullYear() + String(now.getMonth() + 1).padStart(2, "0") + String(now.getDate()).padStart(2, "0");
-
     const all_info = all_array.reduce((acc, cur) => {
-      // 전월 집계
-      if (cur.sale_date.startsWith(prevMonth)) {
-        const sum_info = acc.prevMonth.find(x => x.business_number == cur.business_number);
+        const sum_info = acc.find(x => x.business_number == cur.business_number);
 
         if (sum_info) {
           sum_info.sum_amt += Number(cur.sale_amt);
-          sum_info.list.push(cur);
         }else{
-          acc.prevMonth.push({
+          acc.push({
             business_number: cur.business_number,
-            sum_amt: Number(cur.sale_amt),
-            list: [cur]
+            sum_amt: Number(cur.sale_amt)
           })
         }
-      }
 
-      // 어제 집계
-      if (cur.sale_date == prevDay) {
-        const sum_info = acc.prevDay.find(x => x.business_number == cur.business_number);
+        return acc;
+    }, []);
 
-        if (sum_info) {
-          sum_info.sum_amt += Number(cur.sale_amt);
-          sum_info.list.push(cur);
-        }else{
-          acc.prevDay.push({
-            business_number: cur.business_number,
-            sum_amt: Number(cur.sale_amt),
-            list: [cur]
-          })
-        }
-      // 주간 집계
-      // }else if (Number(cur.sale_date) >= Number(prevWeek)) {
-      //   const sum_info = acc.prevWeek.find(x => x.business_number == cur.business_number);
+    const sumList = all_info.map(x => x.sum_amt);
+    const user_sum_amt = all_info.find(x => x.business_number == user_info.business_number).sum_amt;
 
-      //   if (sum_info) {
-      //     sum_info.sum_amt += Number(cur.sale_amt);
-      //     sum_info.list.push(cur);
-      //   }else{
-      //     acc.prevWeek.push({
-      //       business_number: cur.business_number,
-      //       sum_amt: Number(cur.sale_amt),
-      //       list: [cur]
-      //     })
-      //   }
-      }
-
-      return acc;
-    }, {prevMonth:[], prevWeek:[], prevDay:[]});
-
-    const monthRank = all_info.prevMonth.reduce((acc, cur) => {
-      if (cur.business_number == business_info.business_number) {
-        acc.sum_amt = cur.sum_amt;
-      }
-
-      acc.list.push(cur.sum_amt);
-
-      return acc;
-    }, {sum_amt:"0", list:[]});
-
-    // const weekRank = all_info.prevWeek.reduce((acc, cur) => {
-    //   if (cur.business_number == business_info.business_number) {
-    //     acc.sum_amt = cur.sum_amt;
-    //   }
-
-    //   acc.list.push(cur.sum_amt);
-
-    //   return acc;
-    // }, {sum_amt:"0", list:[]});
-
-    const dayRank = all_info.prevDay.reduce((acc, cur) => {
-      if (cur.business_number == business_info.business_number) {
-        acc.sum_amt = cur.sum_amt;
-      }
-
-      acc.list.push(cur.sum_amt);
-
-      return acc;
-    }, {sum_amt:"0", list:[]});
-
-    const monthRank_info = calculatePercentileRank(monthRank.list, monthRank.sum_amt);
-    // const weekRank_info = calculatePercentileRank(weekRank.list, weekRank.sum_amt);
-    const dayRank_info = calculatePercentileRank(dayRank.list, dayRank.sum_amt);
-
-    const monthTot = monthRank.list.reduce((acc, cur) => {
-      if (cur >= monthRank.sum_amt) {
-        acc.monthUpper.push(cur);
-      }else{
-        acc.monthDown.push(cur);
-      }
-      return acc;
-    },{monthUpper:[], monthDown:[]});
-
-    const dayTot = dayRank.list.reduce((acc, cur) => {
-      if (cur >= dayRank.sum_amt) {
-        acc.dayUpper.push(cur);
-      }else{
-        acc.dayDown.push(cur);
-      }
-      return acc;
-    },{dayUpper:[], dayDown:[]});
+    const monthRank_info = calculatePercentileRank(sumList, user_sum_amt);
 
     results.monthInfo = monthRank_info;
-    results.monthAmt = monthRank.sum_amt;
-    results.dayInfo = dayRank_info;
-    results.dayAmt = dayRank.sum_amt;
-    results.where_nm = business_info.where_nm;
-    results.kind_nm = business_info.kind_nm;
-    results.base_date = base_date;
+    results.monthAmt = user_sum_amt;
+    results.smb_sector = user_info.smb_sector;
+    results.zone_nm = user_info.zone_nm;
+    results.base_date = month;
 
     logger.info(JSON.stringify(results));
 

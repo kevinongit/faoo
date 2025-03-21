@@ -7,13 +7,12 @@ const Calendar = ({dailySales}) => {
 
   const today = new Date();
 
-  // ✅ 이전 달 & 다음 달 변경 시 Zustand 상태 업데이트
+  //이전 달 & 다음 달 변경 시 Zustand 상태 업데이트
   const handlePrevMonth = () => {
     const currentMonthNum = parseInt(currentMonth, 10);
-    const currentYearNum = parseInt(currentYear, 10);
     if (currentMonthNum === 1) {
       setCurrentMonth(12);
-      setCurrentYear(currentYearNum - 1);
+      setCurrentYear(currentYear - 1);
     } else {
       setCurrentMonth(currentMonthNum - 1);
     }
@@ -21,16 +20,15 @@ const Calendar = ({dailySales}) => {
 
   const handleNextMonth = () => {
     const currentMonthNum = parseInt(currentMonth, 10);
-    const currentYearNum = parseInt(currentYear, 10);
     if (currentMonthNum === 12) {
       setCurrentMonth(1);
-      setCurrentYear(currentYearNum + 1);
+      setCurrentYear(currentYear + 1);
     } else {
       setCurrentMonth(currentMonthNum + 1);
     }
   };
 
-  // ✅ 해당 월의 첫째 날과 마지막 날짜 계산
+  //해당 월의 첫째 날과 마지막 날짜 계산
   const firstDayOfMonth = new Date(currentYear, currentMonth - 1, 1).getDay();
   const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
   const calendarDays = [...Array(firstDayOfMonth).fill(null), ...Array.from({length: daysInMonth}, (_, i) => i + 1)];

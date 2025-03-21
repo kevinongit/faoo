@@ -36,7 +36,7 @@ export default function GeneratePage({ users = [], trends = [] }) {
       alert("Please fill all fields");
       return;
     }
-    setLoading({ loading: true, text: "" });
+    setLoading({ loading: true, text: "Generating data..." });
     try {
       const genDuration = `${durationCount}${durationUnit}`;
       const fullRevenueTrend = `${revenueTrend}_${trendPercentage}`;
@@ -224,8 +224,8 @@ export default function GeneratePage({ users = [], trends = [] }) {
             {renderAccordionSection(
               "Acquisition Details",
               data.card_sales_data.daily_sales_data.reduce((acc, item) => {
-                if (item.acquisition_details && item.acquisition_details.length > 0) {
-                  acc.push(...item.acquisition_details);
+                if (item.acquisition_details) {
+                  acc.push(item.acquisition_details);
                 }
                 return acc;
               }, [])
@@ -233,8 +233,8 @@ export default function GeneratePage({ users = [], trends = [] }) {
             {renderAccordionSection(
               "Deposit Details",
               data.card_sales_data.daily_sales_data.reduce((acc, item) => {
-                if (item.deposit_details && item.deposit_details.length > 0) {
-                  acc.push(...item.deposit_details);
+                if (item.deposit_details) {
+                  acc.push(item.deposit_details);
                 }
                 return acc;
               }, [])

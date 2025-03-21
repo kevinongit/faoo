@@ -293,11 +293,11 @@ def generate_compare_data():
 
     user = next((u for u in SMB_USERS if u["business_number"] == business_number), None)
 
-    random_number = f"10010{secrets.randbelow(100000):05}"
-
     result_list = []
     print(f"총 100 개의 데이터를 생성 중...")
     for idx in tqdm(range(0, 100, 1)):
+        random_number = f"10010{secrets.randbelow(100000):05}"
+
         user_copy = {}
         user_copy["business_number"] = random_number
         user_copy["merchant_name"] = f"가맹점{random_number}"
