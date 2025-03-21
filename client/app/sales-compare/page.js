@@ -72,7 +72,7 @@ export default function SaleCompareDashboard() {
       const columnChartData = [
         ["가게", "평균 매출", { role: "style" }, { role: "annotation" }],
         ["우리가게", Math.floor(Number(rankData.monthAmt) / 10000), "color: #5A48EE; opacity: 0.9", `${Math.floor(Number(rankData.monthAmt) / 10000).toLocaleString()}\n만원`],
-        [rankData.where_nm, Math.floor(Number(rankData.monthInfo.totalAvg) / 10000), "color: #C2B7F4; opacity: 0.9", `${Math.floor(Number(rankData.monthInfo.totalAvg) / 10000).toLocaleString()}\n만원`],
+        [rankData.zone_nm, Math.floor(Number(rankData.monthInfo.totalAvg) / 10000), "color: #C2B7F4; opacity: 0.9", `${Math.floor(Number(rankData.monthInfo.totalAvg) / 10000).toLocaleString()}\n만원`],
       ];
 
       setMonthChartData(columnChartData);
