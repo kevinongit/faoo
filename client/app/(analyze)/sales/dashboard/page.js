@@ -38,35 +38,35 @@ export default function SalesSummary() {
     if (!isAuthenticated) {
       router.push("/login");
     }
-  }, []);
+  }, [isAuthenticated, router]);
 
-  console.log("🔑 User:", user);
+  //console.log("🔑 User:", user);
   const business_number = user?.business_number; //"1111100001"; // 사업자 번호
-  // ✅ 페이지가 로드될 때 두 개의 API 호출
+  // 페이지가 로드될 때 두 개의 API 호출
   useEffect(() => {
     fetchMonthlySales(business_number);
     fetchComparison(business_number);
     fetchDailySales(business_number, currentYear, currentMonth);
-  }, []);
+  }, [business_number]);
 
   useEffect(() => {
     fetchDailySales(business_number, currentYear, currentMonth);
-  }, [currentYear, currentMonth]);
+  }, [business_number, currentYear, currentMonth, fetchDailySales]);
 
-  console.log("📊 Daily Sales Data:", dailySales);
+  //console.log("📊 Daily Sales Data:", dailySales);
 
   //console.log("📅 Monthly Sales Data:", salesData);
   //console.log("📊 Daily Sales Data:", dailySales);
 
-  // ✅ 오늘 날짜의 매출 데이터 가져오기
+  // 오늘 날짜의 매출 데이터 가져오기
   const formattedDate = selectedDate.toISOString().split("T")[0]; // YYYY-MM-DD 형식
   const todaySales = comparisonData.today_sales || 0;
   const yesterdaySales = comparisonData.yesterday_sales || 0;
   const twoDaysAgoSales = comparisonData.two_days_ago_sales || 0;
   const totalSales = salesData.total_sales || 0;
 
-  console.log(todaySales, yesterdaySales, totalSales);
-  // ✅ 숫자 카운트 애니메이션 (오늘 매출) using useRef and requestAnimationFrame
+  //console.log(todaySales, yesterdaySales, totalSales);
+  // 숫자 카운트 애니메이션 (오늘 매출) using useRef and requestAnimationFrame
   const salesRef = useRef(0);
   const salesDisplayRef = useRef(null);
 
@@ -112,7 +112,7 @@ export default function SalesSummary() {
     requestAnimationFrame(animateCountUp);
   }, [totalSales]);
 
-  // ✅ 매출 변화량 계산
+  //  매출 변화량 계산
   const salesDiff = todaySales - yesterdaySales;
   const isIncrease = salesDiff > 0;
   const diffText = isIncrease ? `+${salesDiff.toLocaleString()}` : `${salesDiff.toLocaleString()}`;
@@ -123,7 +123,7 @@ export default function SalesSummary() {
     <LucideTrendingDown className="w-5 h-5 text-blue-500" />
   );
 
-  // ✅ 2일 전 대비 변화량 계산
+  // 2일 전 대비 변화량 계산
   const twoDaysAgoDiff = yesterdaySales - twoDaysAgoSales;
   const isTwoDaysAgoIncrease = twoDaysAgoDiff > 0;
   const twoDaysAgoDiffText = isTwoDaysAgoIncrease
