@@ -8,7 +8,7 @@ import GNB from "@/components/GNB";
 import { useEffect, useState, useRef } from "react";
 import * as d3 from "d3";
 import { Chart } from "react-google-charts";
-
+import Loading from "@/components/Loading";
 export default function SaleCompareDashboard() {
   const router = useRouter();
   const { user, isAuthenticated } = useAuthStore();
@@ -94,6 +94,18 @@ export default function SaleCompareDashboard() {
       },
     },
   };
+
+  if (!rankData || !rankData.monthInfo || !rankData.monthInfo.rankList) {
+    return (
+      <>
+        <div className="container mx-auto p-3 pt-0 pb-20">
+          <div className="relative flex items-center justify-center mb-4">
+            <Loading loading={true} size={150} color="blue" text="데이터를 불러오는 중..." />
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
