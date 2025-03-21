@@ -1,0 +1,48 @@
+import { Button } from "@/components/ui/button";
+import { Store, PieChart, CreditCard } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+export default function ActionButtonGroup() {
+  const router = useRouter();
+
+  return (
+    <div className="flex flex-wrap justify-around p-4">
+      <button
+        onClick={() => router.push("/soho-home")}
+        className="flex flex-col items-center m-2"
+      >
+        <div className="flex items-center justify-center w-12 h-12 bg-gray-200 rounded-full shadow-md">
+          <Store className="h-6 w-6 text-gray-600" />
+        </div>
+        <span className="text-xs mt-2 text-gray-600">소상공인</span>
+      </button>
+      <button
+        onClick={() => router.push("/auto-transfer")}
+        className="flex flex-col items-center m-2"
+      >
+        <div className="flex items-center justify-center w-12 h-12 bg-gray-200 rounded-full shadow-md">
+          <CreditCard className="h-6 w-6 text-gray-600" />
+        </div>
+        <span className="text-xs mt-2 text-gray-600">자동이체 등록</span>
+      </button>
+      <button
+        onClick={() => router.push("/card-history")}
+        className="flex flex-col items-center m-2"
+      >
+        <div className="flex items-center justify-center w-12 h-12 bg-gray-200 rounded-full shadow-md">
+          <CreditCard className="h-6 w-6 text-gray-600" />
+        </div>
+        <span className="text-xs mt-2 text-gray-600">카드이용내역</span>
+      </button>
+      <button
+        onClick={() => router.push("/recent-history")}
+        className="flex flex-col items-center m-2"
+      >
+        <div className="flex items-center justify-center w-12 h-12 bg-gray-200 rounded-full shadow-md">
+          <PieChart className="h-6 w-6 text-gray-600" />
+        </div>
+        <span className="text-xs mt-2 text-gray-600">최근조회</span>
+      </button>
+    </div>
+  );
+}

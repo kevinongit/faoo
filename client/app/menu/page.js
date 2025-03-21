@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 
 const menuItems = [
-  { icon: Home, label: "홈", href: "/dashboard" },
+  { icon: Home, label: "홈", href: "/sweet-home" },
   { icon: Gift, label: "혜택", href: "/benefits" },
   { icon: Package, label: "상품", href: "/products" },
   { icon: CreditCard, label: "카드", href: "/cards" },

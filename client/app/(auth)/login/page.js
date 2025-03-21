@@ -20,7 +20,7 @@ export default function LoginPage() {
   const { login, isAuthenticated } = useAuthStore();
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/dashboard");
+      router.push("/sweet-home");
     }
   }, [isAuthenticated, router]);
 
@@ -39,7 +39,7 @@ export default function LoginPage() {
         description: `${response.data.user.username}님 환영합니다!`,
         duration: 1000,
       });
-      router.push("/dashboard");
+      router.push("/sweet-home");
     } catch (error) {
       console.error("Login error:", error);
       setError(error.response?.data?.message || "서버 연결에 실패했습니다");

@@ -96,7 +96,11 @@ const formatValue = (value, header) => {
 };
 
 export default function DataTable({ data, title }) {
-  if (!data || data.length === 0) return null;
+  // if (!data || data.length === 0) return null;
+
+  // Filter out null or undefined entries
+  const validData = data.filter((row) => row !== null && row !== undefined);
+  if (validData.length === 0) return <p>유효한 데이터가 없습니다.</p>;
 
   // sectionKey 계산 개선
   const sectionKey = title
@@ -106,16 +110,16 @@ export default function DataTable({ data, title }) {
     .split(" ")[0];
 
   console.log(`DataTable - title: ${title}, sectionKey: ${sectionKey}`); // 디버깅 로그
-
+  console.log(validData);
   const fields =
     FIXED_FIELDS[sectionKey] ||
-    Object.keys(data[0]).map((key) => ({
+    Object.keys(validData[0]).map((key) => ({
       key,
       header: key.replace(/_/g, " "),
     }));
 
   // 데이터 변환: 고정된 필드만 추출
-  const normalizedData = data.map((row) => {
+  const normalizedData = validData.map((row) => {
     const newRow = {};
     fields.forEach(({ key }) => {
       newRow[key] = row[key];

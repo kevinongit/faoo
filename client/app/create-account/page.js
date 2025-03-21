@@ -25,31 +25,12 @@ export default function CreateAccount() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 여기에 계좌 생성 API 호출 로직을 구현합니다.
-    // 예시:
-    // try {
-    //   const response = await api.post('/create-account', { accountType, initialDeposit })
-    //   if (response.data.success) {
-    //     toast({
-    //       title: "계좌 생성 성공",
-    //       description: "새 계좌가 성공적으로 생성되었습니다.",
-    //     })
-    //     router.push('/dashboard')
-    //   }
-    // } catch (error) {
-    //   toast({
-    //     title: "계좌 생성 실패",
-    //     description: "계좌 생성 중 오류가 발생했습니다. 다시 시도해주세요.",
-    //     variant: "destructive",
-    //   })
-    // }
-
     // 임시로 성공 메시지를 표시하고 대시보드로 리다이렉트합니다.
     toast({
       title: "계좌 생성 성공",
       description: "새 계좌가 성공적으로 생성되었습니다.",
     });
-    router.push("/dashboard");
+    router.push("/sweet-home");
   };
 
   return (
