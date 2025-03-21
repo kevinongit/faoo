@@ -233,7 +233,7 @@ export default function SalesDashboard() {
               <div className="ml-0 mt-3">
                 <button
                   className="inline-flex items-center px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-blue-500 text-sm font-medium transition border border-gray-300"
-                  onClick={() => router.push("/sales-compare")}
+                  onClick={() => router.push(`/sales-compare?month=${base_date_str.substring(0, 6)}`)}
                 >
                   매출 분석 보러가기 <span className="ml-1">→</span>
                 </button>
