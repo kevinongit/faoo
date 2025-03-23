@@ -5,6 +5,7 @@ import random
 from datetime import datetime, timedelta
 import numpy as np
 import subprocess
+import sys
 
 app = Flask(__name__)
 CORS(app)
@@ -12,7 +13,7 @@ CORS(app)
 @app.route('/datagen', methods=['GET'])
 def run_data_collect():
     try:
-        process = subprocess.Popen(['python', 'scripts/dataCollect.py'],
+        process = subprocess.Popen([sys.executable, 'scripts/dataCollect.py'],
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE,
                                    text=True)
