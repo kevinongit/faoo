@@ -1,5 +1,6 @@
 import TemporaryPage from "../TemporaryPage";
 import Navbar from "../components/Navbar";
+import SystemFlow from "../../components/ui/SystemFlow";
 
 async function fetchUsersAndTrends() {
   try {
@@ -18,7 +19,14 @@ export default async function Page() {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <TemporaryPage users={users} />
+      <div className="flex flex-row gap-4 p-4">
+        <div className="w-2/5 h-[calc(100vh-64px)]">
+          <SystemFlow />
+        </div>
+        <div className="w-3/5">
+          <TemporaryPage users={users} />
+        </div>
+      </div>
     </div>
   );
 }
