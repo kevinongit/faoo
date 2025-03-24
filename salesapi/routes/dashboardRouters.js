@@ -1,6 +1,6 @@
 const express = require("express");
 const dashboardRouter = express.Router();
-const {MongoClient} = require("mongodb");
+const {MongoClient, UnorderedBulkOperation} = require("mongodb");
 //const { MONGODB_URI } = process.env;
 const logger = require("../middleware/logger");
 
@@ -14,34 +14,38 @@ async function connectToDatabase() {
 // 이번 달 온라인 & 오프라인 매출 조회 API
 dashboardRouter.post("/sales/month", async (req, res) => {
   try {
-    const {business_number} = req.body;
+    const {business_number, year, month} = req.body;
     if (!business_number) {
       return res.status(400).json({error: "Business number is required"});
     }
 
     const db = await connectToDatabase();
 
-    // 현재 연도 및 월 가져오기 (YYYYMM 형식)
-    const today = new Date();
-    const currentMonth = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, "0")}`;
-    console.log(currentMonth);
+    let selectedMonth = undefined;
+    if (year && month) {
+      selectedMonth = `${year}${String(month).padStart(2, "0")}`;
+    } else {
+      const today = new Date();
+      selectedMonth = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, "0")}`;
+    }
+    console.log(selectedMonth);
 
     // 온라인 & 오프라인 매출 데이터 가져오기
     const onlineSalesCollection = db.collection("sales_online_info");
     const offlineSalesCollection = db.collection("sales_offline_info");
 
-    console.log(business_number, currentMonth);
+    console.log(business_number, selectedMonth);
     const onlineSales = await onlineSalesCollection
       .find({
         business_number,
-        sale_date: {$regex: `^${currentMonth}`} // 이번 달의 데이터만 필터링
+        sale_date: {$regex: `^${selectedMonth}`} // 이번 달의 데이터만 필터링
       })
       .toArray();
 
     const offlineSales = await offlineSalesCollection
       .find({
         business_number,
-        sale_date: {$regex: `^${currentMonth}`}
+        sale_date: {$regex: `^${selectedMonth}`}
       })
       .toArray();
 
@@ -61,7 +65,7 @@ dashboardRouter.post("/sales/month", async (req, res) => {
 
     res.json({
       business_number,
-      current_month: currentMonth,
+      select_month: selectedMonth,
       online_sales: totalOnlineSales,
       offline_sales: totalOfflineSales,
       total_sales: totalSales
