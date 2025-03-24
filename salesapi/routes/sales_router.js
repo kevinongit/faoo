@@ -172,6 +172,76 @@ router.post("/weekSales", async (req, res) => {
   }
 })
 
+router.post("/monthSales", async (req, res) => {
+  try {
+    const { business_number, from_date, to_date } = req.body;
+    let start_date = new Date().getFullYear() + String(new Date().getMonth() + 1).padStart(2, "0") + "01";
+    let end_date = new Date().getFullYear() + String(new Date().getMonth() + 1).padStart(2, "0") + "31";
+
+    if (from_date != null && /^\d{4}\d{2}$/.test(from_date)) {
+      start_date = from_date + "01";
+    }
+
+    if (to_date != null && /^\d{4}\d{2}$/.test(to_date)) {
+      end_date = to_date + "31";
+    }
+
+    const db = await connectToDatabase("chart_data");
+    const off_collection = db.collection("sales_offline_info");
+    const on_collection = db.collection("sales_online_info");
+
+    const off_sum_base = await off_collection.find({ business_number: business_number, sale_date: {
+      $gte: start_date,
+      $lte: end_date
+    }}).toArray();
+    const on_sum_base = await on_collection.find({ business_number: business_number, sale_date: {
+      $gte: start_date,
+      $lte: end_date
+    }}).toArray();
+
+    const sumList = off_sum_base.concat(on_sum_base);
+
+    const result = sumList.reduce((acc, sales) => {
+      const obj = acc.find(x => sales.sale_date.startsWith(x.sale_month));
+
+      if (obj) {
+        obj.sum_amt += Number(sales.sale_amt);
+      }else{
+        acc.push({
+          sale_month: sales.sale_date.substring(0, 6),
+          sum_amt: Number(sales.sale_amt)
+        })
+      }
+
+      return acc;
+    }, []);
+
+    const start_dt = new Date(start_date.substring(0, 4), start_date.substring(4, 6) - 1, 1);
+    const end_dt = new Date(end_date.substring(0, 4), end_date.substring(4, 6) - 1, 1);
+
+    for (let dt = start_dt; dt <= end_dt; dt.setMonth(dt.getMonth() + 1)) {
+      const date = dt.getFullYear() + String(dt.getMonth() + 1).padStart(2, "0");
+
+      if (result.find(x => x.sale_month === date)) {
+        continue;
+      }
+
+      result.push({
+        sale_date: date,
+        sum_amt: 0
+      });
+    }
+
+    logger.info(
+      `/monthSales retrieved for business number: ${business_number} ${from_date}~${end_date} : ${result.length}`
+    );
+    res.json(result);
+  } catch (error) {
+    logger.error("Error retrieving monthSales:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+})
+
 router.post("/totalSales", async (req, res) => {
   try {
     const { business_number } = req.body;
