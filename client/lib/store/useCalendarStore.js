@@ -12,7 +12,7 @@ const useCalendarStore = create((set) => ({
 
   // 이번 달 매출 데이터 가져오기
 
-  fetchMonthlySales: async (business_number) => {
+  fetchMonthlySales: async (business_number, year, month) => {
     set({isLoading: true, error: null});
 
     try {
@@ -21,7 +21,7 @@ const useCalendarStore = create((set) => ({
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({business_number})
+        body: JSON.stringify({business_number, year, month})
       });
 
       if (!response.ok) {
