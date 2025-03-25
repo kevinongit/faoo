@@ -34,7 +34,8 @@ const Calendar = ({dailySales}) => {
   const calendarDays = [...Array(firstDayOfMonth).fill(null), ...Array.from({length: daysInMonth}, (_, i) => i + 1)];
 
   return (
-    <div className="w-full max-w-md mx-auto p-4 bg-white rounded-lg shadow-md min-h-[350px]">
+    // <div className="w-full max-w-md mx-auto p-4 bg-white rounded-lg shadow-md min-h-[350px]">
+    <div className="w-full p-4 bg-white rounded-lg shadow-md min-h-[350px]">
       <div className="flex justify-between items-center mb-2">
         <button
           onClick={handlePrevMonth}
