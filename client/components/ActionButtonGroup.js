@@ -26,13 +26,13 @@ export default function ActionButtonGroup() {
         <span className="mt-2 text-xs text-gray-600">간편 손익계산</span>
       </button>
       <button
-        onClick={() => router.push("/card-history")}
+        onClick={() => router.push("/simple-pnl-lv2")}
         className="flex flex-col items-center m-2"
       >
         <div className="flex items-center justify-center w-12 h-12 bg-gray-200 rounded-full shadow-md">
           <CreditCard className="w-6 h-6 text-gray-600" />
         </div>
-        <span className="mt-2 text-xs text-gray-600">카드이용내역</span>
+        <span className="mt-2 text-xs text-gray-600">간편 손익계산 Lv2</span>
       </button>
       <button
         onClick={() => router.push("/recent-history")}

@@ -9,6 +9,7 @@ const routes = require("./routes/routes");
 const dashboardRouter = require("./routes/dashboardRouters");
 const sale_router = require("./routes/sales_router");
 const sale_compare_router = require("./routes/sales_compare_router");
+const simplePnlRouter = require("./routes/simple-pnl");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -19,13 +20,14 @@ connectDB();
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/api", routes);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/saleapi", sale_router);
 app.use("/compareapi", sale_compare_router);
+app.use("/simple-pnl", simplePnlRouter);
 
 // Start server
 app.listen(port, () => {

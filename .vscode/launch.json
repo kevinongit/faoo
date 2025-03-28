@@ -1,0 +1,18 @@
+
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch",
+            "request": "attach",
+            "type": "node",
+            "cwd": "${workspaceFolder}/salesapi",
+            "port": 9701,
+            "sourceMaps": true,
+            "outFiles": [
+                "${workspaceFolder}/salesapi/**/*.js"
+            ]
+            
+        }
+    ]
+}
