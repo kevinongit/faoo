@@ -15,6 +15,7 @@
 import random
 from datetime import datetime, timedelta
 from pymongo import MongoClient
+from tqdm import tqdm
 
 # MongoDB 연결
 client = MongoClient('mongodb://localhost:27017/')
@@ -47,17 +48,17 @@ def sale_date():
 # 사업장별 매출금액 random
 def sale_amt(datestr):
     sale_list = []
-    """ 일일 매출건수 200건씩 랜덤 사업장, 시간, 성별, 금액, 연령대를 구성"""
-    for i in range(1, 201):
-        nn = f"1111100{random.randint(1, 100):03d}"
+    """ 일일 매출건수 5000건씩 랜덤 사업장, 시간, 성별, 금액, 연령대를 구성"""
+    for i in range(1, 5001):
+        nn = f"100101{random.randint(1, 1000):04d}"
         business_info = next((item for item in business_numbers if item["business_number"] == nn), None)
         sale_list.append({
             "sale_date": datestr,
             "business_number": business_info["business_number"],
-            "kind_cd": business_info["kind_cd"],
-            "kind_nm": business_info["kind_nm"],
-            "where_cd": business_info["where_cd"],
-            "where_nm": business_info["where_nm"],
+            # "kind_cd": business_info["kind_cd"],
+            # "kind_nm": business_info["kind_nm"],
+            # "where_cd": business_info["where_cd"],
+            # "where_nm": business_info["where_nm"],
             "sale_time": f"{random.randint(1, 23):02d}",
             "sale_amt": f"{random.randint(50, 1000)}00",
             "gender": random.randint(1, 2),
@@ -69,14 +70,28 @@ def sale_amt(datestr):
 def generate_offsales():
     date_list = sale_date()
     sale_total = []
-    for date in date_list:
-        sale_list = sale_amt(date)
+
+    total = len(date_list)
+
+    print(f"총 {total}일 날짜의 데이터를 생성 중...")
+
+    for idx in tqdm(range(0, total, 1)):
+        sale_list = sale_amt(date_list[idx])
         sale_total.extend(sale_list)
 
     return sale_total
 
 # 데이터 삽입
 def insert_mock_data():
-    db.sales_offline_info.insert_many(generate_offsales())
+    data = generate_offsales()
+    total = len(data)  # 전체 데이터 개수
+
+    print(f"총 {total}개의 데이터를 삽입 중...")
+
+    for idx in tqdm(range(0, total, 10000)):
+        batch = data[idx:idx+10000]
+        db.sales_offline_info.insert_many(batch)
+
+    print("데이터 삽입 완료")
 
 insert_mock_data()

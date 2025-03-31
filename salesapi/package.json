@@ -5,7 +5,7 @@
     "main": "salesapi.js",
     "scripts": {
         "start": "nodemon salesapi.js",
-        "dev": "nodemon salesapi.js"
+        "dev": "nodemon --inspect=9332 salesapi.js"
     },
     "dependencies": {
         "body-parser": "^1.19.0",

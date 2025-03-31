@@ -264,4 +264,54 @@ router.post("/totalSales", async (req, res) => {
   }
 });
 
+router.post("/dailySalesDetail", async (req, res) => {
+  try {
+    const { business_number, base_date } = req.body;
+    const db = await connectToDatabase("chart_data");
+    const off_collection = db.collection("sales_offline_info");
+    const on_collection = db.collection("sales_online_info");
+
+    const off_sum_base = await off_collection.find({ business_number: business_number, sale_date: {
+      $eq: base_date
+    }}).toArray();
+    const on_sum_base = await on_collection.find({ business_number: business_number, sale_date: {
+      $eq: base_date
+    }}).toArray();
+
+    const sumList = off_sum_base.concat(on_sum_base);
+
+    const day_sum = sumList.reduce((acc, sales) => {
+      if (sales.gender == "1") {
+        ++acc.male;
+      }else{
+        ++acc.female;
+      }
+
+      ++acc[`age_${sales.age}`];
+
+      ++acc[`time_${sales.sale_time}`];
+
+      const obj = acc.platform.find(x => x.platform_cd == sales.platform_cd);
+      if (obj) {
+        ++obj.cnt;
+        obj.sum_amt += Number(sales.sale_amt);
+      }else{
+        acc.platform.push({ platform_cd: sales.platform_cd, platform_nm: sales.platform_nm, cnt: 1, sum_amt: Number(sales.sale_amt) });
+      }
+
+      return acc;
+    }, {male: 0, female: 0, age_00: 0, age_10: 0, age_20: 0, age_30: 0, age_40: 0, age_50: 0, age_60: 0, age_70: 0, age_80: 0, age_90: 0,
+        time_00: 0, time_01: 0, time_02: 0, time_03: 0, time_04: 0, time_05: 0, time_06: 0, time_07: 0, time_08: 0, time_09: 0, time_10: 0, time_11: 0, time_12: 0, time_13: 0, time_14: 0, time_15: 0, time_16: 0, time_17: 0, time_18: 0, time_19: 0, time_20: 0, time_21: 0, time_22: 0, time_23: 0,
+        platform:[]});
+
+    logger.info(
+      `/dailySalesDetail retrieved for business number: ${business_number} ${base_date} : ${sumList.length}`
+    );
+    res.json(day_sum);
+  } catch (error) {
+    logger.error("Error retrieving totalSales:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = router;

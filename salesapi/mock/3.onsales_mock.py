@@ -16,6 +16,7 @@
 import random
 from datetime import datetime, timedelta
 from pymongo import MongoClient
+from tqdm import tqdm
 
 # MongoDB 연결
 client = MongoClient('mongodb://localhost:27017/')
@@ -48,19 +49,21 @@ def sale_date():
 # 사업장별 매출금액 random
 def sale_amt(datestr):
     sale_list = []
-    platform_list = ["배달의민족", "쿠팡이츠", "요기요"]
-    """ 일일 매출건수 300건씩 랜덤 사업장, 플랫폼, 시간, 성별, 금액, 연령대를 구성"""
-    for i in range(1, 301):
-        nn = f"1111100{random.randint(1, 100):03d}"
+    platform_list = [{"cd":"01", "nm":"배달의민족"}, {"cd":"02", "nm":"쿠팡이츠"}, {"cd":"03", "nm":"요기요"}, {"cd":"04", "nm":"스마트스토어"}, {"cd":"05", "nm":"11번가"}, {"cd":"06", "nm":"쿠팡"}]
+    """ 일일 매출건수 5000건씩 랜덤 사업장, 플랫폼, 시간, 성별, 금액, 연령대를 구성"""
+    for i in range(1, 5001):
+        nn = f"100101{random.randint(1, 1000):04d}"
         business_info = next((item for item in business_numbers if item["business_number"] == nn), None)
+        platform_info = random.choice(platform_list)
         sale_list.append({
             "sale_date": datestr,
             "business_number": business_info["business_number"],
-            "kind_cd": business_info["kind_cd"],
-            "kind_nm": business_info["kind_nm"],
-            "where_cd": business_info["where_cd"],
-            "where_nm": business_info["where_nm"],
-            "platform": random.choice(platform_list),
+            # "kind_cd": business_info["kind_cd"],
+            # "kind_nm": business_info["kind_nm"],
+            # "where_cd": business_info["where_cd"],
+            # "where_nm": business_info["where_nm"],
+            "platform_cd": platform_info["cd"],
+            "platform_nm": platform_info["nm"],
             "sale_time": f"{random.randint(1, 23):02d}",
             "sale_amt": f"{random.randint(50, 1000)}00",
             "gender": random.randint(1, 2),
@@ -69,17 +72,31 @@ def sale_amt(datestr):
 
     return sale_list
 
-def generate_offsales():
+def generate_onsales():
     date_list = sale_date()
     sale_total = []
-    for date in date_list:
-        sale_list = sale_amt(date)
+
+    total = len(date_list)
+
+    print(f"총 {total}일 날짜의 데이터를 생성 중...")
+
+    for idx in tqdm(range(0, total, 1)):
+        sale_list = sale_amt(date_list[idx])
         sale_total.extend(sale_list)
 
     return sale_total
 
 # 데이터 삽입
 def insert_mock_data():
-    db.sales_online_info.insert_many(generate_offsales())
+    data = generate_onsales()
+    total = len(data)  # 전체 데이터 개수
+
+    print(f"총 {total}개의 데이터를 삽입 중...")
+
+    for idx in tqdm(range(0, total, 10000)):
+        batch = data[idx:idx+10000]
+        db.sales_online_info.insert_many(batch)
+
+    print("데이터 삽입 완료")
 
 insert_mock_data()

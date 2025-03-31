@@ -11,11 +11,11 @@ from itertools import cycle
 from pymongo import MongoClient
 
 # 사업자 번호 리스트
-business_numbers = [{"name": f"사업장{i:03d}", "number": f"1111100{i:03d}"} for i in range(1, 101)]
+business_numbers = [{"name": f"사업장{i:04d}", "number": f"100101{i:04d}"} for i in range(1, 1001)]
 
 # 업종코드 리스트
 def generate_business_kind():
-    kinds_cd = [f"000{i}" for i in range(1, 11)]
+    kinds_cd = [f"00{i:02d}" for i in range(1, 11)]
     kinds_nm = ["커피전문점","편의점","한식","일식","양식"]
     kinds = []
     for kind_cd, kind_nm in zip(kinds_cd, cycle(kinds_nm)):
