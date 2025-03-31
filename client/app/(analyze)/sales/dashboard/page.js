@@ -1,12 +1,18 @@
 "use client";
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState } from "react";
 import useCalendarStore from "@/lib/store/useCalendarStore"; // ✅ Zustand 추가
-import {Card, CardContent} from "@/components/ui/card";
-import {LucideUser, LucideSun, LucideTrendingUp, LucideTrendingDown, LucideCalendar} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  LucideUser,
+  LucideSun,
+  LucideTrendingUp,
+  LucideTrendingDown,
+  LucideCalendar,
+} from "lucide-react";
 import Calendar from "@/components/ui/Calendar";
 import GNB from "@/components/GNB";
-import {useAuthStore} from "@/lib/store/authStore";
-import {useRouter} from "next/navigation";
+import { useAuthStore } from "@/lib/store/authStore";
+import { useRouter } from "next/navigation";
 import useSaleCompareStore from "@/lib/store/saleCompareStore";
 
 const date = new Date();
@@ -16,11 +22,20 @@ yesterday.setDate(yesterday.getDate() - 1);
 const yesterdayDate = `${yesterday.getMonth() + 1}월 ${yesterday.getDate()}일`;
 
 export default function SalesSummary() {
-  const {currentYear, currentMonth, setCurrentYear, setCurrentMonth} = useCalendarStore();
-  const {salesData, comparisonData, dailySales, fetchMonthlySales, fetchComparison, fetchDailySales, isLoading, error} =
+  const { currentYear, currentMonth, setCurrentYear, setCurrentMonth } =
     useCalendarStore();
-  const {fetchData, rankData} = useSaleCompareStore();
-  const {user, isAuthenticated} = useAuthStore();
+  const {
+    salesData,
+    comparisonData,
+    dailySales,
+    fetchMonthlySales,
+    fetchComparison,
+    fetchDailySales,
+    isLoading,
+    error,
+  } = useCalendarStore();
+  const { fetchData, rankData } = useSaleCompareStore();
+  const { user, isAuthenticated } = useAuthStore();
 
   const router = useRouter();
 
@@ -43,7 +58,10 @@ export default function SalesSummary() {
 
   //년월이 바뀌면 데이터 조회
   useEffect(() => {
-    fetchData(user?.business_number, `${currentYear}${String(currentMonth).padStart(2, "0")}`);
+    fetchData(
+      user?.business_number,
+      `${currentYear}${String(currentMonth).padStart(2, "0")}`
+    );
     fetchMonthlySales(business_number, currentYear, currentMonth);
     fetchComparison(business_number);
     fetchDailySales(business_number, currentYear, currentMonth);
@@ -63,8 +81,10 @@ export default function SalesSummary() {
 
   const onlineSales = salesData.online_sales || 0;
   const offlineSales = salesData.offline_sales || 0;
-  const onlineSalesPercentage = totalSales > 0 ? ((onlineSales / totalSales) * 100).toFixed(1) : 0;
-  const offlineSalesPercentage = totalSales > 0 ? ((offlineSales / totalSales) * 100).toFixed(1) : 0;
+  const onlineSalesPercentage =
+    totalSales > 0 ? ((onlineSales / totalSales) * 100).toFixed(1) : 0;
+  const offlineSalesPercentage =
+    totalSales > 0 ? ((offlineSales / totalSales) * 100).toFixed(1) : 0;
 
   //console.log(todaySales, yesterdaySales, totalSales);
   // 숫자 카운트 애니메이션 (오늘 매출) using useRef and requestAnimationFrame
@@ -86,7 +106,8 @@ export default function SalesSummary() {
       const elapsedTime = timestamp - startTime;
       const progress = Math.min(elapsedTime / duration, 1);
       salesRef.current = Math.floor(progress * end);
-      salesDisplayRef.current.innerText = salesRef.current.toLocaleString() + "원";
+      salesDisplayRef.current.innerText =
+        salesRef.current.toLocaleString() + "원";
       if (progress < 1) {
         animationFrameId = requestAnimationFrame(animateCountUp);
       }
@@ -103,7 +124,9 @@ export default function SalesSummary() {
   //  매출 변화량 계산
   const salesDiff = todaySales - yesterdaySales;
   const isIncrease = salesDiff > 0;
-  const diffText = isIncrease ? `+${salesDiff.toLocaleString()}` : `${salesDiff.toLocaleString()}`;
+  const diffText = isIncrease
+    ? `+${salesDiff.toLocaleString()}`
+    : `${salesDiff.toLocaleString()}`;
   const diffColor = isIncrease ? "text-red-500" : "text-blue-500";
   const trendIcon = isIncrease ? (
     <LucideTrendingUp className="w-5 h-5 text-red-500" />
@@ -117,7 +140,9 @@ export default function SalesSummary() {
   const twoDaysAgoDiffText = isTwoDaysAgoIncrease
     ? `▲ ${twoDaysAgoDiff.toLocaleString()}원`
     : `▼ ${Math.abs(twoDaysAgoDiff).toLocaleString()}원`;
-  const twoDaysAgoDiffColor = isTwoDaysAgoIncrease ? "text-red-500" : "text-blue-500";
+  const twoDaysAgoDiffColor = isTwoDaysAgoIncrease
+    ? "text-red-500"
+    : "text-blue-500";
   const twoDaysAgoTrendIcon = isTwoDaysAgoIncrease ? (
     <LucideTrendingUp className="w-5 h-5 text-red-500" />
   ) : (
@@ -131,20 +156,32 @@ export default function SalesSummary() {
         className="w-full flex flex-col md:flex-row justify-center items-center text-white py-3 px-5 rounded-lg shadow-md text-center md:text-left h-[60px]"
         style={{backgroundColor: "#0B6DA2"}}> */}
         {isLoading ? (
-          <p className="text-white flex items-center justify-center h-full">매출 데이터 로딩 중...</p>
+          <p className="text-white flex items-center justify-center h-full">
+            매출 데이터 로딩 중...
+          </p>
         ) : error ? (
-          <p className="text-red-200 flex items-center justify-center h-full">오류 발생: {error}</p>
+          <p className="text-red-200 flex items-center justify-center h-full">
+            오류 발생: {error}
+          </p>
         ) : (
           <div className="text-sm md:text-base font-semibold w-full flex flex-col space-y-1">
             <div className="flex justify-between text-blue-500 w-full">
               <span className="min-w-[100px]">온라인 매출:</span>
-              <span className="text-right tabular-nums w-[100px]">{onlineSales.toLocaleString()}원</span>
-              <span className="text-right tabular-nums w-[60px]">({onlineSalesPercentage}%)</span>
+              <span className="text-right tabular-nums w-[100px]">
+                {onlineSales.toLocaleString()}원
+              </span>
+              <span className="text-right tabular-nums w-[60px]">
+                ({onlineSalesPercentage}%)
+              </span>
             </div>
             <div className="flex justify-between text-blue-500 w-full">
               <span className="min-w-[100px]">오프라인 매출:</span>
-              <span className="text-right tabular-nums w-[100px]">{offlineSales.toLocaleString()}원</span>
-              <span className="text-right tabular-nums w-[60px]">({offlineSalesPercentage}%)</span>
+              <span className="text-right tabular-nums w-[100px]">
+                {offlineSales.toLocaleString()}원
+              </span>
+              <span className="text-right tabular-nums w-[60px]">
+                ({offlineSalesPercentage}%)
+              </span>
             </div>
           </div>
         )}
@@ -159,17 +196,22 @@ export default function SalesSummary() {
               {currentMonth}월 매출
             </h2>
             <div className="flex flex-col items-center justify-center h-full">
-              <p className="text-center mt-1 text-[10px] md:text-base">이번 달 현재까지 매출</p>
+              <p className="text-center mt-1 text-[10px] md:text-base">
+                이번 달 현재까지 매출
+              </p>
               <p
                 ref={salesDisplayRef}
-                className="text-center text-lg md:text-xl font-bold text-red-500"></p>
+                className="text-center text-lg md:text-xl font-bold text-red-500"
+              ></p>
               <p className="text-center text-[9px] md:text-sm text-gray-600 mt-1">
                 {isLoading ? (
-                  <p>...</p>
+                  "..."
                 ) : (
                   <>
                     {rankData.zone_nm} {rankData.smb_sector} 상위{" "}
-                    <span className="text-red-500 font-bold">{rankData?.monthInfo?.percentileRank || ""}%</span>
+                    <span className="text-red-500 font-bold">
+                      {rankData?.monthInfo?.percentileRank || ""}%
+                    </span>
                   </>
                 )}
               </p>
@@ -187,19 +229,32 @@ export default function SalesSummary() {
               {/* 2일 전 대비 변화량 */}
               <p className="text-sm md:text-base text-gray-600 text-center mt-1 flex justify-center items-center whitespace-nowrap">
                 전일 대비
-                <span className={`${twoDaysAgoDiffColor} font-bold flex items-center ml-1`}>{twoDaysAgoDiffText}</span>
+                <span
+                  className={`${twoDaysAgoDiffColor} font-bold flex items-center ml-1`}
+                >
+                  {twoDaysAgoDiffText}
+                </span>
               </p>
               <p className="text-[11px] md:text-sm text-gray-600 text-center mt-2 leading-tight break-words">
                 전년 동기 대비
                 <br />
                 <span
                   className={`${
-                    comparisonData.yesterday_sales > comparisonData.yesterday_lastyear
+                    comparisonData.yesterday_sales >
+                    comparisonData.yesterday_lastyear
                       ? "text-red-500"
                       : "text-blue-500"
-                  } font-bold`}>
-                  {comparisonData.yesterday_sales > comparisonData.yesterday_lastyear ? "▲" : "▼"}{" "}
-                  {Math.abs(comparisonData.yesterday_sales - comparisonData.yesterday_lastyear).toLocaleString()}원
+                  } font-bold`}
+                >
+                  {comparisonData.yesterday_sales >
+                  comparisonData.yesterday_lastyear
+                    ? "▲"
+                    : "▼"}{" "}
+                  {Math.abs(
+                    comparisonData.yesterday_sales -
+                      comparisonData.yesterday_lastyear
+                  ).toLocaleString()}
+                  원
                 </span>
               </p>
             </div>
