@@ -48,8 +48,8 @@ const SimplePnlLv2 = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // Memoize the year_month string
-  const yearMonth = useMemo(() => 
-    `${year}${month.toString().padStart(2, "0")}`, 
+  const yearMonth = useMemo(
+    () => `${year}${month.toString().padStart(2, "0")}`,
     [year, month]
   );
 
@@ -119,7 +119,9 @@ const SimplePnlLv2 = () => {
           rent: Math.floor(Number(result.data.inputs.rent || 0)),
           labor: Math.floor(Number(result.data.inputs.labor || 0)),
           utilities: Math.floor(Number(result.data.inputs.utilities || 0)),
-          otherExpenses: Math.floor(Number(result.data.inputs.otherExpenses || 0)),
+          otherExpenses: Math.floor(
+            Number(result.data.inputs.otherExpenses || 0)
+          ),
         };
         setSavedData({
           ...result.data,
@@ -269,7 +271,10 @@ const SimplePnlLv2 = () => {
             {/* Cost of Sales Input */}
             <div className="grid items-center grid-cols-3 gap-2">
               <label className="flex items-center col-span-1 gap-2 text-sm font-medium group">
-                <ShoppingCart size={18} className="text-gray-500 transition-colors group-hover:text-blue-500" />
+                <ShoppingCart
+                  size={18}
+                  className="text-gray-500 transition-colors group-hover:text-blue-500"
+                />
                 매출원가
                 <TooltipProvider>
                   <Tooltip>
@@ -297,7 +302,10 @@ const SimplePnlLv2 = () => {
             {/* Rent Input */}
             <div className="grid items-center grid-cols-3 gap-2">
               <label className="flex items-center col-span-1 gap-2 text-sm font-medium group">
-                <Building2 size={18} className="text-gray-500 transition-colors group-hover:text-blue-500" />
+                <Building2
+                  size={18}
+                  className="text-gray-500 transition-colors group-hover:text-blue-500"
+                />
                 임차료
                 <TooltipProvider>
                   <Tooltip>
@@ -325,7 +333,10 @@ const SimplePnlLv2 = () => {
             {/* Labor Input */}
             <div className="grid items-center grid-cols-3 gap-2">
               <label className="flex items-center col-span-1 gap-2 text-sm font-medium group">
-                <Users size={18} className="text-gray-500 transition-colors group-hover:text-blue-500" />
+                <Users
+                  size={18}
+                  className="text-gray-500 transition-colors group-hover:text-blue-500"
+                />
                 인건비
                 <TooltipProvider>
                   <Tooltip>
@@ -353,7 +364,10 @@ const SimplePnlLv2 = () => {
             {/* Utilities Input */}
             <div className="grid items-center grid-cols-3 gap-2">
               <label className="flex items-center col-span-1 gap-2 text-sm font-medium group">
-                <Lightbulb size={18} className="text-gray-500 transition-colors group-hover:text-blue-500" />
+                <Lightbulb
+                  size={18}
+                  className="text-gray-500 transition-colors group-hover:text-blue-500"
+                />
                 공과금
                 <TooltipProvider>
                   <Tooltip>
@@ -381,7 +395,10 @@ const SimplePnlLv2 = () => {
             {/* Other Expenses Input */}
             <div className="grid items-center grid-cols-3 gap-2">
               <label className="flex items-center col-span-1 gap-2 text-sm font-medium group">
-                <LayoutGrid size={18} className="text-gray-500 transition-colors group-hover:text-blue-500" />
+                <LayoutGrid
+                  size={18}
+                  className="text-gray-500 transition-colors group-hover:text-blue-500"
+                />
                 기타비용
                 <TooltipProvider>
                   <Tooltip>
@@ -389,7 +406,9 @@ const SimplePnlLv2 = () => {
                       <HelpCircle size={14} className="text-gray-400" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="text-xs">기타 운영비용 (소모품비, 광고비 등)</p>
+                      <p className="text-xs">
+                        기타 운영비용 (소모품비, 광고비 등)
+                      </p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -424,14 +443,16 @@ const SimplePnlLv2 = () => {
               onClick={handleSave}
               disabled={!isDataChanged || isLoading}
               className={`flex-1 flex items-center justify-center gap-2 transition-all duration-200 group
-                ${isDataChanged && !isLoading
-                  ? 'text-white bg-emerald-600 hover:bg-emerald-700' 
-                  : 'text-gray-400 bg-gray-100 cursor-not-allowed'}`}
+                ${
+                  isDataChanged && !isLoading
+                    ? "text-white bg-emerald-600 hover:bg-emerald-700"
+                    : "text-gray-400 bg-gray-100 cursor-not-allowed"
+                }`}
             >
               <span className="transition-transform duration-200 group-hover:scale-110">
-                {isLoading ? '⏳' : '💾'}
+                {isLoading ? "⏳" : "💾"}
               </span>
-              {isLoading ? '저장중...' : '저장하기'}
+              {isLoading ? "저장중..." : "저장하기"}
             </Button>
           </div>
 
@@ -440,14 +461,18 @@ const SimplePnlLv2 = () => {
             {/* Total Revenue Card */}
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 shadow-sm transition-all duration-200 hover:shadow-md">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-600">총매출액</span>
+                <span className="text-sm font-medium text-gray-600">
+                  총매출액
+                </span>
                 <span className="flex items-center text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
                   <Calculator size={12} className="mr-1" />
                   매출집계
                 </span>
               </div>
               <div className="flex items-baseline justify-end">
-                <span className="text-2xl font-bold text-gray-900">{formatNumber(totalRevenue)}</span>
+                <span className="text-2xl font-bold text-gray-900">
+                  {formatNumber(totalRevenue)}
+                </span>
                 <span className="ml-1 text-gray-600">원</span>
               </div>
             </div>
@@ -455,14 +480,18 @@ const SimplePnlLv2 = () => {
             {/* Total Cost Card */}
             <div className="bg-gradient-to-br from-rose-50 to-pink-50 rounded-xl p-4 shadow-sm transition-all duration-200 hover:shadow-md">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-600">총비용</span>
+                <span className="text-sm font-medium text-gray-600">
+                  총비용
+                </span>
                 <span className="flex items-center text-xs text-rose-600 bg-rose-50 px-2 py-1 rounded-full">
                   <Calculator size={12} className="mr-1" />
                   비용합계
                 </span>
               </div>
               <div className="flex items-baseline justify-end">
-                <span className="text-2xl font-bold text-gray-900">{formatNumber(results.totalCost)}</span>
+                <span className="text-2xl font-bold text-gray-900">
+                  {formatNumber(results.totalCost)}
+                </span>
                 <span className="ml-1 text-gray-600">원</span>
               </div>
             </div>
@@ -470,14 +499,22 @@ const SimplePnlLv2 = () => {
             {/* Net Profit Card */}
             <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 shadow-sm transition-all duration-200 hover:shadow-md">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-600">순이익</span>
+                <span className="text-sm font-medium text-gray-600">
+                  순이익
+                </span>
                 <span className="flex items-center text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
                   <Calculator size={12} className="mr-1" />
                   매출-비용
                 </span>
               </div>
               <div className="flex items-baseline justify-end">
-                <span className={`text-2xl font-bold ${results.netProfit >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                <span
+                  className={`text-2xl font-bold ${
+                    results.netProfit >= 0
+                      ? "text-emerald-600"
+                      : "text-rose-600"
+                  }`}
+                >
                   {formatNumber(results.netProfit)}
                 </span>
                 <span className="ml-1 text-gray-600">원</span>
@@ -488,14 +525,18 @@ const SimplePnlLv2 = () => {
             <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl p-4 shadow-sm transition-all duration-200 hover:shadow-md">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center">
-                  <span className="text-sm font-medium text-gray-600">부가세 참고액</span>
+                  <span className="text-sm font-medium text-gray-600">
+                    부가세 참고액
+                  </span>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
                         <HelpCircle size={14} className="ml-1 text-gray-400" />
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p className="text-xs">매출액의 10%를 1.1로 나눈 금액</p>
+                        <p className="text-xs">
+                          매출액의 10%를 1.1로 나눈 금액
+                        </p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -506,7 +547,9 @@ const SimplePnlLv2 = () => {
                 </span>
               </div>
               <div className="flex items-baseline justify-end">
-                <span className="text-2xl font-bold text-gray-900">{formatNumber(results.vatReference)}</span>
+                <span className="text-2xl font-bold text-gray-900">
+                  {formatNumber(results.vatReference)}
+                </span>
                 <span className="ml-1 text-gray-600">원</span>
               </div>
             </div>

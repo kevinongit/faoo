@@ -38,7 +38,7 @@ async function createWindow() {
         width: 100%;
         min-height: 844px;
         overflow-x: hidden;
-        overflow-y: ${isLoginPage ? "hidden" : "auto"};
+        overflow-y: auto;
       }
       body {
         display: flex;

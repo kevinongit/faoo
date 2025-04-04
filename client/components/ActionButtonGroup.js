@@ -35,13 +35,13 @@ export default function ActionButtonGroup() {
         <span className="mt-2 text-xs text-gray-600">간편 손익계산 Lv2</span>
       </button>
       <button
-        onClick={() => router.push("/recent-history")}
+        onClick={() => router.push("/my-soho-idea")}
         className="flex flex-col items-center m-2"
       >
         <div className="flex items-center justify-center w-12 h-12 bg-gray-200 rounded-full shadow-md">
           <PieChart className="w-6 h-6 text-gray-600" />
         </div>
-        <span className="mt-2 text-xs text-gray-600">최근조회</span>
+        <span className="mt-2 text-xs text-gray-600">나의 아이디어</span>
       </button>
     </div>
   );
