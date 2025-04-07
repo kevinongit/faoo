@@ -24,8 +24,11 @@ export default function SalesDashboardContent() {
   let param_date = searchParams.get("date");
   let base_date = new Date();
 
-  if (param_date && /^\d{4}-\d{2}-\d{2}$/.test(param_date)) {
-    base_date = new Date(param_date);
+  if (param_date && /^\d{8}$/.test(param_date)) {
+    const year = parseInt(param_date.slice(0, 4));
+    const month = parseInt(param_date.slice(4, 6)) - 1; // JS month is 0-indexed
+    const day = parseInt(param_date.slice(6, 8));
+    base_date = new Date(year, month, day);
   } else {
     base_date = new Date();
     base_date.setDate(base_date.getDate() - 1);
@@ -214,7 +217,7 @@ export default function SalesDashboardContent() {
           </button>
 
           <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900">
-            일일 브리핑
+            주간 분석비교
           </h1>
         </div>
 
@@ -298,7 +301,7 @@ export default function SalesDashboardContent() {
                     )
                   }
                 >
-                  매출 분석 보러가기 <span className="ml-1">→</span>
+                  월간 분석비교 보기 <span className="ml-1">→</span>
                 </button>
               </div>
             </div>

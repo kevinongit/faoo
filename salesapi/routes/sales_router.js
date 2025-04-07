@@ -287,9 +287,11 @@ router.post("/dailySalesDetail", async (req, res) => {
         ++acc.female;
       }
 
-      ++acc[`age_${sales.age}`];
+      ++acc[`age_${sales.age}`].cnt;
+      acc[`age_${sales.age}`].amt += sales.sale_amt;
 
-      ++acc[`time_${sales.sale_time}`];
+      ++acc[`time_${sales.sale_time}`].cnt;
+      acc[`time_${sales.sale_time}`].amt += sales.sale_amt;
 
       const obj = acc.platform.find(x => x.platform_cd == sales.platform_cd);
       if (obj) {
@@ -300,8 +302,8 @@ router.post("/dailySalesDetail", async (req, res) => {
       }
 
       return acc;
-    }, {male: 0, female: 0, age_00: 0, age_10: 0, age_20: 0, age_30: 0, age_40: 0, age_50: 0, age_60: 0, age_70: 0, age_80: 0, age_90: 0,
-        time_00: 0, time_01: 0, time_02: 0, time_03: 0, time_04: 0, time_05: 0, time_06: 0, time_07: 0, time_08: 0, time_09: 0, time_10: 0, time_11: 0, time_12: 0, time_13: 0, time_14: 0, time_15: 0, time_16: 0, time_17: 0, time_18: 0, time_19: 0, time_20: 0, time_21: 0, time_22: 0, time_23: 0,
+    }, {male: 0, female: 0, age_00: {cnt: 0, amt: 0}, age_10: {cnt: 0, amt: 0}, age_20: {cnt: 0, amt: 0}, age_30: {cnt: 0, amt: 0}, age_40: {cnt: 0, amt: 0}, age_50: {cnt: 0, amt: 0}, age_60: {cnt: 0, amt: 0}, age_70: {cnt: 0, amt: 0}, age_80: {cnt: 0, amt: 0}, age_90: {cnt: 0, amt: 0},
+        time_00: {cnt: 0, amt: 0}, time_01: {cnt: 0, amt: 0}, time_02: {cnt: 0, amt: 0}, time_03: {cnt: 0, amt: 0}, time_04: {cnt: 0, amt: 0}, time_05: {cnt: 0, amt: 0}, time_06: {cnt: 0, amt: 0}, time_07: {cnt: 0, amt: 0}, time_08: {cnt: 0, amt: 0}, time_09: {cnt: 0, amt: 0}, time_10: {cnt: 0, amt: 0}, time_11: {cnt: 0, amt: 0}, time_12: {cnt: 0, amt: 0}, time_13: {cnt: 0, amt: 0}, time_14: {cnt: 0, amt: 0}, time_15: {cnt: 0, amt: 0}, time_16: {cnt: 0, amt: 0}, time_17: {cnt: 0, amt: 0}, time_18: {cnt: 0, amt: 0}, time_19: {cnt: 0, amt: 0}, time_20: {cnt: 0, amt: 0}, time_21: {cnt: 0, amt: 0}, time_22: {cnt: 0, amt: 0}, time_23: {cnt: 0, amt: 0},
         platform:[]});
 
     logger.info(

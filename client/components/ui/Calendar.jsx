@@ -74,7 +74,7 @@ const Calendar = ({dailySales}) => {
             <div
               key={index}
               className="text-center p-2 rounded-md flex flex-col items-center justify-center cursor-pointer"
-              onClick={() => router.push(`/chart-dashboard?date=${dateKey}`)}>
+              onClick={() => router.push(`/daily-sales-detail?date=${dateKey.replaceAll("-", "")}`)}>
               <span>{day ? day : ""}</span>
               <span className="text-green-600 text-xs h-4 flex items-center whitespace-nowrap">{formattedSales}</span>
             </div>

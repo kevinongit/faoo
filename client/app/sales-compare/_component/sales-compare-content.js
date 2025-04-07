@@ -31,21 +31,22 @@ export default function SalesCompareContent() {
   useEffect(() => {
     if (rankData?.monthInfo) {
       const width = 140;
-      const margin = 10;
+      const marginWidth = 10;
+      const marginHeight = 10;
       const height = 100;
       const percent = Number(rankData.monthInfo.percentileRank || 0) / 100;
       const fillX = Math.round((width / 2) * percent) + 5;
-      const fillY = height * percent;
+      const fillY = height * percent + marginHeight;
 
       const svg = d3.select(ref.current);
       svg.selectAll("*").remove();
-      svg.attr("width", width + 60).attr("height", height);
+      svg.attr("width", width + 60).attr("height", height + marginHeight);
 
       svg
         .append("polygon")
         .attr(
           "points",
-          `${margin},${height} ${width / 2},0 ${width - margin},${height}`
+          `${marginWidth},${height + marginHeight} ${width / 2},${marginHeight} ${width - marginWidth},${height + marginHeight}`
         )
         .attr("fill", "#E0E0E0");
 
@@ -53,8 +54,8 @@ export default function SalesCompareContent() {
         .append("polygon")
         .attr(
           "points",
-          `${width / 2 - fillX + margin},${fillY} ${width / 2},0 ${
-            width / 2 + fillX - margin
+          `${width / 2 - fillX + marginWidth},${fillY} ${width / 2},${marginHeight} ${
+            width / 2 + fillX - marginWidth
           },${fillY}`
         )
         .attr("fill", "#64B5F6");
@@ -169,7 +170,7 @@ export default function SalesCompareContent() {
           <span className="text-lg font-bold text-gray-600">&lt;</span>
         </button>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900">
-          매출 비교 분석
+          월간 분석비교
         </h1>
       </div>
 
