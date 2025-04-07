@@ -19,8 +19,7 @@ export default function SalesCompareContent() {
   const searchParams = useSearchParams();
   let month = searchParams.get("month");
   if (!month) {
-    month = new Date().getFullYear() + x;
-    String(new Date().getMonth() + 1).padStart(2, "0");
+    month = new Date().getFullYear() + String(new Date().getMonth() + 1).padStart(2, "0");
   }
 
   useEffect(() => {
@@ -40,7 +39,7 @@ export default function SalesCompareContent() {
 
       const svg = d3.select(ref.current);
       svg.selectAll("*").remove();
-      svg.attr("width", width).attr("height", height);
+      svg.attr("width", width + 60).attr("height", height);
 
       svg
         .append("polygon")
@@ -68,6 +67,44 @@ export default function SalesCompareContent() {
         .attr("y2", fillY)
         .attr("stroke", "black")
         .attr("stroke-dasharray", "2,3");
+
+      // 텍스트 내용과 스타일
+      const labelText = "내 사업장";
+      const fontSize = 10;
+      const paddingX = 4;
+      const paddingY = 2;
+
+      // 텍스트 위치
+      const textX = width + 10;
+      const textY = fillY + 4;
+
+      // 임시 텍스트 요소로 크기 측정
+      const tempText = svg.append("text")
+        .attr("x", -9999)
+        .attr("y", -9999)
+        .attr("font-size", `${fontSize}px`)
+        .text(labelText);
+
+      const bbox = tempText.node().getBBox();
+      tempText.remove();  // 측정 후 제거
+
+      // 배경 사각형
+      svg.append("rect")
+        .attr("x", textX - paddingX)
+        .attr("y", textY - fontSize + 1 - paddingY)
+        .attr("width", bbox.width + paddingX * 2)
+        .attr("height", bbox.height + paddingY * 2)
+        .attr("rx", 4)  // 모서리 둥글게
+        .attr("fill", "#E3F2FD"); // 밝은 파란 배경
+
+      // 텍스트
+      svg.append("text")
+        .attr("x", textX)
+        .attr("y", textY)
+        .text(labelText)
+        .attr("font-size", `${fontSize}px`)
+        .attr("fill", "#1E88E5")
+        .attr("font-weight", "bold");
 
       const columnChartData = [
         ["가게", "평균 매출", { role: "style" }, { role: "annotation" }],
@@ -141,16 +178,16 @@ export default function SalesCompareContent() {
           <CardTitle className="text-lg sm:text-xl text-gray-800 font-bold mb-5">
             {`${Number(rankData.base_month)}월 ${rankData.zone_nm} ${
               rankData.smb_sector
-            } 매출 비교`}
+            } 사업장 매출 비교`}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0 pb-1">
           <div className="flex justify-start gap-4 items-center relative">
-            <div className="flex-1 max-w-[140px]">
-              <svg ref={ref}></svg>
+            <div className="flex-1 max-w-[200px] ml-10">
+              <svg ref={ref} className="block mx-auto" />
             </div>
-            <div className="flex-1 flex flex-col items-center relative">
-              <div className="absolute top-[-12px] left-1/2 transform -translate-x-1/2 px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-sm font-bold shadow-sm border border-blue-300 mb-5 mt-[-30px]">
+            <div className="flex-1 flex flex-col items-center pt-12 relative">
+              <div className="absolute top-[20px] left-1/2 transform -translate-x-1/2 px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-sm font-bold shadow-sm border border-blue-300 mb-5 mt-[-30px]">
                 {`상위 ${rankData?.monthInfo?.percentileRank || ""}%`}
               </div>
               <p className="text-[13px] -mt-2 text-gray-700 font-medium leading-tight text-center">
@@ -159,7 +196,7 @@ export default function SalesCompareContent() {
                 <span className="font-semibold text-[15px] text-black">
                   {rankData.zone_nm} {rankData.smb_sector}
                 </span>{" "}
-                중에서
+                사업장에서
                 <br />
                 <span className="font-semibold text-[15px] text-blue-500">
                   {Number(rankData.base_month)}월
@@ -178,7 +215,7 @@ export default function SalesCompareContent() {
       <Card className="mb-6 mt-7 shadow-md border border-gray-300 rounded-lg p-5 pt-7 relative">
         <CardHeader className="flex p-0 justify-between items-start">
           <CardTitle className="text-lg sm:text-xl font-semibold text-purple-700">
-            {`${rankData.zone_nm} ${rankData.smb_sector}의 ${Number(
+            {`우리가게는 ${rankData.zone_nm} ${rankData.smb_sector} 사업장의 ${Number(
               rankData.base_month
             )}월 평균 매출액${rankData.compareStr}`}
           </CardTitle>

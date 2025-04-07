@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@canvasjs/react-charts": "^1.0.2",
+    "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^3.10.0",
     "@nivo/annotations": "^0.88.0",
     "@nivo/colors": "^0.88.0",

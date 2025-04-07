@@ -57,7 +57,7 @@ router.post("/salesRanking", async (req, res) => {
     }, []);
 
     const sumList = all_info.map(x => x.sum_amt);
-    const user_sum_amt = all_info.find(x => x.business_number == user_info.business_number).sum_amt;
+    const user_sum_amt = all_info.find(x => x.business_number == user_info.business_number)?.sum_amt || 0;
 
     const monthRank_info = calculatePercentileRank(sumList, user_sum_amt);
 
