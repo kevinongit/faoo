@@ -81,7 +81,6 @@ export default function DailySalesDetail() {
   }, [ratioData, selectedType]);
 
   const getColor = function(entry, index) {
-    console.log(entry);
     const COLORS = ["#9134d3", "#fdf400", "#fb6b05", "#ff8c94"];
 
     switch(entry.key) {
@@ -95,6 +94,44 @@ export default function DailySalesDetail() {
         return COLORS[index % COLORS.length]
     }
   }
+
+  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 1.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    const platform = platformData[index];
+    const label = `${platform.key} ${(percent * 100).toFixed(0)}%`;
+
+    return (
+      <g>
+        <rect
+          x={x - label.length *2.8}
+          y={y - 10}
+          rx={10}
+          ry={10}
+          width={label.length * 10}
+          height={20}
+          fill={getColor(platform, index)}
+          stroke={getColor(platform, index)}
+          strokeWidth={1}
+          style={{ filter: "drop-shadow(1px 1px 2px rgba(0,0,0,0.1))" }}
+        />
+        <text
+          x={x + 15}
+          y={y + 2}
+          fill="#ffffff"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize="10"
+          fontWeight="bold"
+        >
+          {label}
+        </text>
+      </g>
+    );
+  };
 
   if (ratioData && Object.keys(ratioData).length === 0) {
     return <Loading />;
@@ -141,16 +178,17 @@ export default function DailySalesDetail() {
           </CardHeader>
 
           <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={220}>
               <PieChart>
                 <Pie
                   data={platformData}
-                  cx="40%"
+                  cx="45%"
                   cy="50%"
                   innerRadius={0}
-                  outerRadius={70}
+                  outerRadius={67}
                   dataKey="value"
-                  label={({ key, percent }) => `${key} ${(percent * 100).toFixed(0)}%`}
+                  isAnimationActive={true}
+                  label={renderCustomizedLabel}
                 >
                   {platformData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={getColor(entry, index)} />
