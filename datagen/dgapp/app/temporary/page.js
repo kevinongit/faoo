@@ -14,10 +14,10 @@ async function fetchUsersAndTrends() {
 }
 
 export default async function Page() {
-  const {users, trends} = await fetchUsersAndTrends();
+  const users = await fetchUsersAndTrends();
   return (
     <PageLayout>
-      <TemporaryPage users={users} trends={trends} />
+      <TemporaryPage users={users} />
     </PageLayout>
   );
 }

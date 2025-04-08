@@ -1,11 +1,11 @@
 'use client';
 
-import {useState} from "react";
 import Navbar from "./components/Navbar";
 import SystemFlow from "../components/ui/SystemFlow";
+import { usePageStore } from "./store/usePageStore";
 
 export default function PageLayout({children}) {
-  const [showFlow, setShowFlow] = useState(true);
+  const { showFlow, setShowFlow } = usePageStore();
 
   return (
     <div className="min-h-screen">

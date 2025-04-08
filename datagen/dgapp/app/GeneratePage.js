@@ -9,10 +9,11 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "./c
 import {Input} from "./components/Input";
 import {saveDataToMongo} from "./actions/mongoActions";
 import useFlowStore from "./store/useFlowStore";
+import { usePageStore } from "./store/usePageStore";
 
 export default function GeneratePage({users = [], trends = []}) {
   const [loading, setLoading] = useState({loading: false, text: ""});
-  const [businessNumber, setBusinessNumber] = useState("");
+  const {businessNumber, setBusinessNumber} = usePageStore();
   const [durationUnit, setDurationUnit] = useState("d");
   const [durationCount, setDurationCount] = useState("1");
   const [revenueTrend, setRevenueTrend] = useState("slow_increase");

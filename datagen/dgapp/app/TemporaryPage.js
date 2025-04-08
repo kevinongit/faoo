@@ -9,10 +9,11 @@ import Loading from "./components/Loading";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "./components/Select";
 import {Input} from "./components/Input";
 import {saveDataToMongo} from "./actions/mongoActions";
+import { usePageStore } from "./store/usePageStore";
 
 export default function TemporaryPage({users = []}) {
   const [loading, setLoading] = useState({loading: false, text: ""});
-  const [businessNumber, setBusinessNumber] = useState("");
+  const {businessNumber, setBusinessNumber} = usePageStore();
   const [durationUnit, setDurationUnit] = useState("d");
   const [durationCount, setDurationCount] = useState("1");
   const addPath = useFlowStore((state) => state.addPath);
