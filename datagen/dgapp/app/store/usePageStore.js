@@ -1,7 +1,7 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 export const usePageStore = create((set) => ({
-  showFlow: true,
+  showFlow: false,
   businessNumber: "",
   setShowFlow: (showFlow) => set({ showFlow }),
   setBusinessNumber: (businessNumber) => set({ businessNumber }),

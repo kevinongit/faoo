@@ -16,6 +16,7 @@ export default function NotifyPage({ users = [] }) {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(false);
   const [businessNumber, setBusinessNumber] = useState("");
+  const [sender, setSender] = useState("admin");
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [message, setMessage] = useState("");
 
@@ -114,7 +115,7 @@ export default function NotifyPage({ users = [] }) {
 
       const payload = {
         to: selectedUser ? selectedUser.bid : businessNumber,
-        from: "admin",
+        from: sender,
         user: selectedUser || null,
         templateId: template.id,
         title: template.title,
@@ -162,12 +163,31 @@ export default function NotifyPage({ users = [] }) {
       </Link>
     );
   };
+  // console.log(users);
 
   return (
     <div className="container mx-auto p-6 max-w-4xl">
       <div className="bg-white rounded-lg shadow-lg p-6">
         <h2 className="text-xl font-semibold mb-4">알림 설정</h2>
         <div className="grid grid-cols-1 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              발신자
+            </label>
+            <Select onValueChange={setSender} value={sender} disabled>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="발신자를 선택하세요" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="admin">admin</SelectItem>
+                {users.map((user) => (
+                  <SelectItem key={user.bid} value={user.bid}>
+                    {`${user.merchant_name} (${user.name}, ${user.business_number_dash}, ${user.smb_sector})`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               수신자 (사업자)
@@ -179,7 +199,7 @@ export default function NotifyPage({ users = [] }) {
               <SelectContent>
                 {users.map((user) => (
                   <SelectItem key={user.bid} value={user.bid}>
-                    {`${user.merchant_name} (${user.name}, ${user.biz_number_dash}, ${user.smb_sector})`}
+                    {`${user.merchant_name} (${user.name}, ${user.business_number_dash}, ${user.smb_sector})`}
                   </SelectItem>
                 ))}
               </SelectContent>

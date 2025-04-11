@@ -353,5 +353,246 @@ def get_revenue_trends():
     trend_types = sorted(set('_'.join(t.split('_')[:-1]) for t in possible_trends))
     return jsonify(trend_types)
 
+@app.route('/sectors', methods=['GET'])
+def get_sectors():
+    try:
+        # SECTOR_RATIOS에서 smb_sector 값만 추출하여 중복 제거 후 정렬
+        sectors = sorted(set(sector["smb_sector"] for sector in SECTOR_RATIOS))
+        return jsonify(sectors)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/gen-sales', methods=['POST'])
+def generate_sales_data():
+    try:
+        data = request.json
+        print("\n=== /gen-sales API 호출 파라미터 ===")
+        print("Business Info:", json.dumps(data.get('business_info', {}), indent=2, ensure_ascii=False))
+        print("Sales Data:", json.dumps(data.get('sales_data', {}), indent=2, ensure_ascii=False))
+        print("Date Range:", json.dumps(data.get('date_range', {}), indent=2, ensure_ascii=False))
+        print("Trend:", json.dumps(data.get('trend', {}), indent=2, ensure_ascii=False))
+        print("Seasonality:", json.dumps(data.get('seasonality', {}), indent=2, ensure_ascii=False))
+        print("==================================\n")
+
+        # 필수 필드 검증
+        business_info = data.get('business_info', {})
+        sales_data = data.get('sales_data', {})
+        date_range = data.get('date_range', {})
+        trend = data.get('trend', {})
+        seasonality = data.get('seasonality', {})
+
+        # 필수 필드 검증
+        required_fields = {
+            'business_info': ['business_number', 'business_type', 'business_days'],
+            'sales_data': ['weekday_avg_sales'],
+            'date_range': ['start_date', 'end_date']
+        }
+
+        for section, fields in required_fields.items():
+            for field in fields:
+                if not data.get(section, {}).get(field):
+                    return jsonify({'error': f'Missing required field: {section}.{field}'}), 400
+
+        # 배달 비율 검증
+        if sales_data.get('has_delivery'):
+            delivery_ratios = sales_data.get('delivery_ratios', {})
+            if not all(key in delivery_ratios for key in ['baemin', 'coupang_eats', 'yogiyo']):
+                return jsonify({'error': 'Missing delivery platform ratios'}), 400
+            if sum(delivery_ratios.values()) != 100:
+                return jsonify({'error': 'Delivery platform ratios must sum to 100%'}), 400
+
+        # 온라인 판매 비율 검증
+        if sales_data.get('has_online_sales'):
+            online_ratios = sales_data.get('online_sales_ratios', {})
+            if not all(key in online_ratios for key in ['smart_store', 'eleven_street', 'gmarket']):
+                return jsonify({'error': 'Missing online sales platform ratios'}), 400
+            if sum(online_ratios.values()) != 100:
+                return jsonify({'error': 'Online sales platform ratios must sum to 100%'}), 400
+
+        # 날짜 형식 검증
+        try:
+            start_date = datetime.strptime(date_range['start_date'], '%Y-%m-%d')
+            end_date = datetime.strptime(date_range['end_date'], '%Y-%m-%d')
+            if start_date > end_date:
+                return jsonify({'error': 'Start date must be before end date'}), 400
+        except ValueError:
+            return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
+
+        # 매출 데이터 생성
+        result = generate_sales_data_v2(
+            business_info=business_info,
+            sales_data=sales_data,
+            date_range=date_range,
+            trend=trend,
+            seasonality=seasonality
+        )
+
+        # 임시 파일로 저장
+        business_number = business_info.get('business_number', 'unknown')
+        timestamp = datetime.now().strftime('%Y%m%d')
+        filename = f'gen_{business_number}_{timestamp}.log'
+        
+        # 결과 데이터에 메타데이터 추가
+        result_with_meta = {
+            'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'business_info': business_info,
+            'sales_data': sales_data,
+            'date_range': date_range,
+            'trend': trend,
+            'seasonality': seasonality,
+            'sales_data': result
+        }
+        
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(result_with_meta, f, ensure_ascii=False, indent=2)
+        print(f"\n생성된 데이터가 {filename} 파일로 저장되었습니다.")
+
+        return jsonify(result)
+
+    except Exception as e:
+        print(f"Error in generate_sales_data: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+def generate_sales_data_v2(business_info, sales_data, date_range, trend, seasonality):
+    # 기본 설정
+    start_date = datetime.strptime(date_range['start_date'], '%Y-%m-%d')
+    end_date = datetime.strptime(date_range['end_date'], '%Y-%m-%d')
+    business_days = business_info.get('business_days', [])
+    is_weekend_open = business_info.get('is_weekend_open', False)
+    
+    # 매출 기본값 설정
+    weekday_avg_sales = int(sales_data.get('weekday_avg_sales', 0))
+    weekend_avg_sales = int(sales_data.get('weekend_avg_sales', 0)) if is_weekend_open else 0
+    
+    # 배달 비율 설정
+    delivery_ratios = sales_data.get('delivery_ratios', {
+        'baemin': 55,
+        'coupang_eats': 40,
+        'yogiyo': 5
+    }) if sales_data.get('has_delivery', False) else None
+    
+    # 온라인 판매 비율 설정
+    online_sales_ratios = sales_data.get('online_sales_ratios', {
+        'smart_store': 40,
+        'eleven_street': 30,
+        'gmarket': 30
+    }) if sales_data.get('has_online_sales', False) else None
+
+    # 트렌드 설정
+    trend_type = trend.get('type', 'stable')
+    trend_rate = float(trend.get('rate', 0))
+    trend_deviation = float(trend.get('deviation', 0))
+
+    # 시즌성 설정
+    seasonality_pattern = seasonality.get('pattern', 'low')
+    seasonality_intensity = float(seasonality.get('intensity', 0))
+
+    # 결과 데이터 초기화
+    result = {
+        'merchant': [],
+        'approval': [],
+        'acquisition': [],
+        'deposit': [],
+        'baemin': [],
+        'coupangeats': [],
+        'yogiyo': [],
+        'cash': [],
+        'tax': []
+    }
+
+    # 시즌성 패턴에 따른 계수 설정
+    def get_seasonality_factor(date, pattern, intensity):
+        month = date.month
+        if pattern == 'low':
+            # 겨울철(12-2월) 저조기
+            if month in [12, 1, 2]:
+                return 1 - (intensity / 100)
+            # 여름철(6-8월) 저조기
+            elif month in [6, 7, 8]:
+                return 1 - (intensity / 200)
+            else:
+                return 1
+        elif pattern == 'high':
+            # 봄철(3-5월) 성수기
+            if month in [3, 4, 5]:
+                return 1 + (intensity / 100)
+            # 가을철(9-11월) 성수기
+            elif month in [9, 10, 11]:
+                return 1 + (intensity / 200)
+            else:
+                return 1
+        else:  # 'stable'
+            return 1
+
+    # 일별 데이터 생성
+    current_date = start_date
+    while current_date <= end_date:
+        # 영업일 여부 확인
+        is_business_day = current_date.weekday() in business_days
+        if not is_business_day and not is_weekend_open:
+            current_date += timedelta(days=1)
+            continue
+
+        # 기본 매출액 계산
+        base_sales = weekend_avg_sales if current_date.weekday() >= 5 else weekday_avg_sales
+        
+        # 시즌성 계수 적용
+        seasonality_factor = get_seasonality_factor(current_date, seasonality_pattern, seasonality_intensity)
+        adjusted_sales = int(base_sales * seasonality_factor)
+
+        # 트렌드 계수 적용
+        days_passed = (current_date - start_date).days
+        total_days = (end_date - start_date).days
+        trend_factor = get_trend_factor(days_passed, total_days, trend_type, trend_rate)
+        final_sales = int(adjusted_sales * trend_factor)
+
+        # 거래 데이터 생성
+        transaction_time = generate_transaction_time(current_date)
+        
+        # 카드 거래
+        card_txn = {
+            "transaction_type": "offline",
+            "supply_value": int(final_sales / 1.1),
+            "vat": final_sales - int(final_sales / 1.1),
+            "total_amount": final_sales,
+            "fee": int(final_sales * CARD_FEE_RATE),
+            "net_amount": final_sales - int(final_sales * CARD_FEE_RATE),
+            "card_type": random.choice(CARD_TYPES),
+            "approval_number": f"{chr(65+days_passed)}{random.randint(100000000, 999999999)}",
+            "approval_datetime": transaction_time.strftime("%Y-%m-%d %H:%M:%S")
+        }
+
+        # 결과에 추가
+        result['approval'].append({
+            "date": current_date.strftime("%Y-%m-%d"),
+            "merchant_name": business_info.get('business_name', ''),
+            "business_number": business_info.get('business_number', ''),
+            "approval_details": [card_txn]
+        })
+
+        # 배달 플랫폼 데이터 생성
+        if delivery_ratios:
+            for platform, ratio in delivery_ratios.items():
+                if ratio > 0:
+                    platform_sales = int(final_sales * (ratio / 100))
+                    platform_txn = {
+                        "amount": platform_sales,
+                        "fee": int(platform_sales * DELIVERY_FEE_RATE),
+                        "net_amount": platform_sales - int(platform_sales * DELIVERY_FEE_RATE),
+                        "approval_number": f"{platform[:2].upper()}-{chr(65+days_passed)}{random.randint(100000000, 999999999)}",
+                        "approval_datetime": transaction_time.strftime("%Y-%m-%d %H:%M:%S")
+                    }
+                    result[platform].append({
+                        "date": current_date.strftime("%Y-%m-%d"),
+                        "daily_sales": [platform_txn],
+                        "total_sales_amount": platform_sales,
+                        "total_fee": int(platform_sales * DELIVERY_FEE_RATE),
+                        "settlement_amount": platform_sales - int(platform_sales * DELIVERY_FEE_RATE)
+                    })
+
+        current_date += timedelta(days=1)
+
+    return result
+
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=3400)

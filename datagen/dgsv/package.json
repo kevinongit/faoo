@@ -1,0 +1,19 @@
+{
+  "name": "fapp",
+  "version": "1.0.0",
+  "description": "Data Generation Service",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --exec python serv2.py",
+    "dev": "nodemon --exec python serv2.py"
+  },
+  "dependencies": {
+    "nodemon": "^3.0.3"
+  },
+  "nodemonConfig": {
+    "ignore": ["*.test.js", "*.spec.js"],
+    "watch": ["datagen/dgsv/*.py"],
+    "ext": "py",
+    "exec": "python datagen/dgsv/serv2.py"
+  }
+} 
