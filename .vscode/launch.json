@@ -1,0 +1,113 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Login API",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/server/server.js",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "envFile": "${workspaceFolder}/server/.env",
+      "restart": true
+    },
+
+    {
+      "name": "Sales API",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/salesapi/salesapi.js",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "envFile": "${workspaceFolder}/salesapi/.env",
+      "restart": true
+    },
+    {
+      "name": "CFA API",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/cfa/cfa_server.js",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "envFile": "${workspaceFolder}/cfa/.env",
+      "restart": true
+    },
+    {
+      "name": "DG Server",
+      "type": "debugpy",
+      //"type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/datagen/dgsv/serv2.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "cwd": "${workspaceFolder}/datagen/dgsv"
+      //"python": "/opt/homebrew/bin/python3.11",
+      // "env": {
+      //   "PYTHONPATH": "${workspaceFolder}/datagen/dgsv"
+      // }
+    },
+    {
+      "name": "DG analysis Server",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/analysis/main.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "cwd": "${workspaceFolder}/analysis"
+    },
+
+    {
+      "name": "DG Next Server",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run dev",
+      "cwd": "${workspaceFolder}/datagen/dgapp",
+      "sourceMaps": true,
+      "preLaunchTask": "data generatornpm install"
+    },
+    {
+      "name": "DG Next Client",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3010/",
+      "webRoot": "${workspaceFolder}/datagen/dgapp",
+      "sourceMaps": true
+    },
+
+    {
+      "name": "Next server-side",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run dev",
+      "cwd": "${workspaceFolder}/client",
+      "sourceMaps": true,
+      "preLaunchTask": "client npm install"
+    },
+    {
+      "name": "Next client-side",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:4100/sales/dashboard",
+      "webRoot": "${workspaceFolder}/client",
+      "sourceMaps": true
+    }
+  ],
+
+  "compounds": [
+    {
+      "name": "Server Debugging",
+      "configurations": ["Login API", "Sales API", "CFA API"],
+      "stopAll": true
+    },
+    {
+      "name": "Client Debugging",
+      "configurations": ["Next server-side", "Next client-side"],
+      "stopAll": true
+    },
+    {
+      "name": "Data Generator",
+      "configurations": ["DG analysis Server", "DG Server", "DG Next Server", "DG Next Client"],
+      "stopAll": true
+    }
+  ]
+}
