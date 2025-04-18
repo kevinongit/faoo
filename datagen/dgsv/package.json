@@ -4,7 +4,7 @@
   "description": "Data Generation Service",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec python serv2.py",
+    "start": "nodemon --exec python serv4.py",
     "dev": "nodemon --exec python serv2.py"
   },
   "dependencies": {

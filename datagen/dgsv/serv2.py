@@ -457,26 +457,45 @@ def generate_sales_data_v2(business_info, sales_data, date_range, trend, seasona
     # 기본 설정
     start_date = datetime.strptime(date_range['start_date'], '%Y-%m-%d')
     end_date = datetime.strptime(date_range['end_date'], '%Y-%m-%d')
-    business_days = business_info.get('business_days', [])
-    is_weekend_open = business_info.get('is_weekend_open', False)
+    
+    # business_days를 숫자 배열로 변환
+    weekday_map = {
+        'mon': 0, 'monday': 0,
+        'tue': 1, 'tuesday': 1,
+        'wed': 2, 'wednesday': 2,
+        'thu': 3, 'thursday': 3,
+        'fri': 4, 'friday': 4,
+        'sat': 5, 'saturday': 5,
+        'sun': 6, 'sunday': 6
+    }
+    
+    # 요일 문자열을 소문자로 변환하고 매핑
+    business_days = [weekday_map[day.lower()] for day in business_info.get('business_days', [])]
     
     # 매출 기본값 설정
     weekday_avg_sales = int(sales_data.get('weekday_avg_sales', 0))
-    weekend_avg_sales = int(sales_data.get('weekend_avg_sales', 0)) if is_weekend_open else 0
     
     # 배달 비율 설정
     delivery_ratios = sales_data.get('delivery_ratios', {
         'baemin': 55,
         'coupang_eats': 40,
         'yogiyo': 5
-    }) if sales_data.get('has_delivery', False) else None
+    }) if sales_data.get('has_delivery', False) else {
+        'baemin': 0,
+        'coupang_eats': 0,
+        'yogiyo': 0
+    }
     
     # 온라인 판매 비율 설정
     online_sales_ratios = sales_data.get('online_sales_ratios', {
         'smart_store': 40,
         'eleven_street': 30,
         'gmarket': 30
-    }) if sales_data.get('has_online_sales', False) else None
+    }) if sales_data.get('has_online_sales', False) else {
+        'smart_store': 0,
+        'eleven_street': 0,
+        'gmarket': 0
+    }
 
     # 트렌드 설정
     trend_type = trend.get('type', 'stable')
@@ -527,14 +546,13 @@ def generate_sales_data_v2(business_info, sales_data, date_range, trend, seasona
     # 일별 데이터 생성
     current_date = start_date
     while current_date <= end_date:
-        # 영업일 여부 확인
-        is_business_day = current_date.weekday() in business_days
-        if not is_business_day and not is_weekend_open:
+        # 영업일 여부 확인 - business_days에 포함된 요일만 영업
+        if current_date.weekday() not in business_days:
             current_date += timedelta(days=1)
             continue
 
         # 기본 매출액 계산
-        base_sales = weekend_avg_sales if current_date.weekday() >= 5 else weekday_avg_sales
+        base_sales = weekday_avg_sales
         
         # 시즌성 계수 적용
         seasonality_factor = get_seasonality_factor(current_date, seasonality_pattern, seasonality_intensity)
