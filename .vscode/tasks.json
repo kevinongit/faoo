@@ -1,0 +1,17 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "client npm install",
+      "command": "npm install",
+      "type": "shell",
+      "options": {"cwd": "${workspaceFolder}/client"}
+    },
+    {
+      "label": "data generatornpm install",
+      "command": "npm install",
+      "type": "shell",
+      "options": {"cwd": "${workspaceFolder}/datagen/dgapp"}
+    }
+  ]
+}
