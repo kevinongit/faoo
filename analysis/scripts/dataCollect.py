@@ -4,6 +4,8 @@ from pymongo import MongoClient, UpdateOne
 import os
 import random
 from tqdm import tqdm
+from pprint import pprint
+from datetime import datetime, date
 platform_list = [{"cd":"01", "nm":"배달의민족"}, {"cd":"02", "nm":"쿠팡이츠"}, {"cd":"03", "nm":"요기요"}, {"cd":"04", "nm":"스마트스토어"}, {"cd":"05", "nm":"11번가"}, {"cd":"06", "nm":"쿠팡"}]
 
 # 몽고DB 연결
@@ -16,7 +18,26 @@ def connect_to_mongo():
         sys.exit(1)
 
 # 몽고DB 데이터 조회
-def get_target_data(db):
+def get_target_data(db, business_number):
+    try:
+        collection = db["sales_data"]
+        today = date.today()
+        start_of_day = datetime(today.year, today.month, today.day, 0, 0, 0)
+        end_of_day = datetime(today.year, today.month, today.day, 23, 59, 59)
+        query = {
+            "business_number": business_number,
+            "created_at": {
+                "$gte": start_of_day,
+                "$lte": end_of_day
+            }
+        }
+        latest_item = collection.find(query).sort("created_at", -1).limit(1)
+        return latest_item
+    except Exception as e:
+        print(f"Error fetching data: {e}")
+        return []
+
+def get_target_data_org(db):
     try:
         target_data = db["sales_data"]
         target_list = list(target_data.find(
@@ -33,12 +54,13 @@ def get_target_data(db):
         return []
 
 # 배달의민족 데이터 조회
-def get_baemin_data(baemin):
+def get_baemin_data(merchant_info, baemin):
+    print(baemin)
     try:
         transformed_data = []
-        biz_number = baemin["merchant_info"]["business_number"]
-        smb_sector = baemin["merchant_info"]["smb_sector"]
-        zone_nm = baemin["merchant_info"]["zone_nm"]
+        biz_number = merchant_info["business_number"]
+        smb_sector = merchant_info_["smb_sector"]
+        zone_nm = merchant_info["zone_nm"]
 
         for daily_data in baemin["daily_sales_data"]:
             date = daily_data["date"]
@@ -63,12 +85,12 @@ def get_baemin_data(baemin):
         return []
 
 # 카드 판매 데이터 조회
-def get_card_sales_data(card):
+def get_card_sales_data(merchant_info, card):
     try:
         transformed_data = []
-        biz_number = card["merchant_info"]["business_number"]
-        smb_sector = card["merchant_info"]["smb_sector"]
-        zone_nm = card["merchant_info"]["zone_nm"]
+        biz_number = merchant_info["business_number"]
+        smb_sector = merchant_info["smb_sector"]
+        zone_nm = merchant_info["zone_nm"]
 
         for detail in card["daily_sales_data"]:
             date = detail["date"]
@@ -93,12 +115,12 @@ def get_card_sales_data(card):
         return []
 
 # 쿠팡이츠 데이터 조회
-def get_coupangeats_data(coupangeats):
+def get_coupangeats_data(merchant_info, coupangeats):
     try:
         transformed_data = []
-        biz_number = coupangeats["merchant_info"]["business_number"]
-        smb_sector = coupangeats["merchant_info"]["smb_sector"]
-        zone_nm = coupangeats["merchant_info"]["zone_nm"]
+        biz_number = merchant_info["business_number"]
+        smb_sector = merchant_info["smb_sector"]
+        zone_nm = merchant_info["zone_nm"]
 
         for daily_data in coupangeats["daily_sales_data"]:
             date = daily_data["date"]
@@ -124,14 +146,14 @@ def get_coupangeats_data(coupangeats):
 
 
 # 현금영수증 데이터 조회
-def get_hometax_cash_data(hometax):
+def get_hometax_cash_data(merchant_info, hometax):
     try:
         transformed_data = []
-        biz_number = hometax["merchant_info"]["business_number"]
-        smb_sector = hometax["merchant_info"]["smb_sector"]
-        zone_nm = hometax["merchant_info"]["zone_nm"]
+        biz_number = merchant_info["business_number"]
+        smb_sector = merchant_info["smb_sector"]
+        zone_nm = merchant_info["zone_nm"]
 
-        for daily_data in hometax["daily_cash_receipts_data"]:
+        for daily_data in hometax:
             date = daily_data["date"]
             for daily_sales in daily_data["cash_receipts"]:
                 transformed_data.append({
@@ -154,12 +176,12 @@ def get_hometax_cash_data(hometax):
         return []
 
 # 요기요 데이터 조회
-def get_yogiyo_data(yogiyo):
+def get_yogiyo_data(merchant_info, yogiyo):
     try:
         transformed_data = []
-        biz_number = yogiyo["merchant_info"]["business_number"]
-        smb_sector = yogiyo["merchant_info"]["smb_sector"]
-        zone_nm = yogiyo["merchant_info"]["zone_nm"]
+        biz_number = merchant_info["business_number"]
+        smb_sector = merchant_info["smb_sector"]
+        zone_nm = merchant_info["zone_nm"]
 
         for daily_data in yogiyo["daily_sales_data"]:
             date = daily_data["date"]
@@ -186,15 +208,45 @@ def get_yogiyo_data(yogiyo):
 if __name__ == "__main__":
     client = connect_to_mongo()
     result = []
-    list_data = get_target_data(client['originalData'])
+    
+    # 환경변수에서 business_number 가져오기
+    business_number = os.getenv('BUSINESS_NUMBER')
+    if not business_number:
+        print("Error: BUSINESS_NUMBER environment variable is not set")
+        sys.exit(1)
 
-    print(f"총 {len(list_data)}개의 데이터를 분석 중...")
-    for list_dt in tqdm(list_data):
-        result.extend(get_baemin_data(list_dt["baemin"]))
-        result.extend(get_card_sales_data(list_dt["card_sales_data"]))
-        result.extend(get_coupangeats_data(list_dt["coupangeats"]))
-        result.extend(get_hometax_cash_data(list_dt["hometax_cash_receipts"]))
-        result.extend(get_yogiyo_data(list_dt["yogiyo"]))
+    list_datas = get_target_data(client['originalData'], business_number)
+    list_data = list_datas[0]
+    
+    print("\n=== MongoDB에서 조회한 데이터 ===")
+    print("list_data 타입:", type(list_data))
+    print("list_data 내용:")
+    pprint(list(list_data), indent=2, width=100)
+    print("================================\n")
+
+    print(f"데이터를 분석 중...")
+    if not list_data:
+        print(f"No data found for business number: {business_number}")
+        sys.exit(0)
+
+    print("\n=== 데이터 구조 확인 ===")
+    print("list_data.keys():", list_data.keys())
+    print("merchant_info:", list_data.get("merchant_info", {}))
+    print("card_sales_data:", list_data.get("card_sales_data", {}))
+    print("baemin:", list_data.get("baemin", {}))
+    print("coupangeats:", list_data.get("coupangeats", {}))
+    print("yogiyo:", list_data.get("yogiyo", {}))
+    print("hometax_cash_receipts:", list_data.get("hometax_cash_receipts", {}))
+    print("hometax_tax_invoices:", list_data.get("hometax_tax_invoices", {}))
+    print("================================\n")
+
+    merchant_info = list_data["merchant_info"]
+    # for list_dt in tqdm(list_data):
+    result.extend(get_baemin_data(merchant_info, list_data["baemin"]))
+    result.extend(get_card_sales_data(merchant_info, list_data["card_sales_data"]))
+    result.extend(get_coupangeats_data(merchant_info, list_data["coupangeats"]))
+    result.extend(get_hometax_cash_data(merchant_info, list_data["hometax_cash_receipts"]))
+    result.extend(get_yogiyo_data(merchant_info, list_data["yogiyo"]))
 
     offline_data = list(filter(lambda x: x["transaction_type"] == "offline", result))
     online_data = list(filter(lambda x: x["transaction_type"] == "online", result))
@@ -212,14 +264,11 @@ if __name__ == "__main__":
             client["chart_data"]["sales_online_info"].insert_many(batch)
 
     # 한번에 업데이트 처리
-    update_operations = []
-    for item in list_data:
-        update_operations.append(
-            UpdateOne(
-                {"_id": item["_id"]},
-                {"$set": {"gen_apply_yn": "Y"}}
-            )
+    if list_data:
+        client['originalData']['sales_data'].update_one(
+            {"_id": list_data["_id"]},
+            {"$set": {"gen_apply_yn": "Y"}}
         )
-
-    if update_operations:
-        client['originalData']['sales_data'].bulk_write(update_operations)
+        print("데이터 처리 완료 표시 업데이트 완료")
+    else:
+        print("업데이트할 데이터가 없습니다.")

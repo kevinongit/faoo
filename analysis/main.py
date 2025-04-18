@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import numpy as np
 import subprocess
 import sys
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -13,10 +14,23 @@ CORS(app)
 @app.route('/datagen', methods=['GET'])
 def run_data_collect():
     try:
+        # business_number를 환경변수로 전달
+        business_number = request.args.get('businessNumber')
+        if not business_number:
+            return jsonify({
+                "status": "error",
+                "message": "사업자번호가 필요합니다."
+            }), 400
+
+        # 환경변수로 business_number 전달
+        env = os.environ.copy()
+        env['BUSINESS_NUMBER'] = business_number
+
         process = subprocess.Popen([sys.executable, 'scripts/dataCollect.py'],
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE,
-                                   text=True)
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE,
+                                 text=True,
+                                 env=env)
 
         # 🔹 실시간 출력 처리
         output_lines = []
