@@ -1,7 +1,12 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
-    }
-  }
+    },
+    "jsx": "react",
+    "resolveJsonModule": true,
+    "moduleResolution": "node"
+  },
+  "include": ["**/*.js", "**/*.jsx"]
 }

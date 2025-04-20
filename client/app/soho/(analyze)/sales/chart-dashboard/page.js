@@ -1,11 +1,14 @@
-import { Suspense } from "react";
-import GNB from "@/components/GNB";
-import Loading from "@/components/Loading";
-import SalesCompareContent from "./_component/sales-compare-content";
+"use client";
 
-export default function SaleCompareDashboard() {
+import { Suspense } from "react";
+import Loading from "@/components/Loading";
+import SalesDashboardContent from "./_component/sales-dashboard-content";
+import BackHeader from "@/components/BackHeader";
+
+export default function SalesDashboard() {
   return (
     <>
+      <BackHeader title="주간 분석" />
       <Suspense
         fallback={
           <div className="container mx-auto p-3 pt-0 pb-20">
@@ -20,9 +23,8 @@ export default function SaleCompareDashboard() {
           </div>
         }
       >
-        <SalesCompareContent />
+        <SalesDashboardContent />
       </Suspense>
-      <GNB />
     </>
   );
 }

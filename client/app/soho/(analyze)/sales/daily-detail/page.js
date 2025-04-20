@@ -3,9 +3,13 @@ import GNB from "@/components/GNB";
 import Loading from "@/components/Loading";
 import DailySalesContent from "./_component/daily-sales-detail-content";
 
+import BackHeader from "@/components/BackHeader";
+
 export default function DailySales() {
   return (
     <>
+      <BackHeader title="일일 매출 상세" />
+
       <Suspense
         fallback={
           <div className="container mx-auto p-3 pt-0 pb-20">
@@ -22,7 +26,6 @@ export default function DailySales() {
       >
         <DailySalesContent />
       </Suspense>
-      <GNB />
     </>
   );
 }

@@ -46,6 +46,7 @@
     "dayjs": "^1.11.13",
     "devextreme-react": "^24.2.5",
     "echarts": "^5.6.0",
+    "echarts-for-react": "^3.0.2",
     "embla-carousel-react": "^8.5.2",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.474.0",

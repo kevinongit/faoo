@@ -10,9 +10,9 @@ export default function BusinessHeader({
   const sectorImage = getSectorImage(sector);
 
   return (
-    <header className="sticky top-16 z-10 bg-white pb-2 p-3">
+    <header className="fixed left-0 right-0 top-[50px] z-10 bg-white p-3 border-b border-gray-100">
       <div className="w-full px-3 md:px-0">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
               <Image

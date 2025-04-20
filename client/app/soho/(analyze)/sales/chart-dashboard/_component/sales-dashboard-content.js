@@ -6,8 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import useSaleDataStore from "@/lib/store/saleDataStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuthStore } from "@/lib/store/authStore";
-import GNB from "@/components/GNB";
 import Loading from "@/components/Loading";
+import BusinessHeader from "@/components/BusinessHeader";
 
 export default function SalesDashboardContent() {
   const router = useRouter();
@@ -207,20 +207,12 @@ export default function SalesDashboardContent() {
 
   return (
     <>
-      <div className="container mx-auto p-3 pt-0 pb-20">
-        <div className="relative flex items-center justify-center mb-4">
-          <button
-            className="absolute left-0 p-2 bg-gray-200 hover:bg-gray-300 rounded-full shadow-md transition"
-            onClick={() => router.back()}
-          >
-            <span className="text-lg font-bold text-gray-600">&lt;</span>
-          </button>
-
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900">
-            주간 분석비교
-          </h1>
-        </div>
-
+      <BusinessHeader
+        business_name={user?.business_name}
+        business_number={user?.business_number}
+        sector={user?.sector}
+      />
+      <div className="container mx-auto p-3 pt-16 pb-20">
         <Card className="mb-6 shadow-md border border-gray-300 rounded-lg p-5">
           <CardHeader className="flex p-0 justify-between items-start">
             <CardTitle className="text-2xl sm:text-3xl font-semibold text-gray-800">
@@ -415,8 +407,6 @@ export default function SalesDashboardContent() {
           </CardContent>
         </Card>
       </div>
-
-      <GNB />
     </>
   );
 }

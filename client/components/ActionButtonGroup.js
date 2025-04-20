@@ -8,7 +8,7 @@ export default function ActionButtonGroup() {
   return (
     <div className="flex flex-wrap justify-around p-4">
       <button
-        onClick={() => router.push("/soho-home")}
+        onClick={() => router.push("/soho/home")}
         className="flex flex-col items-center m-2"
       >
         <div className="flex items-center justify-center w-12 h-12 bg-gray-200 rounded-full shadow-md">
