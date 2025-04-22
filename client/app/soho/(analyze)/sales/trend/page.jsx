@@ -265,48 +265,96 @@ export default function Trend() {
     // 로딩 시작
     setLoading(true);
 
-    // 실제 구현에서는 API 호출로 대체
-    // 여기서는 예시 데이터 생성
+    // 실제 API를 호출하여 데이터 가져오기
     const fetchData = async () => {
       try {
-        // 현재 연도와 이전 2년 데이터 생성
+        // 현재 연도와 이전 2년 데이터 범위 설정
         const currentYear = new Date().getFullYear();
-        const years = [currentYear - 2, currentYear - 1, currentYear];
+        const years = [currentYear - 1, currentYear];
         setAvailableYears(years);
 
-        // 예시 데이터 생성
-        const mockData = years.map((year) => {
-          // 월별 데이터 생성
-          const monthlyData = Array.from({ length: 12 }, (_, i) => {
-            const month = i + 1;
-            // 랜덤 데이터 생성 (실제 구현에서는 API 데이터로 대체)
-            const onlineSales = Math.floor(Math.random() * 5000000) + 1000000;
-            // 1월에는 오프라인 매출이 없음
-            const offlineSales =
-              month === 1 ? 0 : Math.floor(Math.random() * 8000000) + 2000000;
+        // API 호출을 위한 날짜 범위 설정
+        const fromDate = `${years[0]}01`; // 시작 연도의 1월
+        const toDate = `${currentYear}+${String(
+          new Date().getMonth() + 1
+        ).padStart(2, "0")}`; // 현재 년월
 
-            return {
-              year,
-              month,
-              online: onlineSales,
-              offline: offlineSales,
-              total: onlineSales + offlineSales,
-            };
-          });
+        // API 호출
+        const response = await fetch(
+          "http://localhost:6100/saleapi/monthSales",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              business_number: business_number || "1001010001", // 사용자 정보가 없는 경우 기본값 사용
+              from_date: fromDate,
+              to_date: toDate,
+            }),
+          }
+        );
 
-          return {
-            year,
-            data: monthlyData,
-          };
-        });
+        if (!response.ok) {
+          throw new Error(`API 호출 실패: ${response.status}`);
+        }
 
-        setYearData(mockData);
+        // API 응답 데이터 파싱
+        const apiData = await response.json();
+
+        // 데이터 변환 및 상태 업데이트
+        const transformedData = processApiData(apiData, years);
+        setYearData(transformedData);
         setSelectedYear(currentYear);
         setLoading(false);
       } catch (error) {
         console.error("데이터 로딩 중 오류 발생:", error);
-        setLoading(false);
       }
+    };
+
+    // API 데이터를 차트에서 사용할 형식으로 변환하는 함수
+    const processApiData = (apiData, years) => {
+      // 연도별로 데이터 그룹화
+      return years.map((year) => {
+        // 해당 연도의 데이터만 필터링
+        const yearPrefix = year.toString();
+        const yearData = apiData.filter((item) =>
+          item.sale_month.startsWith(yearPrefix)
+        );
+
+        // 월별 데이터 생성
+        const monthlyData = Array.from({ length: 12 }, (_, i) => {
+          const month = i + 1;
+          const monthStr = month.toString().padStart(2, "0");
+          const monthData = yearData.find(
+            (item) => item.sale_month === `${year}${monthStr}`
+          );
+
+          if (monthData) {
+            return {
+              year,
+              month,
+              online: monthData.on_amt,
+              offline: monthData.off_amt,
+              total: monthData.sum_amt,
+            };
+          } else {
+            // 데이터가 없는 경우 기본값 설정
+            return {
+              year,
+              month,
+              online: 0,
+              offline: 0,
+              total: 0,
+            };
+          }
+        });
+
+        return {
+          year,
+          data: monthlyData,
+        };
+      });
     };
 
     fetchData();
@@ -662,8 +710,15 @@ export default function Trend() {
                   notMerge={false}
                   lazyUpdate={true}
                   onEvents={{
-                    legendselectchanged: (e) =>
-                      setShowPrevYearAvg(e.selected["이전 연도"]),
+                    legendselectchanged: (e) => {
+                      // 모바일 더블탭 방지: '이전 연도'만 정확히 토글할 때만 상태 변경
+                      if (
+                        e.name === "이전 연도" &&
+                        Object.keys(e.selected).length === 1
+                      ) {
+                        setShowPrevYearAvg(e.selected["이전 연도"]);
+                      }
+                    },
                   }}
                 />
               )}
