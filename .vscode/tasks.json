@@ -5,13 +5,31 @@
       "label": "client npm install",
       "command": "npm install",
       "type": "shell",
-      "options": {"cwd": "${workspaceFolder}/client"}
+      "options": { "cwd": "${workspaceFolder}/client" }
     },
     {
       "label": "data generatornpm install",
       "command": "npm install",
       "type": "shell",
-      "options": {"cwd": "${workspaceFolder}/datagen/dgapp"}
+      "options": { "cwd": "${workspaceFolder}/datagen/dgapp" }
+    },
+    {
+      "label": "salesapi npm install",
+      "command": "npm install",
+      "type": "shell",
+      "options": { "cwd": "${workspaceFolder}/salesapi" }
+    },
+    {
+      "label": "cfa npm install",
+      "command": "npm install",
+      "type": "shell",
+      "options": { "cwd": "${workspaceFolder}/cfa" }
+    },
+    {
+      "label": "Login API npm install",
+      "command": "npm install",
+      "type": "shell",
+      "options": { "cwd": "${workspaceFolder}/server" }
     }
   ]
 }
