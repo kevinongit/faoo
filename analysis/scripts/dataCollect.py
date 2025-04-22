@@ -59,7 +59,7 @@ def get_baemin_data(merchant_info, baemin):
     try:
         transformed_data = []
         biz_number = merchant_info["business_number"]
-        smb_sector = merchant_info_["smb_sector"]
+        smb_sector = merchant_info["smb_sector"]
         zone_nm = merchant_info["zone_nm"]
 
         for daily_data in baemin["daily_sales_data"]:
@@ -128,7 +128,7 @@ def get_coupangeats_data(merchant_info, coupangeats):
                 transformed_data.append({
                     "sale_date": date.replace("-", ""),
                     "business_number": biz_number,
-                    "sale_time": daily_sales["approval_datetime"].split(" ")[1][:2],
+                    "sale_time": daily_sales["order_time"].split(":")[0],
                     "sale_amt": daily_sales["amount"],
                     "transaction_type": "online",
                     "smb_sector": smb_sector,
@@ -189,7 +189,7 @@ def get_yogiyo_data(merchant_info, yogiyo):
                 transformed_data.append({
                     "sale_date": date.replace("-", ""),
                     "business_number": biz_number,
-                    "sale_time": daily_sales["approval_datetime"].split(" ")[1][:2],
+                    "sale_time": daily_sales["order_time"].split(":")[0],
                     "sale_amt": daily_sales["amount"],
                     "transaction_type": "online",
                     "smb_sector": smb_sector,

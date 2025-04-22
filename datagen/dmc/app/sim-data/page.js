@@ -2242,37 +2242,77 @@ export default function SimData() {
                           ([key]) =>
                             key.startsWith("top") && key !== "percentileRank"
                         )
-                        .map(([key, value]) => (
-                          <div
-                            key={key}
-                            className="flex justify-between items-center"
-                          >
-                            <span className="text-sm">
-                              {key === "topOthAvg"
-                                ? "10등급 (하위 10% 이하)"
-                                : key === "top10Avg"
-                                ? "1등급 (상위 10%)"
-                                : key === "top20Avg"
-                                ? "2등급 (상위 20%)"
-                                : key === "top30Avg"
-                                ? "3등급 (상위 30%)"
-                                : key === "top40Avg"
-                                ? "4등급 (상위 40%)"
-                                : key === "top50Avg"
-                                ? "5등급 (평균)"
-                                : key === "top60Avg"
-                                ? "6등급 (전체 60% 내)"
-                                : key === "top70Avg"
-                                ? "7등급 (전체 70% 내)"
-                                : key === "top80Avg"
-                                ? "8등급 (하위 30% 이하)"
-                                : "9등급 (하위 20% 이하)"}
-                            </span>
-                            <span className="text-sm font-medium">
-                              {value.toLocaleString()}원
-                            </span>
-                          </div>
-                        ))}
+                        .map(([key, value]) => {
+                          const grade =
+                            key === "topOthAvg"
+                              ? "10"
+                              : key === "top10Avg"
+                              ? "1"
+                              : key === "top20Avg"
+                              ? "2"
+                              : key === "top30Avg"
+                              ? "3"
+                              : key === "top40Avg"
+                              ? "4"
+                              : key === "top50Avg"
+                              ? "5"
+                              : key === "top60Avg"
+                              ? "6"
+                              : key === "top70Avg"
+                              ? "7"
+                              : key === "top80Avg"
+                              ? "8"
+                              : "9";
+
+                          const isSelectedGrade =
+                            grade === formData.revenueRange;
+
+                          return (
+                            <div
+                              key={key}
+                              className={`flex justify-between items-center p-2 rounded-lg ${
+                                isSelectedGrade
+                                  ? "bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800"
+                                  : ""
+                              }`}
+                            >
+                              <span
+                                className={`text-sm ${
+                                  isSelectedGrade ? "font-bold" : ""
+                                }`}
+                              >
+                                {key === "topOthAvg"
+                                  ? "10등급 (하위 10% 이하)"
+                                  : key === "top10Avg"
+                                  ? "1등급 (상위 10%)"
+                                  : key === "top20Avg"
+                                  ? "2등급 (상위 20%)"
+                                  : key === "top30Avg"
+                                  ? "3등급 (상위 30%)"
+                                  : key === "top40Avg"
+                                  ? "4등급 (상위 40%)"
+                                  : key === "top50Avg"
+                                  ? "5등급 (평균)"
+                                  : key === "top60Avg"
+                                  ? "6등급 (전체 60% 내)"
+                                  : key === "top70Avg"
+                                  ? "7등급 (전체 70% 내)"
+                                  : key === "top80Avg"
+                                  ? "8등급 (하위 30% 이하)"
+                                  : "9등급 (하위 20% 이하)"}
+                              </span>
+                              <span
+                                className={`text-sm font-medium ${
+                                  isSelectedGrade
+                                    ? "text-green-600 dark:text-green-400 font-bold"
+                                    : ""
+                                }`}
+                              >
+                                {value.toLocaleString()}원
+                              </span>
+                            </div>
+                          );
+                        })}
                     </div>
                   </div>
                 </div>
