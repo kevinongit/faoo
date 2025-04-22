@@ -615,7 +615,7 @@ export default function Trend() {
             <CardContent className="px-0 pb-2">
               <p className="text-sm mx-3 my-2">최근 6개월 매출</p>
               {loading ? (
-                <div className="flex justify-center items-center h-[300px]">
+                <div className="flex justify-center items-center h-[180px]">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
                 </div>
               ) : (
@@ -636,7 +636,7 @@ export default function Trend() {
                 <div>
                   <div className="flex items-center gap-1">
                     <p className="text-xs text-gray-500">온라인 비중:</p>
-                    <p className="font-bold text-blue-600">
+                    <p className="font-bold text-blue-600 w-12">
                       {(() => {
                         const yearDataObj = yearData.find(
                           (d) => d.year === selectedYear
@@ -651,8 +651,8 @@ export default function Trend() {
                           0
                         );
                         return totalSales > 0
-                          ? `${Math.round((totalOnline / totalSales) * 100)}%`
-                          : "0%";
+                          ? `${((totalOnline / totalSales) * 100).toFixed(1)}%`
+                          : "0.0%";
                       })()}
                     </p>
                   </div>
@@ -670,7 +670,7 @@ export default function Trend() {
                 <div>
                   <div className="flex items-center gap-1">
                     <p className="text-xs text-gray-500">오프라인 비중:</p>
-                    <p className="font-bold text-indigo-600">
+                    <p className="font-bold text-indigo-600 w-12">
                       {(() => {
                         const yearDataObj = yearData.find(
                           (d) => d.year === selectedYear
@@ -685,8 +685,8 @@ export default function Trend() {
                           0
                         );
                         return totalSales > 0
-                          ? `${Math.round((totalOffline / totalSales) * 100)}%`
-                          : "0%";
+                          ? `${((totalOffline / totalSales) * 100).toFixed(1)}%`
+                          : "0.0%";
                       })()}
                     </p>
                   </div>
@@ -701,7 +701,7 @@ export default function Trend() {
             <CardContent className="p-1">
               <p className="text-sm mx-3 my-2">월별 매출</p>
               {loading ? (
-                <div className="flex justify-center items-center h-[400px]">
+                <div className="flex justify-center items-center h-[200px]">
                   <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
                 </div>
               ) : (
