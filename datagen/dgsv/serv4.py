@@ -192,7 +192,8 @@ def generate_smb_revenue_direct():
             # 배달 플랫폼 데이터 생성
             if data.get('hasDelivery', False):
                 delivery_ratio = float(data.get('deliveryRatio', 0)) / 100
-                delivery_sales = int(base_sales * delivery_ratio)
+                # 배달앱 매출을 base_sales와 별개로 계산
+                delivery_sales = int(base_sales * (delivery_ratio / (1 - delivery_ratio)))
 
                 for platform, ratio in [
                     ('baemin', float(data.get('baeminRatio', 0)) / 100),
@@ -202,17 +203,21 @@ def generate_smb_revenue_direct():
                     if ratio > 0:
                         platform_sales = int(delivery_sales * ratio)
                         txns = []
-                        for _ in range(random.randint(2, 4)):
-                            amount = generate_variable_amount(platform_sales // 3)
+                        # 거래 건수 조정 (더 많은 거래로 분산)
+                        for _ in range(random.randint(4, 8)):
+                            # 각 거래의 금액을 더 균등하게 분배
+                            amount = generate_variable_amount(platform_sales // 5, 0.9, 1.1)
                             approval_time = generate_transaction_time(current_date, (12, 22))
-                            fee = int(amount * DELIVERY_FEE_RATE)
+                            fees = calculate_delivery_fees(amount, platform)
                             txns.append({
+                                "order_id": f"{platform[:2].upper()}-{current_date.strftime('%Y%m%d')}-{random.randint(1000, 9999)}",
                                 "amount": amount,
-                                "fee": fee,
-                                "net_amount": amount - fee,
-                                "card_type": random.choice(CARD_TYPES),
-                                "approval_number": f"{platform[:2].upper()}-{chr(65+data_count)}{random.randint(100000000, 999999999)}",
-                                "approval_datetime": approval_time.strftime("%Y-%m-%d %H:%M:%S")
+                                "fee": fees["total_fee"],
+                                "net_amount": amount - fees["total_fee"],
+                                "order_time": f"{random.randint(11, 22)}:{random.randint(0, 59):02d}",
+                                "payment_method": random.choice(["card", "cash"]),
+                                "status": "completed",
+                                "fee_detail": fees
                             })
 
                         # 배달 플랫폼 데이터 추가
@@ -451,29 +456,64 @@ def do_collect():
                     'business_number': business_number,
                     'year': date.year,
                     'month': date.month,
-                    'revenue': 0
+                    'revenue': 0,
+                    'daily_sales': []
                 }
             
             # 일별 매출 합계 계산
-            daily_revenue = sum(txn['total_amount'] for txn in daily_data['approval_details'])
-            monthly_sales[year_month]['revenue'] += daily_revenue
-
-        # 배달 앱 매출 데이터 처리
-        for platform in ['baemin', 'coupangeats', 'yogiyo']:
-            if platform in log_data and 'daily_sales_data' in log_data[platform]:
-                for daily_data in log_data[platform]['daily_sales_data']:
-                    date = datetime.strptime(daily_data['date'], '%Y-%m-%d')
-                    year_month = f"{date.year}-{date.month:02d}"
-                    
-                    if year_month not in monthly_sales:
-                        monthly_sales[year_month] = {
-                            'business_number': business_number,
-                            'year': date.year,
-                            'month': date.month,
-                            'revenue': 0
+            card_total = sum(txn['total_amount'] for txn in daily_data['approval_details'])
+            
+            # 배달 플랫폼 매출 데이터 처리
+            platform_total = 0
+            platform_detail = {}
+            
+            for platform in ['baemin', 'coupangeats', 'yogiyo']:
+                if platform in log_data and 'daily_sales_data' in log_data[platform]:
+                    platform_data = next((d for d in log_data[platform]['daily_sales_data'] 
+                                        if d['date'] == daily_data['date']), None)
+                    if platform_data:
+                        platform_sales = platform_data['total_sales_amount']
+                        platform_total += platform_sales
+                        platform_detail[platform] = {
+                            'sales': platform_sales,
+                            'commission': platform_data['total_fee'],
+                            'settlement': platform_data['settlement_amount']
                         }
-                    
-                    monthly_sales[year_month]['revenue'] += daily_data['total_sales_amount']
+            
+            # 현금 매출 데이터 처리
+            cash_total = 0
+            cash_receipts = next((d for d in log_data['hometax_cash_receipts'] 
+                                if d['date'] == daily_data['date']), None)
+            if cash_receipts:
+                cash_total = cash_receipts['total_cash_amount']
+            
+            # 일별 매출 데이터 추가
+            daily_total = card_total + platform_total + cash_total
+            
+            # 매출 비율 계산
+            daily_sales = {
+                'date': daily_data['date'],
+                'card_total': card_total,
+                'platform_total': platform_total,
+                'platform_detail': platform_detail,
+                'cash_total': cash_total,
+                'total': daily_total,
+                'ratios': {
+                    'card': round(card_total / daily_total * 100, 2) if daily_total > 0 else 0,
+                    'platform': round(platform_total / daily_total * 100, 2) if daily_total > 0 else 0,
+                    'cash': round(cash_total / daily_total * 100, 2) if daily_total > 0 else 0,
+                }
+            }
+            
+            # 플랫폼별 비율 계산
+            if platform_total > 0:
+                platform_ratios = {}
+                for platform, detail in platform_detail.items():
+                    platform_ratios[platform] = round(detail['sales'] / platform_total * 100, 2)
+                daily_sales['platform_ratios'] = platform_ratios
+            
+            monthly_sales[year_month]['daily_sales'].append(daily_sales)
+            monthly_sales[year_month]['revenue'] += daily_sales['total']
 
         # 월간 매출 데이터 저장
         print("\n월간 매출 데이터 저장 시작...")
@@ -489,10 +529,16 @@ def do_collect():
                 # 기존 데이터 업데이트
                 monthly_sales_collection.update_one(
                     {'_id': existing_data['_id']},
-                    {'$set': {'revenue': data['revenue']}}
+                    {'$set': {
+                        'revenue': data['revenue'],
+                        'daily_sales': data['daily_sales'],
+                        'updated_at': datetime.now()
+                    }}
                 )
             else:
                 # 새 데이터 삽입
+                data['created_at'] = datetime.now()
+                data['updated_at'] = datetime.now()
                 monthly_sales_collection.insert_one(data)
 
         # 저장된 월간 매출 데이터 조회
@@ -670,10 +716,14 @@ def generate_comparison_groups():
                 {'$set': response}
             )
             print("기존 데이터 업데이트 완료")
+            # ObjectId를 문자열로 변환
+            response['_id'] = str(existing_data['_id'])
         else:
             # 새 데이터 삽입
-            collection.insert_one(response)
+            result = collection.insert_one(response)
             print("새 데이터 저장 완료")
+            # ObjectId를 문자열로 변환
+            response['_id'] = str(result.inserted_id)
         
         client.close()
         print("MongoDB 연결 종료")
@@ -690,6 +740,35 @@ def generate_comparison_groups():
         return jsonify({
             "error": f"비교군 생성 중 오류가 발생했습니다: {str(e)}"
         }), 500
+
+def calculate_delivery_fees(amount, platform):
+    """배달 플랫폼별 수수료 계산"""
+    # 기본 배달비
+    delivery_fee = 3400
+    
+    # 중계수수료율 설정
+    if platform == "yogiyo":
+        commission_rate = 0.125  # 12.5%
+    else:  # baemin, coupangeats
+        commission_rate = 0.078  # 7.8%
+    
+    # 중계수수료 계산
+    commission_fee = round(amount * commission_rate)
+    commission_vat_fee = round(commission_fee * 0.1)  # 부가세 10%
+    
+    # 카드수수료 계산
+    card_fee = round(amount * 0.025)  # 2.5%
+    
+    # 총 수수료
+    total_fee = commission_fee + commission_vat_fee + delivery_fee + card_fee
+    
+    return {
+        "commission_fee": commission_fee,
+        "commission_vat_fee": commission_vat_fee,
+        "delivery_fee": delivery_fee,
+        "card_fee": card_fee,
+        "total_fee": total_fee
+    }
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3400, debug=True) 

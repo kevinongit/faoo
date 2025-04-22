@@ -14,6 +14,7 @@ import {
   BarChart2,
   Users,
   Target,
+  RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -287,72 +288,74 @@ export default function SimData() {
   };
 
   const getSelectedUserName = () => {
+    console.log(typeof selectedUser, users);
     return (
-      users.find((u) => u.businessNumber === selectedUser)?.merchant_name || ""
+      users.find((u) => u.business_number === selectedUser)?.merchant_name || ""
     );
   };
 
   const validateForm = () => {
-    const errors = {};
-
-    // 기간 설정 검증
-    if (!formData.startDate) {
-      errors.startDate = "시작일을 선택해주세요";
-    }
-    if (!formData.endDate) {
-      errors.endDate = "종료일을 선택해주세요";
-    }
-    if (formData.startDate && formData.endDate) {
-      const start = new Date(formData.startDate);
-      const end = new Date(formData.endDate);
-      if (start > end) {
-        errors.dateRange = "시작일은 종료일보다 이전이어야 합니다";
-      }
+    if (!selectedUser) {
+      setError("사업장을 선택해주세요.");
+      return false;
     }
 
-    // 평균 매출 검증
-    const hasWeekdays = formData.businessDays.some((day) =>
-      ["mon", "tue", "wed", "thu", "fri"].includes(day)
+    if (!formData.businessDays || formData.businessDays.length === 0) {
+      setError("영업일을 선택해주세요.");
+      return false;
+    }
+
+    if (!formData.weekdayAvgSales) {
+      setError("평일 평균매출을 입력해주세요.");
+      return false;
+    }
+
+    // 주말 영업일이 선택된 경우에만 주말 평균매출 검증
+    const hasWeekend = formData.businessDays.some(
+      (day) => day === "sat" || day === "sun"
     );
-    const hasWeekends = formData.businessDays.some((day) =>
-      ["sat", "sun"].includes(day)
-    );
-
-    if (
-      hasWeekdays &&
-      (!formData.weekdayAvgSales || formData.weekdayAvgSales === "0")
-    ) {
-      errors.weekdayAvgSales = "평일 평균 매출을 입력해주세요";
-    }
-    if (
-      hasWeekends &&
-      (!formData.weekendAvgSales || formData.weekendAvgSales === "0")
-    ) {
-      errors.weekendAvgSales = "주말 평균 매출을 입력해주세요";
+    if (hasWeekend && !formData.weekendAvgSales) {
+      setError("주말 평균매출을 입력해주세요.");
+      return false;
     }
 
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
+    if (!formData.startDate || !formData.endDate) {
+      setError("기간을 선택해주세요.");
+      return false;
+    }
+
+    return true;
   };
 
   const handleGenerateData = async () => {
-    if (!validateForm()) {
-      return;
-    }
-
-    console.log(formData);
-    setIsGenerating(true);
-
+    console.log("handleGenerateData");
     try {
-      const response = await fetch(`http://localhost:3400/gen-smb-revenue`, {
+      if (!validateForm()) {
+        console.log("validateForm failed");
+        return;
+      }
+      console.log(formData);
+      setIsLoading(true);
+      setError(null);
+      console.log(formData);
+      // 주말 영업일이 선택된 경우에만 주말 평균매출 포함
+      const requestData = {
+        ...formData,
+        businessNumber: selectedUser,
+        weekendAvgSales: formData.businessDays.some(
+          (day) => day === "sat" || day === "sun"
+        )
+          ? formData.weekendAvgSales
+          : undefined,
+      };
+      console.log(requestData);
+      // 데이터 생성 API 호출
+      const response = await fetch("http://localhost:3400/gen-smb-revenue", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ...formData,
-          businessNumber: selectedUser,
-        }),
+        body: JSON.stringify(requestData),
       });
 
       if (!response.ok) {
@@ -360,33 +363,72 @@ export default function SimData() {
       }
 
       const result = await response.json();
-
-      setGenerationResult({
-        status: result?.status || "error",
-        message: result?.message || "데이터 생성 중 오류가 발생했습니다.",
-        generatedAt: result?.generatedAt || new Date().toISOString(),
-        dataCount: result.dataCount || 0,
-        period: result.period || "",
-      });
-
-      setSteps((prev) => ({
-        ...prev,
-        step1: { status: result ? "completed" : "ready", completed: result },
-        step2: { status: result ? "ready" : "disabled", completed: false },
-      }));
-    } catch (error) {
-      console.error("Error generating data:", error);
-      setGenerationResult({
-        status: "error",
-        message: error.message || "데이터 생성 중 오류가 발생했습니다.",
-      });
+      setGenerationResult(result);
+      setCurrentStep(2);
+    } catch (err) {
+      setError(err.message);
     } finally {
-      setIsGenerating(false);
+      setIsLoading(false);
     }
   };
 
   const scrollToGenerateButton = () => {
     generateButtonRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // Helper functions for calculations
+  const calculateCardSalesTotal = (revenueData) => {
+    if (!revenueData?.card_sales_data?.daily_sales_data) return 0;
+    return revenueData.card_sales_data.daily_sales_data.reduce((total, day) => {
+      if (!day.approval_details) return total;
+      return (
+        total +
+        day.approval_details.reduce(
+          (dayTotal, approval) => dayTotal + (approval.total_amount || 0),
+          0
+        )
+      );
+    }, 0);
+  };
+
+  const calculateOnlineStoreTotal = (revenueData, formData) => {
+    if (!formData?.hasOnlineSales || !revenueData?.online_stores) return 0;
+    return Object.values(revenueData.online_stores).reduce((total, store) => {
+      return (
+        total +
+        store.reduce((storeTotal, day) => {
+          return storeTotal + (day.sales_amount || 0);
+        }, 0)
+      );
+    }, 0);
+  };
+
+  const calculateDeliveryTotal = (revenueData, formData) => {
+    if (!formData?.hasDelivery) return 0;
+    let total = 0;
+    ["baemin", "coupangeats", "yogiyo"].forEach((service) => {
+      if (revenueData[service]?.daily_sales_data) {
+        total += revenueData[service].daily_sales_data.reduce(
+          (serviceTotal, day) => serviceTotal + (day.total_sales_amount || 0),
+          0
+        );
+      }
+    });
+    return total;
+  };
+
+  const calculateOfflineTotal = (revenueData) => {
+    let total = calculateCardSalesTotal(revenueData);
+    if (revenueData?.hometax_cash_receipts) {
+      total += revenueData.hometax_cash_receipts.reduce(
+        (sum, day) => sum + (day.total_cash_amount || 0),
+        0
+      );
+    }
+    if (revenueData?.tax_invoices?.total_issued_amount) {
+      total += revenueData.tax_invoices.total_issued_amount;
+    }
+    return total;
   };
 
   const renderStepContent = () => {
@@ -1020,11 +1062,15 @@ export default function SimData() {
                         type="button"
                         onClick={() => {
                           const today = new Date();
-                          const oneMonthAgo = new Date(today);
-                          oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+                          const threeMonthsAgo = new Date(today);
+                          threeMonthsAgo.setMonth(
+                            threeMonthsAgo.getMonth() - 3
+                          );
                           setFormData({
                             ...formData,
-                            startDate: oneMonthAgo.toISOString().split("T")[0],
+                            startDate: threeMonthsAgo
+                              .toISOString()
+                              .split("T")[0],
                             endDate: today.toISOString().split("T")[0],
                           });
                           setValidationErrors({});
@@ -1034,12 +1080,12 @@ export default function SimData() {
                           formData.startDate &&
                           new Date(formData.endDate).getTime() -
                             new Date(formData.startDate).getTime() ===
-                            30 * 24 * 60 * 60 * 1000
+                            90 * 24 * 60 * 60 * 1000
                             ? "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800"
                             : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700"
                         }`}
                       >
-                        1개월
+                        3개월
                       </button>
                       <button
                         type="button"
@@ -1394,100 +1440,156 @@ export default function SimData() {
         );
       case 2:
         return (
-          <div className="space-y-4">
-            <p className="text-sm text-gray-500">생성된 데이터를 조회합니다.</p>
-            <Button
-              onClick={handleStep2}
-              disabled={
-                !steps.step1.completed ||
-                steps.step2.status === "completed" ||
-                isLoading
-              }
-              className="w-full"
-            >
-              {isLoading ? (
-                <span className="flex items-center justify-center">
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  조회 중...
-                </span>
+          <div className="space-y-6">
+            <div className="text-center">
+              {generationResult?.status === "success" ? (
+                <div className="mt-4 p-4 bg-green-50 rounded-lg">
+                  <p className="text-green-700">
+                    데이터 생성이 완료되었습니다.
+                    <br />
+                    기간: {generationResult.period}
+                    <br />
+                    생성일시:{" "}
+                    {new Date(generationResult.generatedAt).toLocaleString()}
+                  </p>
+                </div>
               ) : (
-                "조회"
+                <div className="mt-4 p-4 bg-red-50 rounded-lg">
+                  <p className="text-red-700">
+                    {error || "데이터 생성에 실패했습니다."}
+                  </p>
+                </div>
               )}
-            </Button>
-            {error && (
-              <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/50 rounded-lg">
-                <p className="text-sm text-red-600 dark:text-red-400">
-                  {error}
-                </p>
-              </div>
-            )}
+            </div>
+            <div className="flex justify-center">
+              <Button
+                onClick={handleStep2}
+                disabled={
+                  !generationResult || generationResult.status !== "success"
+                }
+                className="w-full max-w-xs"
+              >
+                데이터 조회
+              </Button>
+            </div>
             {revenueData && (
-              <div className="mt-4 bg-white dark:bg-gray-800 rounded-lg border p-6">
-                <h3 className="text-lg font-medium mb-4">조회 결과</h3>
-                <div className="space-y-6">
+              <div className="mt-4 bg-white rounded-lg border p-6 max-w-6xl mx-auto">
+                <h3 className="text-lg font-medium mb-6">조회 결과</h3>
+                <div className="space-y-8">
                   {/* 총 매출 요약 */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        총 매출
-                      </p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <p className="text-sm text-gray-500">총 매출</p>
                       <p className="text-lg font-medium">
-                        {(
-                          revenueData?.total_sales?.total || 0
-                        ).toLocaleString()}
-                        원
+                        {(() => {
+                          const onlineTotal = calculateOnlineStoreTotal(
+                            revenueData,
+                            formData
+                          );
+                          const deliveryTotal = calculateDeliveryTotal(
+                            revenueData,
+                            formData
+                          );
+                          const offlineTotal =
+                            calculateOfflineTotal(revenueData);
+                          const grandTotal =
+                            onlineTotal + deliveryTotal + offlineTotal;
+                          return `${grandTotal.toLocaleString()}원`;
+                        })()}
                       </p>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        온라인 스토어 매출
-                      </p>
-                      <p className="text-lg font-medium">
-                        {(
-                          revenueData?.total_sales?.online || 0
-                        ).toLocaleString()}
-                        원
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        배달 앱 매출
-                      </p>
-                      <p className="text-lg font-medium">
-                        {(
-                          revenueData?.total_sales?.delivery || 0
-                        ).toLocaleString()}
-                        원
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {formData.hasDelivery && (
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <p className="text-sm text-gray-500">
+                          배달 앱 매출
+                          {(() => {
+                            const deliveryTotal = calculateDeliveryTotal(
+                              revenueData,
+                              formData
+                            );
+                            const onlineTotal = calculateOnlineStoreTotal(
+                              revenueData,
+                              formData
+                            );
+                            const offlineTotal =
+                              calculateOfflineTotal(revenueData);
+                            const grandTotal =
+                              onlineTotal + deliveryTotal + offlineTotal;
+                            const percentage = (
+                              (deliveryTotal / grandTotal) *
+                              100
+                            ).toFixed(1);
+                            return ` (${percentage}%)`;
+                          })()}
+                        </p>
+                        <p className="text-lg font-medium">
+                          {(() => {
+                            const total = calculateDeliveryTotal(
+                              revenueData,
+                              formData
+                            );
+                            return `${total.toLocaleString()}원`;
+                          })()}
+                        </p>
+                      </div>
+                    )}
+                    {formData.hasOnlineSales && (
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <p className="text-sm text-gray-500">
+                          온라인 스토어 매출
+                          {(() => {
+                            const onlineTotal = calculateOnlineStoreTotal(
+                              revenueData,
+                              formData
+                            );
+                            const deliveryTotal = calculateDeliveryTotal(
+                              revenueData,
+                              formData
+                            );
+                            const offlineTotal =
+                              calculateOfflineTotal(revenueData);
+                            const grandTotal =
+                              onlineTotal + deliveryTotal + offlineTotal;
+                            const percentage = (
+                              (onlineTotal / grandTotal) *
+                              100
+                            ).toFixed(1);
+                            return ` (${percentage}%)`;
+                          })()}
+                        </p>
+                        <p className="text-lg font-medium">
+                          {onlineTotal.toLocaleString()}원
+                        </p>
+                      </div>
+                    )}
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <p className="text-sm text-gray-500">
                         오프라인 매출
+                        {(() => {
+                          const offlineTotal =
+                            calculateOfflineTotal(revenueData);
+                          const onlineTotal = calculateOnlineStoreTotal(
+                            revenueData,
+                            formData
+                          );
+                          const deliveryTotal = calculateDeliveryTotal(
+                            revenueData,
+                            formData
+                          );
+                          const grandTotal =
+                            onlineTotal + deliveryTotal + offlineTotal;
+                          const percentage = (
+                            (offlineTotal / grandTotal) *
+                            100
+                          ).toFixed(1);
+                          return ` (${percentage}%)`;
+                        })()}
                       </p>
                       <p className="text-lg font-medium">
-                        {(
-                          revenueData?.total_sales?.offline || 0
-                        ).toLocaleString()}
-                        원
+                        {(() => {
+                          const total = calculateOfflineTotal(revenueData);
+                          return `${total.toLocaleString()}원`;
+                        })()}
                       </p>
                     </div>
                   </div>
@@ -1497,8 +1599,8 @@ export default function SimData() {
                     <h4 className="font-medium">상세 정보</h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {/* 온라인 스토어 상세 */}
-                      {revenueData.online_stores && (
-                        <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                      {formData.hasOnlineSales && revenueData.online_stores && (
+                        <div className="bg-gray-50 p-4 rounded-lg">
                           <h5 className="font-medium mb-2">
                             온라인 스토어 상세
                           </h5>
@@ -1518,45 +1620,47 @@ export default function SimData() {
                                       수수료율: {data[0]?.platform_fee_rate}%
                                     </span>
                                   </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-sm text-gray-500">
-                                      매출
-                                    </span>
-                                    <span className="text-sm">
-                                      {data
-                                        .reduce(
-                                          (sum, day) => sum + day.sales_amount,
-                                          0
-                                        )
-                                        .toLocaleString()}
-                                      원
-                                    </span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-sm text-gray-500">
-                                      수수료
-                                    </span>
-                                    <span className="text-sm">
-                                      {data
-                                        .reduce((sum, day) => sum + day.fee, 0)
-                                        .toLocaleString()}
-                                      원
-                                    </span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-sm text-gray-500">
-                                      정산금액
-                                    </span>
-                                    <span className="text-sm">
-                                      {data
-                                        .reduce(
-                                          (sum, day) =>
-                                            sum + day.settlement_amount,
-                                          0
-                                        )
-                                        .toLocaleString()}
-                                      원
-                                    </span>
+                                  <div className="grid grid-cols-3 gap-2 text-sm">
+                                    <div>
+                                      <p className="text-gray-500">매출</p>
+                                      <p>
+                                        {data
+                                          .reduce(
+                                            (total, day) =>
+                                              total + (day.sales_amount || 0),
+                                            0
+                                          )
+                                          .toLocaleString()}
+                                        원
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <p className="text-gray-500">수수료</p>
+                                      <p>
+                                        {data
+                                          .reduce(
+                                            (total, day) =>
+                                              total + (day.platform_fee || 0),
+                                            0
+                                          )
+                                          .toLocaleString()}
+                                        원
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <p className="text-gray-500">정산금액</p>
+                                      <p>
+                                        {data
+                                          .reduce(
+                                            (total, day) =>
+                                              total +
+                                              (day.settlement_amount || 0),
+                                            0
+                                          )
+                                          .toLocaleString()}
+                                        원
+                                      </p>
+                                    </div>
                                   </div>
                                 </div>
                               )
@@ -1566,86 +1670,285 @@ export default function SimData() {
                       )}
 
                       {/* 배달 앱 상세 */}
-                      <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                        <h5 className="font-medium mb-2">배달 앱 상세</h5>
-                        <div className="space-y-2">
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-500">배민</span>
-                            <span className="text-sm">
-                              {(
-                                revenueData?.baemin?.daily_sales_data?.[0]
-                                  ?.total_sales_amount || 0
-                              ).toLocaleString()}
-                              원
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-500">
-                              쿠팡이츠
-                            </span>
-                            <span className="text-sm">
-                              {(
-                                revenueData?.coupangeats?.daily_sales_data?.[0]
-                                  ?.total_sales_amount || 0
-                              ).toLocaleString()}
-                              원
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-500">
-                              요기요
-                            </span>
-                            <span className="text-sm">
-                              {(
-                                revenueData?.yogiyo?.daily_sales_data?.[0]
-                                  ?.total_sales_amount || 0
-                              ).toLocaleString()}
-                              원
-                            </span>
+                      {formData.hasDelivery && (
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                          <h5 className="font-medium mb-2">배달 앱 상세</h5>
+                          <div className="space-y-4">
+                            {["baemin", "coupangeats", "yogiyo"].map(
+                              (service) => {
+                                const serviceData = revenueData[service];
+                                if (!serviceData?.daily_sales_data) return null;
+
+                                const totalSales =
+                                  serviceData.daily_sales_data.reduce(
+                                    (total, day) => {
+                                      return (
+                                        total + (day.total_sales_amount || 0)
+                                      );
+                                    },
+                                    0
+                                  );
+
+                                const totalDeliverySales = [
+                                  "baemin",
+                                  "coupangeats",
+                                  "yogiyo",
+                                ].reduce((total, s) => {
+                                  if (revenueData[s]?.daily_sales_data) {
+                                    return (
+                                      total +
+                                      revenueData[s].daily_sales_data.reduce(
+                                        (sum, day) =>
+                                          sum + (day.total_sales_amount || 0),
+                                        0
+                                      )
+                                    );
+                                  }
+                                  return total;
+                                }, 0);
+
+                                const percentage = (
+                                  (totalSales / totalDeliverySales) *
+                                  100
+                                ).toFixed(1);
+
+                                return (
+                                  <div key={service} className="space-y-2">
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-sm font-medium">
+                                        {service === "baemin"
+                                          ? "배민"
+                                          : service === "coupangeats"
+                                          ? "쿠팡이츠"
+                                          : "요기요"}{" "}
+                                        ({percentage}%)
+                                      </span>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-2 text-sm">
+                                      <div>
+                                        <p className="text-gray-500">매출</p>
+                                        <p>{totalSales.toLocaleString()}원</p>
+                                      </div>
+                                      <div>
+                                        <p className="text-gray-500">수수료</p>
+                                        <p className="text-red-500">
+                                          {serviceData.daily_sales_data
+                                            .reduce(
+                                              (total, day) =>
+                                                total + (day.total_fee || 0),
+                                              0
+                                            )
+                                            .toLocaleString()}
+                                          원
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <p className="text-gray-500">
+                                          정산금액
+                                        </p>
+                                        <p className="text-blue-500">
+                                          {serviceData.daily_sales_data
+                                            .reduce(
+                                              (total, day) =>
+                                                total +
+                                                (day.settlement_amount || 0),
+                                              0
+                                            )
+                                            .toLocaleString()}
+                                          원
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              }
+                            )}
                           </div>
                         </div>
-                      </div>
+                      )}
 
                       {/* 오프라인 상세 */}
-                      <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                      <div className="bg-gray-50 p-4 rounded-lg">
                         <h5 className="font-medium mb-2">오프라인 상세</h5>
-                        <div className="space-y-2">
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-500">
-                              카드 매출
-                            </span>
-                            <span className="text-sm">
-                              {(
-                                revenueData?.card_sales?.daily_sales_data?.[0]
-                                  ?.acquisition_details?.total_amount || 0
-                              ).toLocaleString()}
-                              원
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-500">
-                              현금영수증
-                            </span>
-                            <span className="text-sm">
-                              {(
-                                revenueData?.cash_receipts?.total_cash_amount ||
-                                0
-                              ).toLocaleString()}
-                              원
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-500">
-                              세금계산서
-                            </span>
-                            <span className="text-sm">
-                              {(
-                                revenueData?.tax_invoices
-                                  ?.total_issued_amount || 0
-                              ).toLocaleString()}
-                              원
-                            </span>
-                          </div>
+                        <div className="space-y-4">
+                          {/* 카드 매출 */}
+                          {revenueData.card_sales_data?.daily_sales_data && (
+                            <div className="space-y-2">
+                              <div className="flex justify-between items-center">
+                                <span className="text-sm font-medium">
+                                  카드 매출
+                                  {(() => {
+                                    const cardTotal =
+                                      revenueData.card_sales_data.daily_sales_data.reduce(
+                                        (total, day) => {
+                                          if (!day.approval_details)
+                                            return total;
+                                          return (
+                                            total +
+                                            day.approval_details.reduce(
+                                              (dayTotal, approval) =>
+                                                dayTotal +
+                                                (approval.total_amount || 0),
+                                              0
+                                            )
+                                          );
+                                        },
+                                        0
+                                      );
+                                    const offlineTotal =
+                                      calculateOfflineTotal(revenueData);
+                                    const percentage = (
+                                      (cardTotal / offlineTotal) *
+                                      100
+                                    ).toFixed(1);
+                                    return ` (${percentage}%)`;
+                                  })()}
+                                </span>
+                              </div>
+                              <div className="grid grid-cols-3 gap-2 text-sm">
+                                <div>
+                                  <p className="text-gray-500">매출</p>
+                                  <p>
+                                    {revenueData.card_sales_data.daily_sales_data
+                                      .reduce((total, day) => {
+                                        if (!day.approval_details) return total;
+                                        return (
+                                          total +
+                                          day.approval_details.reduce(
+                                            (dayTotal, approval) => {
+                                              return (
+                                                dayTotal +
+                                                (approval.total_amount || 0)
+                                              );
+                                            },
+                                            0
+                                          )
+                                        );
+                                      }, 0)
+                                      .toLocaleString()}
+                                    원
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className="text-gray-500">수수료</p>
+                                  <p className="text-red-500">
+                                    {revenueData.card_sales_data.daily_sales_data
+                                      .reduce((total, day) => {
+                                        return (
+                                          total +
+                                          (day.acquisition_details?.total_fee ||
+                                            0)
+                                        );
+                                      }, 0)
+                                      .toLocaleString()}
+                                    원
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className="text-gray-500">정산금액</p>
+                                  <p className="text-blue-500">
+                                    {revenueData.card_sales_data.daily_sales_data
+                                      .reduce((total, day) => {
+                                        return (
+                                          total +
+                                          (day.acquisition_details
+                                            ?.net_amount || 0)
+                                        );
+                                      }, 0)
+                                      .toLocaleString()}
+                                    원
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* 현금영수증 */}
+                          {revenueData.hometax_cash_receipts && (
+                            <div className="space-y-2">
+                              <div className="flex justify-between items-center">
+                                <span className="text-sm font-medium">
+                                  현금영수증
+                                  {(() => {
+                                    const cashTotal =
+                                      revenueData.hometax_cash_receipts.reduce(
+                                        (sum, day) =>
+                                          sum + (day.total_cash_amount || 0),
+                                        0
+                                      );
+                                    const offlineTotal =
+                                      calculateOfflineTotal(revenueData);
+                                    const percentage = (
+                                      (cashTotal / offlineTotal) *
+                                      100
+                                    ).toFixed(1);
+                                    return ` (${percentage}%)`;
+                                  })()}
+                                </span>
+                              </div>
+                              <div className="grid grid-cols-3 gap-2 text-sm">
+                                <div>
+                                  <p className="text-gray-500">매출</p>
+                                  <p>
+                                    {revenueData.hometax_cash_receipts
+                                      .reduce(
+                                        (sum, day) =>
+                                          sum + (day.total_cash_amount || 0),
+                                        0
+                                      )
+                                      .toLocaleString()}
+                                    원
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className="text-gray-500">발행건수</p>
+                                  <p>
+                                    {revenueData.hometax_cash_receipts
+                                      .reduce(
+                                        (sum, day) =>
+                                          sum + (day.issued_count || 0),
+                                        0
+                                      )
+                                      .toLocaleString()}
+                                    건
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className="text-gray-500">미발행건수</p>
+                                  <p>
+                                    {revenueData.hometax_cash_receipts
+                                      .reduce(
+                                        (sum, day) =>
+                                          sum + (day.non_issued_count || 0),
+                                        0
+                                      )
+                                      .toLocaleString()}
+                                    건
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* 세금계산서 */}
+                          {revenueData.tax_invoices && (
+                            <div className="space-y-2">
+                              <div className="flex justify-between items-center">
+                                <span className="text-sm font-medium">
+                                  세금계산서
+                                </span>
+                              </div>
+                              <div className="grid grid-cols-3 gap-2 text-sm">
+                                <div>
+                                  <p className="text-gray-500">매출</p>
+                                  <p>
+                                    {revenueData.tax_invoices.total_issued_amount.toLocaleString()}
+                                    원
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1977,9 +2280,102 @@ export default function SimData() {
             )}
           </div>
         );
+      case 5:
+        return (
+          <div className="flex flex-col items-center justify-center min-h-[300px] space-y-6">
+            <div className="text-center">
+              <h3 className="text-2xl font-semibold mb-4">
+                {getSelectedUserName()} 데이터 생성 완료
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                모든 데이터 생성 및 분석이 완료되었습니다.
+              </p>
+            </div>
+            <Button
+              onClick={() => {
+                // 모든 상태 초기화
+                setSelectedUser("");
+                setCurrentStep(0);
+                setSteps({
+                  step1: { status: "ready", completed: false },
+                  step2: { status: "ready", completed: false },
+                  step3: { status: "ready", completed: false },
+                  step4: { status: "ready", completed: false },
+                });
+                setFormData({
+                  businessDays: ["mon", "tue", "wed", "thu", "fri"],
+                  isWeekendOpen: false,
+                  weekdayOpenTime: "10:00",
+                  weekdayCloseTime: "22:00",
+                  weekendOpenTime: "10:00",
+                  weekendCloseTime: "22:00",
+                  hasDelivery: false,
+                  deliveryRatio: "30",
+                  baeminRatio: "55",
+                  coupangEatsRatio: "40",
+                  yogiyoRatio: "5",
+                  hasOnlineSales: false,
+                  onlineSalesRatio: "20",
+                  smartStoreRatio: "35",
+                  coupangRatio: "50",
+                  gmarketRatio: "15",
+                  trend: "stable",
+                  trendRate: "5",
+                  trendDeviation: "10",
+                  seasonality: "low",
+                  locationType: "residential",
+                  startDate: "",
+                  endDate: "",
+                  zoneRange: "same",
+                  sectorRange: "same",
+                  revenueRange: "1",
+                });
+                setGenerationResult(null);
+                setRevenueData(null);
+                setComparisonResult(null);
+                setCollectionData(null);
+              }}
+              className="w-full max-w-xs flex items-center gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              새로운 데이터 생성
+            </Button>
+          </div>
+        );
       default:
         return null;
     }
+  };
+
+  const handlePresetClick = () => {
+    const businessDays = ["mon", "tue", "wed", "thu", "fri", "sat"];
+    const weekdayAvgSales = 500000;
+    const hasWeekend = businessDays.some(
+      (day) => day === "sat" || day === "sun"
+    );
+    const today = new Date();
+    const threeMonthsAgo = new Date(today);
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+
+    setFormData({
+      ...formData,
+      businessDays,
+      weekdayAvgSales,
+      weekendAvgSales: hasWeekend
+        ? Math.round(weekdayAvgSales * 1.7)
+        : undefined,
+      startDate: threeMonthsAgo.toISOString().split("T")[0],
+      endDate: today.toISOString().split("T")[0],
+      hasDelivery: true,
+      deliveryRatio: 30,
+      baeminRatio: 50,
+      coupangEatsRatio: 30,
+      yogiyoRatio: 20,
+      hasOnlineStore: false, // 온라인 스토어 선택 해제
+    });
+
+    // 데이터 생성 버튼으로 스크롤
+    setTimeout(scrollToGenerateButton, 100);
   };
 
   return (
@@ -2136,115 +2532,91 @@ export default function SimData() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => {
-                        const today = new Date();
-                        const oneMonthAgo = new Date(today);
-                        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-                        setFormData({
-                          ...formData,
-                          businessDays: ["mon", "tue", "wed", "thu", "fri"],
-                          isWeekendOpen: false,
-                          weekdayOpenTime: "10:00",
-                          weekdayCloseTime: "22:00",
-                          weekendOpenTime: "10:00",
-                          weekendCloseTime: "22:00",
-                          hasDelivery: true,
-                          deliveryRatio: "30",
-                          baeminRatio: "55",
-                          coupangEatsRatio: "40",
-                          yogiyoRatio: "5",
-                          hasOnlineSales: true,
-                          onlineSalesRatio: "20",
-                          smartStoreRatio: "35",
-                          coupangRatio: "50",
-                          gmarketRatio: "15",
-                          trend: "stable",
-                          trendRate: "5",
-                          trendDeviation: "10",
-                          seasonality: "low",
-                          locationType: "residential",
-                          startDate: oneMonthAgo.toISOString().split("T")[0],
-                          endDate: today.toISOString().split("T")[0],
-                          weekdayAvgSales: "500000",
-                          weekendAvgSales: "500000",
-                        });
-                        setCurrentStep(1);
-                        setTimeout(scrollToGenerateButton, 100);
-                      }}
-                      className="flex items-center gap-1"
+                      onClick={handlePresetClick}
+                      className="flex items-center gap-2"
                     >
-                      <Star className="h-4 w-4" />
-                      <span>사업장 프리셋</span>
+                      <FileText className="h-4 w-4" />
+                      사업장 프리셋
                     </Button>
                   )}
                 </div>
-                <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
-                  {getSelectedUserName()}님의 {currentStep}단계 진행 중입니다
-                </p>
+                {currentStep !== 5 && (
+                  <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
+                    {getSelectedUserName()}님의 {currentStep}단계 진행 중입니다
+                  </p>
+                )}
                 {renderStepContent()}
               </div>
             )}
 
             {/* Navigation Buttons */}
             <div className="flex justify-between">
-              <Button
-                variant="outline"
-                onClick={() => setCurrentStep((prev) => Math.max(1, prev - 1))}
-                disabled={!selectedUser || currentStep <= 1}
-              >
-                이전
-              </Button>
-              <Button
-                onClick={() => {
-                  // 현재 스텝에 따라 다른 동작 수행
-                  switch (currentStep) {
-                    case 1:
-                      if (generationResult?.status === "success") {
-                        setSteps((prev) => ({
-                          ...prev,
-                          step1: { status: "completed", completed: true },
-                          step2: { status: "ready", completed: false },
-                        }));
-                        setCurrentStep(2);
-                      }
-                      break;
-                    case 2:
-                      if (revenueData) {
-                        setSteps((prev) => ({
-                          ...prev,
-                          step2: { status: "completed", completed: true },
-                          step3: { status: "ready", completed: false },
-                        }));
-                        setCurrentStep(3);
-                      }
-                      break;
-                    case 3:
-                      setSteps((prev) => ({
-                        ...prev,
-                        step3: { status: "completed", completed: true },
-                        step4: { status: "ready", completed: false },
-                      }));
-                      setCurrentStep(4);
-                      break;
-                    case 4:
-                      // 마지막 단계에서는 아무 동작도 하지 않음
-                      break;
-                    default:
-                      setCurrentStep((prev) => Math.min(4, prev + 1));
+              {currentStep !== 5 && (
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setCurrentStep((prev) => Math.max(1, prev - 1))
                   }
-                }}
-                disabled={
-                  !selectedUser ||
-                  (currentStep === 1 &&
-                    (!generationResult ||
-                      generationResult.status !== "success")) ||
-                  (currentStep === 2 && !revenueData) ||
-                  (currentStep === 3 && !steps.step3.completed) ||
-                  (currentStep === 4 && !steps.step4.completed)
-                }
-              >
-                {currentStep === 4 && steps.step4.completed ? "완료" : "다음"}
-              </Button>
+                  disabled={!selectedUser || currentStep <= 1}
+                >
+                  이전
+                </Button>
+              )}
+              {currentStep === 5 ? null : (
+                <Button
+                  onClick={() => {
+                    // 현재 스텝에 따라 다른 동작 수행
+                    switch (currentStep) {
+                      case 1:
+                        if (generationResult?.status === "success") {
+                          setSteps((prev) => ({
+                            ...prev,
+                            step1: { status: "completed", completed: true },
+                            step2: { status: "ready", completed: false },
+                          }));
+                          setCurrentStep(2);
+                        }
+                        break;
+                      case 2:
+                        if (revenueData) {
+                          setSteps((prev) => ({
+                            ...prev,
+                            step2: { status: "completed", completed: true },
+                            step3: { status: "ready", completed: false },
+                          }));
+                          setCurrentStep(3);
+                        }
+                        break;
+                      case 3:
+                        setSteps((prev) => ({
+                          ...prev,
+                          step3: { status: "completed", completed: true },
+                          step4: { status: "ready", completed: false },
+                        }));
+                        setCurrentStep(4);
+                        break;
+                      case 4:
+                        if (steps.step4.completed) {
+                          setCurrentStep(5);
+                        }
+                        break;
+                      default:
+                        setCurrentStep((prev) => Math.min(4, prev + 1));
+                    }
+                  }}
+                  disabled={
+                    !selectedUser ||
+                    (currentStep === 1 &&
+                      (!generationResult ||
+                        generationResult.status !== "success")) ||
+                    (currentStep === 2 && !revenueData) ||
+                    (currentStep === 3 && !steps.step3.completed) ||
+                    (currentStep === 4 && !steps.step4.completed)
+                  }
+                >
+                  {currentStep === 4 && steps.step4.completed ? "완료" : "다음"}
+                </Button>
+              )}
             </div>
           </div>
         </div>
