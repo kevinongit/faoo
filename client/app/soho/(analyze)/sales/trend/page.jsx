@@ -425,9 +425,11 @@ export default function Trend() {
     // avgTotalData는 이미 12개월 데이터가 모두 있으므로 수정할 필요 없음
 
     const option = {
-      animation: false,
-      animationDuration: 0,
-      animationDurationUpdate: 0,
+      animation: true,
+      animationDuration: 700,
+      animationDurationUpdate: 500,
+      animationEasing: "cubicInOut",
+      animationEasingUpdate: "cubicInOut",
       tooltip: {
         trigger: "axis",
         axisPointer: {
@@ -492,6 +494,7 @@ export default function Trend() {
         {
           type: "value",
           name: "매출액",
+          boundaryGap: ["0%", "10%"],
           axisLabel: {
             show: false,
             formatter: function (value) {
@@ -515,7 +518,7 @@ export default function Trend() {
             focus: "series",
           },
           symbolSize: 8,
-          smooth: true,
+          smooth: false,
           lineStyle: {
             width: 3,
             color: "#5E7CE2",
