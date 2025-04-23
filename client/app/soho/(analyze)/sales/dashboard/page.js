@@ -134,8 +134,10 @@ export default function SalesSummary() {
                 {currentMonth}월 매출
               </h2>
               <div className="flex flex-col items-center justify-start h-full mt-1">
-                <p className="text-center text-[10px] md:text-sm">
-                  {currentMonth}/{date.getDate()} 까지의 매출
+                <p className="text-center text-[10px] md:text-sm h-[16px] md:h-[20px]">
+                  {currentMonth === date.getMonth() + 1
+                    ? `${currentMonth}/${date.getDate()} 까지의 매출`
+                    : ""}
                 </p>
                 <p className="text-center text-base md:text-lg font-bold text-blue-500">
                   <CountUp
@@ -145,18 +147,14 @@ export default function SalesSummary() {
                     suffix="원"
                   />
                 </p>
-                <p className="text-center text-[10px] md:text-xs text-gray-600 mt-0.5">
-                  {isLoading ? (
-                    "..."
-                  ) : (
-                    <>
-                      {rankData.zone_nm} {rankData.smb_sector} 상위{" "}
-                      <span className="text-red-500 font-bold">
-                        {rankData?.monthInfo?.percentileRank || ""}%
-                      </span>
-                    </>
-                  )}
-                </p>
+                {!isLoading && rankData?.monthInfo?.percentileRank > 0 && (
+                  <p className="text-center text-[10px] md:text-xs text-gray-600 mt-0.5">
+                    {rankData.zone_nm} {rankData.smb_sector} 상위{" "}
+                    <span className="text-red-500 font-bold">
+                      {rankData.monthInfo.percentileRank}%
+                    </span>
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>
