@@ -19,7 +19,7 @@ import useCalendarStore from "@/lib/store/useCalendarStore";
 import { useRouter } from "next/navigation";
 import CountUp from "react-countup";
 import BusinessHeader from "@/components/BusinessHeader";
-import BackHeader from "@/components/BackHeader";
+import HomeHeader from "@/components/HomeHeader";
 
 // 매출/목표/달성률 UI 컴포넌트 (SSR/CSR hydration safe)
 function SalesProgressBar({ goalValue, weekSales }) {
@@ -100,6 +100,8 @@ export default function SohoHome() {
     const currentMonth = "0" + (date.getMonth() + 1);
     setCurrentYear(currentYear);
     setCurrentMonth(currentMonth);
+
+    //isFirstDailySalesLoad.current = true;
   }, []);
 
   // 주간 달력 전주, 다음주 관련 설정
@@ -231,7 +233,7 @@ export default function SohoHome() {
 
       salesTenThousand = Math.floor(dailySales.daily_sales[dateKey] / 10000);
     }
-    return { date, ...rest, salesTenThousand };
+    return { date, ...rest, salesTenThousand, dateKey };
   });
 
   // weekOffset 반영해서 달력 상단 라벨/헤더에서 사용
@@ -320,17 +322,19 @@ export default function SohoHome() {
 
   return (
     <>
-      <BackHeader title="SOHO 홈" />
+      <HomeHeader title="SOHO 홈" />
       <div className="min-h-screen bg-[#F3F5FC]">
-        <div className="w-full">
-          <BusinessHeader
-            business_name={business_name}
-            business_number={business_number}
-            sector={smb_sector_en}
-          />
-          <main className="w-full space-y-4 md:px-0 pb-16 mt-[45px]">
+        <div className="w-full pt-[50px]">
+          <div>
+            <BusinessHeader
+              business_name={business_name}
+              business_number={business_number}
+              sector={smb_sector_en}
+            />
+          </div>
+          <main className="w-full space-y-4 md:px-0 pb-16">
             {showBankingBanner && (
-              <div className="bg-[#E4F2FF] p-4 relative ">
+              <div className="bg-[#E4F2FF] p-4 relative mb-4">
                 <button
                   className="absolute top-2 right-2 text-blue-600 hover:text-blue-800"
                   onClick={() => setShowBankingBanner(false)}
@@ -399,8 +403,8 @@ export default function SohoHome() {
               </div>
             )}
 
-            <div className="space-y-4 px-4">
-              <div className="bg-white rounded-[20px] p-4 shadow-sm mt-4">
+            <div className="space-y-4 px-4 mt-4">
+              <div className="bg-white rounded-[20px] p-4 shadow-sm">
                 <div className="flex justify-between items-center mb-4">
                   <div className="flex items-center gap-2">
                     <h3 className="font-medium">이번주 매출 현황</h3>
@@ -479,7 +483,17 @@ export default function SohoHome() {
                       key={index}
                       className={`text-center p-1 ${
                         date.isToday ? "bg-indigo-50 rounded" : ""
-                      }`}
+                      } ${date.salesTenThousand > 0 ? "cursor-pointer" : ""}`}
+                      onClick={() => {
+                        if (date.salesTenThousand > 0) {
+                          router.push(
+                            `/soho/sales/daily-detail?date=${date.dateKey.replaceAll(
+                              "-",
+                              ""
+                            )}`
+                          );
+                        }
+                      }}
                     >
                       {date.day}
                       <div
@@ -536,11 +550,15 @@ export default function SohoHome() {
                     </p>
                     <div className="text-xs text-gray-500 mt-1 flex items-center justify-center gap-2">
                       <span className="text-xs text-gray-500">
-                        사용계좌 설정
+                        사용계좌
+                        <br />
+                        설정
                       </span>
                       <span className="text-xs text-gray-500">|</span>
                       <span className="text-xs text-gray-500">
-                        입금계좌변경
+                        입금계좌
+                        <br />
+                        변경
                       </span>
                     </div>
                   </div>
