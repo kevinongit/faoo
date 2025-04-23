@@ -13,7 +13,7 @@ async function connectToDatabase() {
 
 /**
  * @swagger
- * /sales/month:
+ * /api/dashboard/sales/month:
  *   post:
  *     tags:
  *       - dashboardRouters.js
@@ -114,7 +114,7 @@ dashboardRouter.post("/sales/month", async (req, res) => {
 
 /**
  * @swagger
- * /sales/comparison:
+ * /api/dashboard/sales/comparison:
  *   post:
  *     tags:
  *       - dashboardRouters.js
@@ -248,7 +248,7 @@ dashboardRouter.post("/sales/comparison", async (req, res) => {
 
 /**
  * @swagger
- * /sales/daily:
+ * /api/dashboard/sales/daily:
  *   post:
  *     tags:
  *       - dashboardRouters.js
@@ -339,7 +339,7 @@ dashboardRouter.post("/sales/daily", async (req, res) => {
 
 /**
  * @swagger
- * /sales/monthly_comparison:
+ * /api/dashboard/sales/monthly_comparison:
  *   get:
  *     tags:
  *       - dashboardRouters.js

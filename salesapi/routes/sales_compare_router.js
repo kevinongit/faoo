@@ -19,7 +19,7 @@ async function connectToDB() {
 
 /**
  * @swagger
- * /salesRanking:
+ * /compareapi/salesRanking:
  *   post:
  *     tags:
  *       - sales_compare_router.js

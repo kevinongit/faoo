@@ -19,7 +19,7 @@ async function connectToDatabase() {
 
 /**
  * @swagger
- * /hometax/hometax_sales_invoices:
+ * /api/hometax/hometax_sales_invoices:
  *   post:
  *     tags:
  *       - routes.js
@@ -60,7 +60,7 @@ router.post("/hometax/hometax_sales_invoices", async (req, res) => {
 
 /**
  * @swagger
- * /hometax/hometax_vat_reports:
+ * /api/hometax/hometax_vat_reports:
  *   post:
  *     tags:
  *       - routes.js
@@ -102,7 +102,7 @@ router.post("/hometax/hometax_vat_reports", async (req, res) => {
 
 /**
  * @swagger
- * /hometax/hometax_vat_data:
+ * /api/hometax/hometax_vat_data:
  *   post:
  *     tags:
  *       - routes.js
@@ -144,7 +144,7 @@ router.post("/hometax/hometax_vat_data", async (req, res) => {
 
 /**
  * @swagger
- * /hometax/hometax_vat_summaries:
+ * /api/hometax/hometax_vat_summaries:
  *   post:
  *     tags:
  *       - routes.js
@@ -186,7 +186,7 @@ router.post("/hometax/hometax_vat_summaries", async (req, res) => {
 
 /**
  * @swagger
- * /coupangeats/coupangeats_seller_info:
+ * /api/coupangeats/coupangeats_seller_info:
  *   post:
  *     tags:
  *       - routes.js
@@ -228,7 +228,7 @@ router.post("/coupangeats/coupangeats_seller_info", async (req, res) => {
 
 /**
  * @swagger
- * /coupangeats/coupangeats_vat_reports:
+ * /api/coupangeats/coupangeats_vat_reports:
  *   post:
  *     tags:
  *       - routes.js
@@ -270,7 +270,7 @@ router.post("/coupangeats/coupangeats_vat_reports", async (req, res) => {
 
 /**
  * @swagger
- * /naver/naver_seller_info:
+ * /api/naver/naver_seller_info:
  *   post:
  *     tags:
  *       - routes.js
@@ -312,7 +312,7 @@ router.post("/naver/naver_seller_info", async (req, res) => {
 
 /**
  * @swagger
- * /naver/naver_vat_reports:
+ * /api/naver/naver_vat_reports:
  *   post:
  *     tags:
  *       - routes.js
@@ -354,7 +354,7 @@ router.post("/naver/naver_vat_reports", async (req, res) => {
 
 /**
  * @swagger
- * /zeropay/zeropay_merchant_info:
+ * /api/zeropay/zeropay_merchant_info:
  *   post:
  *     tags:
  *       - routes.js
@@ -396,7 +396,7 @@ router.post("/zeropay/zeropay_merchant_info", async (req, res) => {
 
 /**
  * @swagger
- * /zeropay/zeropay_payment_history:
+ * /api/zeropay/zeropay_payment_history:
  *   post:
  *     tags:
  *       - routes.js
@@ -438,7 +438,7 @@ router.post("/zeropay/zeropay_payment_history", async (req, res) => {
 
 /**
  * @swagger
- * /zeropay/zeropay_deposit_schedule:
+ * /api/zeropay/zeropay_deposit_schedule:
  *   post:
  *     tags:
  *       - routes.js
