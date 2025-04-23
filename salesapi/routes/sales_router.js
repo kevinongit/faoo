@@ -96,7 +96,7 @@ async function getSalesData(business_number, start_date, end_date) {
  * /sales/last7daySales:
  *   post:
  *     tags:
- *       - Sales
+ *       - sales_router.js
  *     summary: 최근 7일간 매출 조회
  *     description: 사업자 번호와 기준 날짜를 기준으로 최근 7일간 오프라인 및 온라인 매출을 조회합니다.
  *     requestBody:
@@ -181,7 +181,7 @@ router.post("/last7daySales", async (req, res) => {
  * /sales/daySales:
  *   post:
  *     tags:
- *       - Sales
+ *       - sales_router.js
  *     summary: 특정 날짜 매출 조회
  *     description: 사업자 번호와 날짜를 기준으로 해당 날짜의 오프라인 및 온라인 매출 내역을 모두 조회합니다.
  *     requestBody:
@@ -261,7 +261,7 @@ router.post("/daySales", async (req, res) => {
  * /sales/weekSales:
  *   post:
  *     tags:
- *       - Sales
+ *       - sales_router.js
  *     summary: 주간 매출 비교 조회
  *     description: 기준 날짜와 주 오프셋을 받아 해당 주, 1주 전, 1년 전 동일 주의 매출 데이터를 모두 조회합니다.
  *     requestBody:
@@ -393,7 +393,7 @@ router.post("/weekSales", async (req, res) => {
  * /sales/monthSales:
  *   post:
  *     tags:
- *       - Sales
+ *       - sales_router.js
  *     summary: 월별 매출 데이터 조회
  *     description: 특정 사업자의 월별 매출 데이터(오프라인, 온라인 포함)를 조회합니다.
  *     requestBody:
@@ -544,7 +544,7 @@ router.post("/monthSales", async (req, res) => {
  * /sales/totalSales:
  *   post:
  *     tags:
- *       - Sales
+ *       - sales_router.js
  *     summary: 총 매출 조회
  *     description: 사업자 번호를 기준으로 전체 기간의 모든 오프라인 및 온라인 매출 레코드를 조회합니다.
  *     requestBody:
@@ -596,7 +596,7 @@ router.post("/totalSales", async (req, res) => {
  * /sales/dailySalesDetail:
  *   post:
  *     tags:
- *       - Sales
+ *       - sales_router.js
  *     summary: 일별 매출 상세 조회
  *     description: 특정 날짜의 매출을 성별, 연령대, 시간대, 플랫폼별로 집계하여 통계 정보를 제공합니다.
  *     requestBody:

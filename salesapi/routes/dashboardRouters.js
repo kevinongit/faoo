@@ -16,7 +16,7 @@ async function connectToDatabase() {
  * /sales/month:
  *   post:
  *     tags:
- *       - Dashboard
+ *       - dashboardRouters.js
  *     summary: 이번 달 온라인 & 오프라인 매출 조회
  *     description: 사업자 번호와 선택적 연도, 월을 받아 해당 월의 온라인 및 오프라인 매출 합계를 반환합니다.
  *     requestBody:
@@ -117,7 +117,7 @@ dashboardRouter.post("/sales/month", async (req, res) => {
  * /sales/comparison:
  *   post:
  *     tags:
- *       - Dashboard
+ *       - dashboardRouters.js
  *     summary: 오늘, 어제, 이틀 전 및 작년 어제 매출 비교 조회
  *     description: 사업자 번호를 받아 오늘, 어제, 이틀 전 및 작년 어제의 온라인과 오프라인 매출 합계를 반환합니다.
  *     requestBody:
@@ -251,7 +251,7 @@ dashboardRouter.post("/sales/comparison", async (req, res) => {
  * /sales/daily:
  *   post:
  *     tags:
- *       - Dashboard
+ *       - dashboardRouters.js
  *     summary: 특정 연도-월 일별 매출 요약 조회
  *     description: 사업자 번호, 연도, 월을 받아 해당 월의 날짜별 매출 합계를 반환합니다.
  *     requestBody:
@@ -342,7 +342,7 @@ dashboardRouter.post("/sales/daily", async (req, res) => {
  * /sales/monthly_comparison:
  *   get:
  *     tags:
- *       - Dashboard
+ *       - dashboardRouters.js
  *     summary: 이번 달과 전달 총 매출 비교 조회
  *     description: 사업자 번호를 쿼리 파라미터로 받아 이번 달과 전달의 총 매출 및 증감률을 반환합니다.
  *     parameters:

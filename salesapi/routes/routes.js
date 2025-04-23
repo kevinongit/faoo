@@ -22,7 +22,7 @@ async function connectToDatabase() {
  * /hometax/hometax_sales_invoices:
  *   post:
  *     tags:
- *       - Hometax
+ *       - routes.js
  *     summary: 홈택스 매출 세금계산서 조회
  *     description: 사업자 번호로 홈택스 매출 세금계산서를 조회합니다.
  *     requestBody:
@@ -63,7 +63,7 @@ router.post("/hometax/hometax_sales_invoices", async (req, res) => {
  * /hometax/hometax_vat_reports:
  *   post:
  *     tags:
- *       - Hometax
+ *       - routes.js
  *     summary: 홈택스 부가세 신고 내역 조회
  *     description: 사업자 번호로 홈택스 부가세 신고 내역을 조회합니다.
  *     requestBody:
@@ -105,7 +105,7 @@ router.post("/hometax/hometax_vat_reports", async (req, res) => {
  * /hometax/hometax_vat_data:
  *   post:
  *     tags:
- *       - Hometax
+ *       - routes.js
  *     summary: 홈택스 부가세 상세 데이터 조회
  *     description: 사업자 번호로 홈택스 부가세 상세 데이터를 조회합니다.
  *     requestBody:
@@ -147,7 +147,7 @@ router.post("/hometax/hometax_vat_data", async (req, res) => {
  * /hometax/hometax_vat_summaries:
  *   post:
  *     tags:
- *       - Hometax
+ *       - routes.js
  *     summary: 홈택스 부가세 요약 조회
  *     description: 사업자 번호로 홈택스 부가세 요약을 조회합니다.
  *     requestBody:
@@ -189,7 +189,7 @@ router.post("/hometax/hometax_vat_summaries", async (req, res) => {
  * /coupangeats/coupangeats_seller_info:
  *   post:
  *     tags:
- *       - CoupangEats
+ *       - routes.js
  *     summary: 쿠팡이츠 판매자 정보 조회
  *     description: 사업자 번호로 쿠팡이츠 판매자 정보를 조회합니다.
  *     requestBody:
@@ -231,7 +231,7 @@ router.post("/coupangeats/coupangeats_seller_info", async (req, res) => {
  * /coupangeats/coupangeats_vat_reports:
  *   post:
  *     tags:
- *       - CoupangEats
+ *       - routes.js
  *     summary: 쿠팡이츠 부가세 신고 내역 조회
  *     description: 사업자 번호로 쿠팡이츠 부가세 신고 내역을 조회합니다.
  *     requestBody:
@@ -273,7 +273,7 @@ router.post("/coupangeats/coupangeats_vat_reports", async (req, res) => {
  * /naver/naver_seller_info:
  *   post:
  *     tags:
- *       - Naver
+ *       - routes.js
  *     summary: 네이버 판매자 정보 조회
  *     description: 사업자 번호로 네이버 판매자 정보를 조회합니다.
  *     requestBody:
@@ -315,7 +315,7 @@ router.post("/naver/naver_seller_info", async (req, res) => {
  * /naver/naver_vat_reports:
  *   post:
  *     tags:
- *       - Naver
+ *       - routes.js
  *     summary: 네이버 부가세 신고 내역 조회
  *     description: 사업자 번호로 네이버 부가세 신고 내역을 조회합니다.
  *     requestBody:
@@ -357,7 +357,7 @@ router.post("/naver/naver_vat_reports", async (req, res) => {
  * /zeropay/zeropay_merchant_info:
  *   post:
  *     tags:
- *       - ZeroPay
+ *       - routes.js
  *     summary: 제로페이 가맹점 정보 조회
  *     description: 사업자 번호로 제로페이 가맹점 정보를 조회합니다.
  *     requestBody:
@@ -399,7 +399,7 @@ router.post("/zeropay/zeropay_merchant_info", async (req, res) => {
  * /zeropay/zeropay_payment_history:
  *   post:
  *     tags:
- *       - ZeroPay
+ *       - routes.js
  *     summary: 제로페이 결제 내역 조회
  *     description: 사업자 번호로 제로페이 결제 내역을 조회합니다.
  *     requestBody:
@@ -441,7 +441,7 @@ router.post("/zeropay/zeropay_payment_history", async (req, res) => {
  * /zeropay/zeropay_deposit_schedule:
  *   post:
  *     tags:
- *       - ZeroPay
+ *       - routes.js
  *     summary: 제로페이 입금 스케줄 조회
  *     description: 사업자 번호로 제로페이 입금 스케줄을 조회합니다.
  *     requestBody:

@@ -22,7 +22,7 @@ async function connectToDB() {
  * /salesRanking:
  *   post:
  *     tags:
- *       - SalesRanking
+ *       - sales_compare_router.js
  *     summary: 매출 순위 조회
  *     description: 사업자 번호와 월을 받아 해당 지역구 및 업종 내 매출 순위를 계산합니다.
  *     requestBody:
