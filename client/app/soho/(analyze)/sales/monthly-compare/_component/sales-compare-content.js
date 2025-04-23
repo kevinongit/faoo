@@ -173,7 +173,7 @@ export default function SalesCompareContent() {
       <BusinessHeader
         business_name={user?.business_name}
         business_number={user?.business_number}
-        sector={user?.sector}
+        sector={user?.smb_sector_en}
       />
 
       <div className="container mx-auto p-3 pt-0 pb-20">
@@ -199,11 +199,11 @@ export default function SalesCompareContent() {
           </CardHeader>
           <CardContent className="p-0 pb-1">
             <div className="flex justify-start gap-4 items-center relative">
-              <div className="flex-1 max-w-[200px] ml-10">
+              <div className="flex-1 max-w-[200px]">
                 <svg ref={ref} className="block mx-auto" />
               </div>
-              <div className="flex-1 flex flex-col items-center pt-12 relative">
-                <div className="absolute top-[20px] left-1/2 transform -translate-x-1/2 px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-xs font-bold shadow-sm border border-blue-300 mb-5 mt-[-30px]">
+              <div className="flex flex-col items-center pt-0">
+                <div className=" w-[80px] px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-xs font-bold shadow-sm border border-blue-300 mb-5 text-center">
                   {`상위 ${rankData?.monthInfo?.percentileRank || ""}%`}
                 </div>
                 <p className="text-[13px] -mt-2 text-gray-700 font-medium leading-tight text-center">
@@ -230,12 +230,10 @@ export default function SalesCompareContent() {
 
         <Card className="mb-6 mt-7 shadow-md border border-gray-300 rounded-lg p-5 pt-7 relative">
           <CardHeader className="flex p-0 justify-between items-start">
-            <CardTitle className="text-lg sm:text-xl font-semibold text-purple-700">
-              {`우리가게는 ${rankData.zone_nm} ${
-                rankData.smb_sector
-              } 사업장의 ${Number(rankData.base_month)}월 평균 매출액${
-                rankData.compareStr
-              }`}
+            <CardTitle className="text-base sm:text-xl font-semibold text-purple-700">
+              {`${rankData.zone_nm} ${rankData.smb_sector} 사업장의 ${Number(
+                rankData.base_month
+              )}월 평균 매출액${rankData.compareStr}`}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0 pb-1">
@@ -253,12 +251,14 @@ export default function SalesCompareContent() {
             </div>
           </CardContent>
           <CardContent className="p-0 pb-1">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+            <div className="overflow-x-auto rounded-lg shadow-sm border border-gray-200">
+              <table className="w-full text-left border-collapse bg-white text-sm">
                 <thead>
-                  <tr className="bg-blue-50 text-gray-700">
-                    <th className="p-3 text-center font-semibold">기준</th>
-                    <th className="p-3 text-center font-semibold">
+                  <tr className="bg-gradient-to-r from-blue-50 to-blue-100">
+                    <th className="py-3 px-4 text-left font-semibold text-gray-700 border-b border-gray-200">
+                      기준
+                    </th>
+                    <th className="py-3 px-4 text-right font-semibold text-gray-700 border-b border-gray-200">
                       평균 매출액 (원)
                     </th>
                   </tr>
@@ -272,16 +272,23 @@ export default function SalesCompareContent() {
                       .map((item, index) => (
                         <tr
                           key={index}
-                          className={`border-b hover:bg-gray-100 transition ${
-                            index === rankData.monthInfo.self_rankIdx
-                              ? "bg-yellow-50"
-                              : index % 2 === 0
-                              ? "bg-gray-50"
-                              : ""
-                          }`}
+                          className={`
+                            border-b border-gray-100 last:border-b-0
+                            transition duration-150 ease-in-out
+                            hover:bg-blue-50/30
+                            ${
+                              index === rankData.monthInfo.self_rankIdx
+                                ? "bg-yellow-50/70 hover:bg-yellow-50"
+                                : index % 2 === 0
+                                ? "bg-gray-50/30"
+                                : "bg-white"
+                            }
+                          `}
                         >
-                          <td className="p-3 text-left pl-6">{item.keyNm}</td>
-                          <td className="text-right font-semibold min-w-[130px]">
+                          <td className="py-2.5 px-4 text-gray-700">
+                            {item.keyNm}
+                          </td>
+                          <td className="py-2.5 px-4 text-right font-medium text-gray-900 min-w-[150px]">
                             {Number(item.value).toLocaleString()} 원
                           </td>
                         </tr>
