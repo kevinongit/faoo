@@ -57,7 +57,7 @@
       "console": "integratedTerminal",
       "justMyCode": true,
       "cwd": "${workspaceFolder}/datagen/dgsv",
-      "python": "/opt/homebrew/bin/python3.11"
+      "python": "${command:python.interpreterPath}"
       // "env": {
       //   "PYTHONPATH": "${workspaceFolder}/datagen/dgsv"
       // }
@@ -69,7 +69,8 @@
       "program": "${workspaceFolder}/analysis/main.py",
       "console": "integratedTerminal",
       "justMyCode": true,
-      "cwd": "${workspaceFolder}/analysis"
+      "cwd": "${workspaceFolder}/analysis",
+      "python": "${command:python.interpreterPath}"
     },
 
     {
