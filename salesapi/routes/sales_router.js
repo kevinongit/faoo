@@ -1,3 +1,10 @@
+/**
+ * @swagger
+ * tags:
+ *   name: sales_router.js
+ *   description: 매출 관련 API
+ */
+
 const express = require("express");
 const router = express.Router();
 const { MongoClient } = require("mongodb");
@@ -84,6 +91,53 @@ async function getSalesData(business_number, start_date, end_date) {
   return result;
 }
 
+/**
+ * @swagger
+ * /sales/last7daySales:
+ *   post:
+ *     tags:
+ *       - Sales
+ *     summary: 최근 7일간 매출 조회
+ *     description: 사업자 번호와 기준 날짜를 기준으로 최근 7일간 오프라인 및 온라인 매출을 조회합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - business_number
+ *               - base_date
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 example: "1001010001"
+ *                 description: 사업자 번호
+ *               base_date:
+ *                 type: string
+ *                 example: "20250423"
+ *                 description: 기준 날짜 (YYYYMMDD)
+ *     responses:
+ *       200:
+ *         description: 최근 7일 매출 데이터 배열
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result_7day:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       sale_date:
+ *                         type: string
+ *                         description: 판매 날짜 (YYYYMMDD)
+ *                       sum_amt:
+ *                         type: number
+ *                         nullable: true
+ *                         description: 매출 합계
+ */
 router.post("/last7daySales", async (req, res) => {
   try {
     const { business_number, base_date } = req.body;
@@ -122,6 +176,46 @@ router.post("/last7daySales", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /sales/daySales:
+ *   post:
+ *     tags:
+ *       - Sales
+ *     summary: 특정 날짜 매출 조회
+ *     description: 사업자 번호와 날짜를 기준으로 해당 날짜의 오프라인 및 온라인 매출 내역을 모두 조회합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - business_number
+ *               - base_date
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 example: "1001010001"
+ *                 description: 사업자 번호
+ *               base_date:
+ *                 type: string
+ *                 example: "20250423"
+ *                 description: 조회 날짜 (YYYYMMDD)
+ *     responses:
+ *       200:
+ *         description: 해당 날짜 매출 내역 배열
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result_day:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     description: 개별 판매 레코드
+ */
 router.post("/daySales", async (req, res) => {
   try {
     const { business_number, base_date } = req.body;
@@ -162,6 +256,49 @@ router.post("/daySales", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /sales/weekSales:
+ *   post:
+ *     tags:
+ *       - Sales
+ *     summary: 주간 매출 비교 조회
+ *     description: 기준 날짜와 주 오프셋을 받아 해당 주, 1주 전, 1년 전 동일 주의 매출 데이터를 모두 조회합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - business_number
+ *               - base_date
+ *               - week_offset
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 example: "1001010001"
+ *               base_date:
+ *                 type: string
+ *                 example: "20250423"
+ *               week_offset:
+ *                 type: integer
+ *                 description: 기준 주 오프셋 (0: 기준 주, 1: 다음 주, -1: 이전 주 등)
+ *     responses:
+ *       200:
+ *         description: 기준, 1주 전, 1년 전 주간 매출 데이터
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result_base:
+ *                   type: array
+ *                 result_7day:
+ *                   type: array
+ *                 result_prevYear:
+ *                   type: array
+ */
 router.post("/weekSales", async (req, res) => {
   try {
     const { business_number, base_date, week_offset } = req.body;
@@ -251,6 +388,51 @@ router.post("/weekSales", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /sales/monthSales:
+ *   post:
+ *     tags:
+ *       - Sales
+ *     summary: 월별 매출 데이터 조회
+ *     description: 특정 사업자의 월별 매출 데이터(오프라인, 온라인 포함)를 조회합니다.
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 example: "1001010001"
+ *               from_date:
+ *                 type: string
+ *                 description: 조회 시작 월 (YYYYMM)
+ *                 example: "202501"
+ *               to_date:
+ *                 type: string
+ *                 description: 조회 종료 월 (YYYYMM)
+ *                 example: "202512"
+ *     responses:
+ *       200:
+ *         description: 월별 매출 데이터 배열
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   sale_month:
+ *                     type: string
+ *                   sum_amt:
+ *                     type: number
+ *                   off_amt:
+ *                     type: number
+ *                   on_amt:
+ *                     type: number
+ */
 router.post("/monthSales", async (req, res) => {
   try {
     const { business_number, from_date, to_date } = req.body;
@@ -357,6 +539,36 @@ router.post("/monthSales", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /sales/totalSales:
+ *   post:
+ *     tags:
+ *       - Sales
+ *     summary: 총 매출 조회
+ *     description: 사업자 번호를 기준으로 전체 기간의 모든 오프라인 및 온라인 매출 레코드를 조회합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - business_number
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 example: "1001010001"
+ *     responses:
+ *       200:
+ *         description: 전체 매출 레코드 배열
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ */
 router.post("/totalSales", async (req, res) => {
   try {
     const { business_number } = req.body;
@@ -379,6 +591,38 @@ router.post("/totalSales", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /sales/dailySalesDetail:
+ *   post:
+ *     tags:
+ *       - Sales
+ *     summary: 일별 매출 상세 조회
+ *     description: 특정 날짜의 매출을 성별, 연령대, 시간대, 플랫폼별로 집계하여 통계 정보를 제공합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - business_number
+ *               - base_date
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 example: "1001010001"
+ *               base_date:
+ *                 type: string
+ *                 example: "20250423"
+ *     responses:
+ *       200:
+ *         description: 일별 매출 통계 정보 객체
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ */
 router.post("/dailySalesDetail", async (req, res) => {
   try {
     const { business_number, base_date } = req.body;

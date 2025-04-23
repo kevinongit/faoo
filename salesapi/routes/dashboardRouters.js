@@ -11,6 +11,34 @@ async function connectToDatabase() {
   return client.db();
 }
 
+/**
+ * @swagger
+ * /sales/month:
+ *   post:
+ *     tags:
+ *       - Dashboard
+ *     summary: 이번 달 온라인 & 오프라인 매출 조회
+ *     description: 사업자 번호와 선택적 연도, 월을 받아 해당 월의 온라인 및 오프라인 매출 합계를 반환합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - business_number
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 example: "1001010001"
+ *               year:
+ *                 type: integer
+ *               month:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: 월별 매출 응답
+ */
 // 이번 달 온라인 & 오프라인 매출 조회 API
 dashboardRouter.post("/sales/month", async (req, res) => {
   try {
@@ -84,6 +112,30 @@ dashboardRouter.post("/sales/month", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /sales/comparison:
+ *   post:
+ *     tags:
+ *       - Dashboard
+ *     summary: 오늘, 어제, 이틀 전 및 작년 어제 매출 비교 조회
+ *     description: 사업자 번호를 받아 오늘, 어제, 이틀 전 및 작년 어제의 온라인과 오프라인 매출 합계를 반환합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - business_number
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 example: "1001010001"
+ *     responses:
+ *       200:
+ *         description: 매출 비교 데이터 응답
+ */
 dashboardRouter.post("/sales/comparison", async (req, res) => {
   try {
     const { business_number } = req.body;
@@ -194,6 +246,36 @@ dashboardRouter.post("/sales/comparison", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /sales/daily:
+ *   post:
+ *     tags:
+ *       - Dashboard
+ *     summary: 특정 연도-월 일별 매출 요약 조회
+ *     description: 사업자 번호, 연도, 월을 받아 해당 월의 날짜별 매출 합계를 반환합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - business_number
+ *               - year
+ *               - month
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 example: "1001010001"
+ *               year:
+ *                 type: integer
+ *               month:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: 일별 매출 요약 응답
+ */
 dashboardRouter.post("/sales/daily", async (req, res) => {
   try {
     const { business_number, year, month } = req.body;
@@ -255,6 +337,26 @@ dashboardRouter.post("/sales/daily", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /sales/monthly_comparison:
+ *   get:
+ *     tags:
+ *       - Dashboard
+ *     summary: 이번 달과 전달 총 매출 비교 조회
+ *     description: 사업자 번호를 쿼리 파라미터로 받아 이번 달과 전달의 총 매출 및 증감률을 반환합니다.
+ *     parameters:
+ *       - in: query
+ *         name: business_number
+ *         schema:
+ *           type: string
+ *           example: "1001010001"
+ *         required: true
+ *         description: 사업자 번호
+ *     responses:
+ *       200:
+ *         description: 월별 매출 비교 응답
+ */
 // 이번달과 전달 총 매출 API
 dashboardRouter.get("/sales/monthly_comparison", async (req, res) => {
   try {

@@ -17,6 +17,31 @@ async function connectToDatabase() {
   return client.db();
 }
 
+/**
+ * @swagger
+ * /hometax/hometax_sales_invoices:
+ *   post:
+ *     tags:
+ *       - Hometax
+ *     summary: 홈택스 매출 세금계산서 조회
+ *     description: 사업자 번호로 홈택스 매출 세금계산서를 조회합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - business_number
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 example: "1001010001"
+ *                 description: 사업자 번호
+ *     responses:
+ *       200:
+ *         description: 세금계산서 배열
+ */
 router.post("/hometax/hometax_sales_invoices", async (req, res) => {
   try {
     const { business_number } = req.body;
@@ -33,6 +58,31 @@ router.post("/hometax/hometax_sales_invoices", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /hometax/hometax_vat_reports:
+ *   post:
+ *     tags:
+ *       - Hometax
+ *     summary: 홈택스 부가세 신고 내역 조회
+ *     description: 사업자 번호로 홈택스 부가세 신고 내역을 조회합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - business_number
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 example: "1001010001"
+ *                 description: 사업자 번호
+ *     responses:
+ *       200:
+ *         description: 세금계산서 배열
+ */
 // HomeTax VAT Reports
 router.post("/hometax/hometax_vat_reports", async (req, res) => {
   try {
@@ -50,6 +100,31 @@ router.post("/hometax/hometax_vat_reports", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /hometax/hometax_vat_data:
+ *   post:
+ *     tags:
+ *       - Hometax
+ *     summary: 홈택스 부가세 상세 데이터 조회
+ *     description: 사업자 번호로 홈택스 부가세 상세 데이터를 조회합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - business_number
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 example: "1001010001"
+ *                 description: 사업자 번호
+ *     responses:
+ *       200:
+ *         description: 세금계산서 배열
+ */
 // HomeTax VAT Data
 router.post("/hometax/hometax_vat_data", async (req, res) => {
   try {
@@ -67,6 +142,31 @@ router.post("/hometax/hometax_vat_data", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /hometax/hometax_vat_summaries:
+ *   post:
+ *     tags:
+ *       - Hometax
+ *     summary: 홈택스 부가세 요약 조회
+ *     description: 사업자 번호로 홈택스 부가세 요약을 조회합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - business_number
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 example: "1001010001"
+ *                 description: 사업자 번호
+ *     responses:
+ *       200:
+ *         description: 세금계산서 배열
+ */
 // HomeTax VAT Summaries
 router.post("/hometax/hometax_vat_summaries", async (req, res) => {
   try {
@@ -84,6 +184,31 @@ router.post("/hometax/hometax_vat_summaries", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /coupangeats/coupangeats_seller_info:
+ *   post:
+ *     tags:
+ *       - CoupangEats
+ *     summary: 쿠팡이츠 판매자 정보 조회
+ *     description: 사업자 번호로 쿠팡이츠 판매자 정보를 조회합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - business_number
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 example: "1001010001"
+ *                 description: 사업자 번호
+ *     responses:
+ *       200:
+ *         description: 세금계산서 배열
+ */
 // CoupangEats Seller Info
 router.post("/coupangeats/coupangeats_seller_info", async (req, res) => {
   try {
@@ -101,6 +226,31 @@ router.post("/coupangeats/coupangeats_seller_info", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /coupangeats/coupangeats_vat_reports:
+ *   post:
+ *     tags:
+ *       - CoupangEats
+ *     summary: 쿠팡이츠 부가세 신고 내역 조회
+ *     description: 사업자 번호로 쿠팡이츠 부가세 신고 내역을 조회합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - business_number
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 example: "1001010001"
+ *                 description: 사업자 번호
+ *     responses:
+ *       200:
+ *         description: 세금계산서 배열
+ */
 // CoupangEats VAT Reports
 router.post("/coupangeats/coupangeats_vat_reports", async (req, res) => {
   try {
@@ -118,6 +268,31 @@ router.post("/coupangeats/coupangeats_vat_reports", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /naver/naver_seller_info:
+ *   post:
+ *     tags:
+ *       - Naver
+ *     summary: 네이버 판매자 정보 조회
+ *     description: 사업자 번호로 네이버 판매자 정보를 조회합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - business_number
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 example: "1001010001"
+ *                 description: 사업자 번호
+ *     responses:
+ *       200:
+ *         description: 세금계산서 배열
+ */
 // Naver Seller Info
 router.post("/naver/naver_seller_info", async (req, res) => {
   try {
@@ -135,6 +310,31 @@ router.post("/naver/naver_seller_info", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /naver/naver_vat_reports:
+ *   post:
+ *     tags:
+ *       - Naver
+ *     summary: 네이버 부가세 신고 내역 조회
+ *     description: 사업자 번호로 네이버 부가세 신고 내역을 조회합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - business_number
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 example: "1001010001"
+ *                 description: 사업자 번호
+ *     responses:
+ *       200:
+ *         description: 세금계산서 배열
+ */
 // Naver VAT Reports
 router.post("/naver/naver_vat_reports", async (req, res) => {
   try {
@@ -152,6 +352,31 @@ router.post("/naver/naver_vat_reports", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /zeropay/zeropay_merchant_info:
+ *   post:
+ *     tags:
+ *       - ZeroPay
+ *     summary: 제로페이 가맹점 정보 조회
+ *     description: 사업자 번호로 제로페이 가맹점 정보를 조회합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - business_number
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 example: "1001010001"
+ *                 description: 사업자 번호
+ *     responses:
+ *       200:
+ *         description: 세금계산서 배열
+ */
 // ZeroPay Merchant Info
 router.post("/zeropay/zeropay_merchant_info", async (req, res) => {
   try {
@@ -169,6 +394,31 @@ router.post("/zeropay/zeropay_merchant_info", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /zeropay/zeropay_payment_history:
+ *   post:
+ *     tags:
+ *       - ZeroPay
+ *     summary: 제로페이 결제 내역 조회
+ *     description: 사업자 번호로 제로페이 결제 내역을 조회합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - business_number
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 example: "1001010001"
+ *                 description: 사업자 번호
+ *     responses:
+ *       200:
+ *         description: 세금계산서 배열
+ */
 // ZeroPay Payment History
 router.post("/zeropay/zeropay_payment_history", async (req, res) => {
   try {
@@ -186,6 +436,31 @@ router.post("/zeropay/zeropay_payment_history", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /zeropay/zeropay_deposit_schedule:
+ *   post:
+ *     tags:
+ *       - ZeroPay
+ *     summary: 제로페이 입금 스케줄 조회
+ *     description: 사업자 번호로 제로페이 입금 스케줄을 조회합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - business_number
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 example: "1001010001"
+ *                 description: 사업자 번호
+ *     responses:
+ *       200:
+ *         description: 세금계산서 배열
+ */
 // ZeroPay Deposit Schedule
 router.post("/zeropay/zeropay_deposit_schedule", async (req, res) => {
   try {

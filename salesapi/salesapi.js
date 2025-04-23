@@ -4,6 +4,8 @@ const cors = require("cors");
 // const bodyParser = require("body-parser");
 const connectDB = require("./config/db");
 const logger = require("./middleware/logger");
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./config/swagger");
 
 const routes = require("./routes/routes");
 const dashboardRouter = require("./routes/dashboardRouters");
@@ -21,6 +23,9 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Swagger 설정
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes
 app.use("/api", routes);
