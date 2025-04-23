@@ -1,0 +1,59 @@
+I have an existing Python Flask application (serv4.py) that generates small business revenue data, and a corresponding client-side Next.js component (page.js) that sends requests to it. Both files are attached below. The client-side application includes UI elements for parameters (trend, trendRate, seasonality, trendDeviation, locationType) in the formData state, sent to the /gen-smb-revenue endpoint. I need to enhance the serv4.py backend to process these parameters with the following updates while preserving all existing endpoints (/users, /gen-smb-revenue, /fetch-smb-revenue, /do-collect, /comparison-groups) and data formats:
+
+Requested Changes:
+
+Rename trendDeviation to seasonalDeviation:
+In page.js, the client sends trendDeviation (string, percentage, e.g., "10" for 10%) as part of formData. Rename this to seasonalDeviation for clarity in both page.js and serv4.py.
+Update all references in serv4.py to process seasonalDeviation instead of trendDeviation.
+Ensure the client-side UI and request JSON in page.js reflect this renaming (update formData and related UI labels).
+Revenue Growth/Decline Rate:
+The client sends trend (string: "stable", "increasing", "decreasing") and trendRate (string, percentage, e.g., "5" for 5%).
+If trend is "increasing" or "decreasing", apply trendRate as a cumulative percentage change over the period (startDate to endDate) to adjust the base_sales for each day in the /gen-smb-revenue endpoint. For example, a 5% increasing trend over 30 days should gradually increase sales by 5% from start to end.
+If trend is "stable", no adjustment is applied.
+Convert trendRate to a float (e.g., "5" → 0.05) and validate (0 ≤ trendRate ≤ 100).
+Seasonal Strength (Summer/Winter):
+The client sends seasonality (string: "neutral", "summer", "winter") and seasonalDeviation (string, percentage, e.g., "10" for 10%).
+If seasonality is "summer", increase sales by seasonalDeviation during summer months (June-August), with a gradual decrease toward winter (December-February, lowest sales). Use sinusoidal or linear interpolation for smooth transitions.
+If seasonality is "winter", increase sales by seasonalDeviation during winter months (December-February), with a gradual decrease toward summer (June-August, lowest sales).
+If seasonality is "neutral", apply no seasonal effect.
+Convert seasonalDeviation to a float (e.g., "10" → 0.1) and validate (0 ≤ seasonalDeviation ≤ 100).
+Apply the seasonal adjustment consistently to all sales types (card, delivery, cash, tax invoices).
+Regional Characteristics with Revenue-Driven Transaction Counts:
+The client sends locationType (string: "residential", "commercial", "tourist", "mixed").
+Adjust transaction counts and timing in the /gen-smb-revenue endpoint based on locationType, scaling transaction counts proportionally to daily revenue (weekdayAvgSales or weekendAvgSales):
+Residential: Base transaction count 5-10 per day, scaled by revenue (e.g., if weekdayAvgSales is 300,000 KRW, use ~5 transactions; if 600,000 KRW, use ~10). Peak hours 17:00-20:00 (weight: 0.15), other hours (10:00-22:00, weight: 0.05).
+Commercial: Base transaction count 10-20 per day, scaled by revenue (e.g., if weekdayAvgSales is 300,000 KRW, use ~10 transactions; if 600,000 KRW, use ~20). Peak hours 11:00-14:00 (lunch, weight: 0.15) and 17:00-19:00 (after work, weight: 0.15), other hours (9:00-21:00, weight: 0.05).
+Tourist: Base transaction count 8-15 per day, scaled by revenue (e.g., if weekendAvgSales is 500,000 KRW, use ~12 transactions; if 1,000,000 KRW, use ~15). Peak hours 12:00-22:00 (weight: 0.1), with weekend sales boosted by 1.5x.
+Mixed (Residential+Commercial): Base transaction count 8-15 per day, scaled by revenue (e.g., if weekdayAvgSales is 300,000 KRW, use ~8 transactions; if 600,000 KRW, use ~15). Peak hours 11:00-14:00 and 17:00-20:00 (weight: 0.15), other hours (9:00-22:00, weight: 0.05).
+Update the generate_transaction_time function to respect weekdayOpenTime, weekdayCloseTime, weekendOpenTime, and weekendCloseTime from formData, ensuring transaction times fall within operating hours.
+Scale card_txn_count dynamically based on daily revenue, using a linear mapping (e.g., revenue doubles → transaction count doubles within the specified range).
+Delivery Platform Adjustments:
+The client sends deliveryRatio (string, e.g., "30" for 30%), baeminRatio, coupangEatsRatio, and yogiyoRatio (strings, summing to 100%).
+Adjust deliveryRatio based on locationType:
+Tourist: Reduce deliveryRatio by 10% (e.g., 30% → 27%) due to higher in-person transactions.
+Residential: Increase deliveryRatio by 10% (e.g., 30% → 33%) due to prevalent delivery.
+Commercial/Mixed: No adjustment.
+Ensure baeminRatio, coupangEatsRatio, and yogiyoRatio sum to 100% after adjustments.
+Apply seasonal and trend effects to delivery sales consistently with other sales types.
+Convert deliveryRatio and platform ratios to floats (e.g., "30" → 0.3) and validate (0 ≤ ratios ≤ 100).
+Requirements:
+
+Update serv4.py to process the renamed seasonalDeviation (instead of trendDeviation) and other parameters (trend, trendRate, seasonality, locationType) from the request JSON, as sent by page.js.
+Update page.js to rename trendDeviation to seasonalDeviation in formData, UI labels, and request JSON, ensuring consistency with the backend.
+Validate all parameters in serv4.py, returning 400 responses with descriptive messages for invalid values (e.g., non-numeric seasonalDeviation, trendRate > 100).
+Modify the /gen-smb-revenue endpoint to incorporate revenue-driven transaction counts, scaling card_txn_count based on weekdayAvgSales or weekendAvgSales for each locationType.
+Preserve the existing output JSON structure (e.g., card_sales_data, baemin, coupangeats, yogiyo, hometax_cash_receipts, hometax_tax_invoices).
+Update generate_transaction_time to handle region-specific peak hours and transaction counts, constrained by operating hours.
+Adjust delivery platform sales calculations to account for regional and seasonal effects, aligning with the DeliveryRatioSlider in page.js.
+Maintain all existing functionality in serv4.py, including logging, error handling, and MongoDB interactions.
+Update generate_variable_amount if needed to reflect seasonal, regional, or revenue-driven variations.
+Add helper functions in serv4.py for trend adjustments, seasonal effects, and transaction scaling (e.g., calculate_trend_factor, calculate_seasonal_factor, scale_transaction_count).
+Generate two artifacts:
+Updated serv4.py with a new UUID, title "serv4.py", and contentType "text/python".
+Updated page.js with a new UUID, title "page.js", and contentType "text/javascript".
+Do not modify other endpoints in serv4.py unless necessary.
+Provide minimal explanatory text outside the artifact tags.
+Attached Code:
+
+
+Please generate the updated serv4.py and page.js with the requested changes, ensuring compatibility and preserving existing functionality.
