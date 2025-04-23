@@ -25,13 +25,50 @@ CARD_FEE_RATE = 0.02  # 카드사 수수료 2%
 DELIVERY_FEE_RATE = 0.10  # 배달 앱 수수료 10%
 
 # 현실적인 시간 분포 생성 (피크타임 반영)
-def generate_transaction_time(base_date, hour_range=(11, 20)):
-    peak_hours = [11, 12, 13, 17, 18, 19, 20]
-    regular_hours = [h for h in range(hour_range[0], hour_range[1] + 1) if h not in peak_hours]
-    hour = random.choices(peak_hours + regular_hours,
-                         weights=[0.15]*len(peak_hours) + [0.05]*len(regular_hours), k=1)[0]
+def generate_transaction_time(base_date, location_type, is_weekend=False, open_time=None, close_time=None):
+    # Parse operating hours
+    if open_time and close_time:
+        open_hour = int(open_time.split(':')[0])
+        close_hour = int(close_time.split(':')[0])
+    else:
+        open_hour = 9
+        close_hour = 22
+    
+    # Define peak hours and weights for different location types
+    peak_hours = {
+        "residential": [(17, 20)],  # Evening peak
+        "commercial": [(11, 14), (17, 19)],  # Lunch and after-work peaks
+        "tourist": [(12, 22)],  # All day peak
+        "mixed": [(11, 14), (17, 20)]  # Lunch and evening peaks
+    }
+    
+    # Get peak hours for the location type
+    location_peaks = peak_hours[location_type]
+    
+    # Create hour weights
+    hour_weights = []
+    for hour in range(open_hour, close_hour + 1):
+        weight = 0.05  # Base weight for non-peak hours
+        for start, end in location_peaks:
+            if start <= hour <= end:
+                weight = 0.15  # Peak hour weight
+                break
+        hour_weights.append(weight)
+    
+    # Normalize weights
+    total_weight = sum(hour_weights)
+    hour_weights = [w/total_weight for w in hour_weights]
+    
+    # Select hour based on weights
+    hour = random.choices(
+        range(open_hour, close_hour + 1),
+        weights=hour_weights,
+        k=1
+    )[0]
+    
     minute = random.randint(0, 59)
     second = random.randint(0, 59)
+    
     return base_date.replace(hour=hour, minute=minute, second=second)
 
 # 금액에 현실적 변동 추가
@@ -72,6 +109,35 @@ def generate_smb_revenue_direct():
             print("Response:", json.dumps(response[0].json, indent=2, ensure_ascii=False))
             print("==================================\n")
             return response
+
+        # Validate optional parameters
+        trend = data.get('trend', 'stable')
+        if trend not in ['stable', 'increasing', 'decreasing']:
+            return jsonify({'error': 'Invalid trend value'}), 400
+
+        trend_rate = data.get('trendRate', '0')
+        try:
+            trend_rate = float(trend_rate)
+            if not 0 <= trend_rate <= 100:
+                return jsonify({'error': 'trendRate must be between 0 and 100'}), 400
+        except ValueError:
+            return jsonify({'error': 'Invalid trendRate value'}), 400
+
+        seasonality = data.get('seasonality', 'neutral')
+        if seasonality not in ['neutral', 'summer', 'winter']:
+            return jsonify({'error': 'Invalid seasonality value'}), 400
+
+        seasonal_deviation = data.get('seasonalDeviation', '0')
+        try:
+            seasonal_deviation = float(seasonal_deviation)
+            if not 0 <= seasonal_deviation <= 100:
+                return jsonify({'error': 'seasonalDeviation must be between 0 and 100'}), 400
+        except ValueError:
+            return jsonify({'error': 'Invalid seasonalDeviation value'}), 400
+
+        location_type = data.get('locationType', 'mixed')
+        if location_type not in ['residential', 'commercial', 'tourist', 'mixed']:
+            return jsonify({'error': 'Invalid locationType value'}), 400
 
         # 사용자 정보 확인
         user = next((u for u in SMB_USERS if u["business_number"] == data['businessNumber']), None)
@@ -125,6 +191,7 @@ def generate_smb_revenue_direct():
         end_date = datetime.strptime(data['endDate'], '%Y-%m-%d')
         current_date = start_date
         data_count = 0
+        total_days = (end_date - start_date).days + 1
 
         while current_date <= end_date:
             # 영업일 여부 확인
@@ -136,14 +203,29 @@ def generate_smb_revenue_direct():
             is_weekend = current_date.weekday() >= 5
             base_sales = int(data['weekdayAvgSales']) * (1.2 if is_weekend else 1)
 
+            # Apply trend and seasonal factors
+            days_elapsed = (current_date - start_date).days
+            trend_factor = calculate_trend_factor(trend, trend_rate, days_elapsed, total_days)
+            seasonal_factor = calculate_seasonal_factor(seasonality, seasonal_deviation, current_date)
+            
+            # Calculate adjusted sales
+            adjusted_sales = base_sales * trend_factor * seasonal_factor
+
+            # Scale transaction count based on revenue and location type
+            card_txn_count = scale_transaction_count(adjusted_sales, location_type, is_weekend)
+            card_total = adjusted_sales
+
             # 카드 거래 생성
             card_txns = []
-            card_txn_count = random.randint(5, 15)
-            card_total = base_sales
-
             for i in range(card_txn_count):
                 amount = generate_variable_amount(card_total // card_txn_count, 0.5, 1.5)
-                approval_time = generate_transaction_time(current_date)
+                approval_time = generate_transaction_time(
+                    current_date,
+                    location_type,
+                    is_weekend,
+                    data.get('weekdayOpenTime'),
+                    data.get('weekdayCloseTime')
+                )
                 approval_number = f"{chr(65+data_count)}{random.randint(100000000, 999999999)}"
                 card_type = random.choice(CARD_TYPES)
                 
@@ -192,8 +274,11 @@ def generate_smb_revenue_direct():
             # 배달 플랫폼 데이터 생성
             if data.get('hasDelivery', False):
                 delivery_ratio = float(data.get('deliveryRatio', 0)) / 100
+                # Adjust delivery ratio based on location type
+                delivery_ratio = adjust_delivery_ratio(delivery_ratio, location_type)
+                
                 # 배달앱 매출을 base_sales와 별개로 계산
-                delivery_sales = int(base_sales * (delivery_ratio / (1 - delivery_ratio)))
+                delivery_sales = int(adjusted_sales * (delivery_ratio / (1 - delivery_ratio)))
 
                 for platform, ratio in [
                     ('baemin', float(data.get('baeminRatio', 0)) / 100),
@@ -207,7 +292,13 @@ def generate_smb_revenue_direct():
                         for _ in range(random.randint(4, 8)):
                             # 각 거래의 금액을 더 균등하게 분배
                             amount = generate_variable_amount(platform_sales // 5, 0.9, 1.1)
-                            approval_time = generate_transaction_time(current_date, (12, 22))
+                            approval_time = generate_transaction_time(
+                                current_date,
+                                location_type,
+                                is_weekend,
+                                data.get('weekdayOpenTime'),
+                                data.get('weekdayCloseTime')
+                            )
                             fees = calculate_delivery_fees(amount, platform)
                             txns.append({
                                 "order_id": f"{platform[:2].upper()}-{current_date.strftime('%Y%m%d')}-{random.randint(1000, 9999)}",
@@ -240,7 +331,13 @@ def generate_smb_revenue_direct():
             cash_txns = []
             for _ in range(cash_txn_count):
                 amount = generate_variable_amount(50000, 0.8, 1.5)
-                approval_time = generate_transaction_time(current_date)
+                approval_time = generate_transaction_time(
+                    current_date,
+                    location_type,
+                    is_weekend,
+                    data.get('weekdayOpenTime'),
+                    data.get('weekdayCloseTime')
+                )
                 cash_txns.append({
                     "amount": amount,
                     "receipt_number": f"CR-{current_date.strftime('%y%m%d')}-{str(len(cash_txns)+1).zfill(3)}",
@@ -261,7 +358,13 @@ def generate_smb_revenue_direct():
             # 세금계산서 데이터 생성
             if random.random() < 0.1:  # 10% 확률로 세금계산서 발행
                 amount = generate_variable_amount(50000, 0.8, 1.5)
-                approval_time = generate_transaction_time(current_date)
+                approval_time = generate_transaction_time(
+                    current_date,
+                    location_type,
+                    is_weekend,
+                    data.get('weekdayOpenTime'),
+                    data.get('weekdayCloseTime')
+                )
                 result['hometax_tax_invoices'].append({
                     "date": current_date.strftime("%Y-%m-%d"),
                     "tax_invoices": [{
@@ -515,9 +618,37 @@ def do_collect():
             monthly_sales[year_month]['daily_sales'].append(daily_sales)
             monthly_sales[year_month]['revenue'] += daily_sales['total']
 
+        # 월별 데이터를 로그 파일로 저장
+        print("\n월별 데이터 로그 파일 저장 시작...")
+        timestamp = datetime.now().strftime('%Y%m%d')
+        for year_month, data in monthly_sales.items():
+            year, month = year_month.split('-')
+            monthly_filename = f'gend/monthly_{business_number}_{year}{month}_{timestamp}.log'
+            
+            # 월별 데이터에 추가 정보 포함
+            monthly_data = {
+                'merchant_info': log_data['merchant_info'],
+                'monthly_stats': {
+                    'year': int(year),
+                    'month': int(month),
+                    'total_revenue': data['revenue'],
+                    'daily_average': round(data['revenue'] / len(data['daily_sales']), 2),
+                    'business_days': len(data['daily_sales']),
+                    'created_at': datetime.now().isoformat()
+                },
+                'daily_sales': data['daily_sales']
+            }
+            
+            with open(monthly_filename, 'w', encoding='utf-8') as f:
+                json.dump(monthly_data, f, ensure_ascii=False, indent=2)
+            print(f"월별 데이터 저장 완료: {monthly_filename}")
+
         # 월간 매출 데이터 저장
         print("\n월간 매출 데이터 저장 시작...")
         for year_month, data in monthly_sales.items():
+            print(f"\n처리 중인 월: {year_month}")
+            print(f"일별 데이터 개수: {len(data['daily_sales'])}")
+            
             # 기존 데이터가 있는지 확인
             existing_data = monthly_sales_collection.find_one({
                 'business_number': business_number,
@@ -526,6 +657,7 @@ def do_collect():
             })
             
             if existing_data:
+                print(f"기존 데이터 발견: {existing_data['_id']}")
                 # 기존 데이터 업데이트
                 monthly_sales_collection.update_one(
                     {'_id': existing_data['_id']},
@@ -535,11 +667,14 @@ def do_collect():
                         'updated_at': datetime.now()
                     }}
                 )
+                print("기존 데이터 업데이트 완료")
             else:
+                print("새 데이터 삽입")
                 # 새 데이터 삽입
                 data['created_at'] = datetime.now()
                 data['updated_at'] = datetime.now()
                 monthly_sales_collection.insert_one(data)
+                print("새 데이터 삽입 완료")
 
         # 저장된 월간 매출 데이터 조회
         monthly_sales_data = list(monthly_sales_collection.find(
@@ -769,6 +904,159 @@ def calculate_delivery_fees(amount, platform):
         "card_fee": card_fee,
         "total_fee": total_fee
     }
+
+def calculate_trend_factor(trend, trend_rate, days_elapsed, total_days):
+    """Calculate the trend adjustment factor based on elapsed days"""
+    if trend == "stable":
+        return 1.0
+    
+    trend_rate = float(trend_rate) / 100
+    progress = days_elapsed / total_days
+    
+    if trend == "increasing":
+        return 1 + (trend_rate * progress)
+    elif trend == "decreasing":
+        return 1 - (trend_rate * progress)
+    return 1.0
+
+def calculate_seasonal_factor(seasonality, seasonal_deviation, date):
+    """Calculate the seasonal adjustment factor based on the date"""
+    if seasonality == "neutral":
+        return 1.0
+    
+    seasonal_deviation = float(seasonal_deviation) / 100
+    month = date.month
+    
+    if seasonality == "summer":
+        # Peak in summer (June-August), lowest in winter (December-February)
+        if month in [6, 7, 8]:  # Summer
+            return 1 + seasonal_deviation
+        elif month in [12, 1, 2]:  # Winter
+            return 1 - seasonal_deviation
+        else:
+            # Smooth transition using sinusoidal interpolation
+            month_angle = (month - 1) * (2 * np.pi / 12)
+            return 1 + seasonal_deviation * np.sin(month_angle)
+    
+    elif seasonality == "winter":
+        # Peak in winter (December-February), lowest in summer (June-August)
+        if month in [12, 1, 2]:  # Winter
+            return 1 + seasonal_deviation
+        elif month in [6, 7, 8]:  # Summer
+            return 1 - seasonal_deviation
+        else:
+            # Smooth transition using sinusoidal interpolation
+            month_angle = (month - 1) * (2 * np.pi / 12)
+            return 1 - seasonal_deviation * np.sin(month_angle)
+    
+    return 1.0
+
+def scale_transaction_count(base_revenue, location_type, is_weekend=False):
+    """Scale transaction count based on revenue and location type"""
+    # Base transaction counts for different location types
+    base_counts = {
+        "residential": (5, 10),
+        "commercial": (10, 20),
+        "tourist": (8, 15),
+        "mixed": (8, 15)
+    }
+    
+    min_count, max_count = base_counts[location_type]
+    
+    # Reference revenue for scaling
+    reference_revenue = 500000  # 500,000 KRW as reference
+    
+    # Scale factor based on revenue
+    scale_factor = min(2.0, max(0.5, base_revenue / reference_revenue))
+    
+    # Calculate base count
+    base_count = min_count + (max_count - min_count) * (scale_factor - 0.5) / 1.5
+    
+    # Adjust for weekend if tourist location
+    if location_type == "tourist" and is_weekend:
+        base_count *= 1.5
+    
+    return int(base_count)
+
+def adjust_delivery_ratio(delivery_ratio, location_type):
+    """Adjust delivery ratio based on location type"""
+    if location_type == "tourist":
+        delivery_ratio *= 0.9  # Reduce by 10%
+    elif location_type == "residential":
+        delivery_ratio *= 1.1  # Increase by 10%
+    
+    return min(1.0, max(0.0, delivery_ratio))
+
+@app.route('/reset-data', methods=['POST', 'OPTIONS'])
+def reset_data():
+    if request.method == 'OPTIONS':
+        return '', 200
+    try:
+        data = request.json
+        print("\n=== /reset-data API 호출 파라미터 ===")
+        print("Request Data:", json.dumps(data, indent=2, ensure_ascii=False))
+        print("==================================\n")
+
+        if not data or 'businessNumber' not in data:
+            return jsonify({'error': 'Business number is required'}), 400
+
+        business_number = data['businessNumber']
+        
+        # MongoDB 연결
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client['originalData']
+        collection = db['sales_data']
+        analyzed_db = client['analyzed']
+        monthly_sales_collection = analyzed_db['monthly_sales']
+        chart_db = client['chart_data']
+        online_info_collection = chart_db['sales_online_info']
+        offline_info_collection = chart_db['sales_offline_info']
+        
+        # 삭제할 데이터 필터 설정
+        filter_query = {}
+        if business_number != 'all':
+            filter_query['business_number'] = business_number
+        
+        # 데이터 삭제
+        collection.delete_many(filter_query)
+        monthly_sales_collection.delete_many(filter_query)
+        online_info_collection.delete_many(filter_query)
+        offline_info_collection.delete_many(filter_query)
+        
+        # 로그 파일 삭제
+        if business_number == 'all':
+            # gend 디렉토리의 모든 로그 파일 삭제
+            for filename in os.listdir('gend'):
+                if filename.endswith('.log'):
+                    os.remove(os.path.join('gend', filename))
+        else:
+            # 특정 사업자의 로그 파일 삭제
+            for filename in os.listdir('gend'):
+                if filename.startswith(f'{business_number}_') and filename.endswith('.log'):
+                    os.remove(os.path.join('gend', filename))
+                if filename.startswith(f'monthly_{business_number}_') and filename.endswith('.log'):
+                    os.remove(os.path.join('gend', filename))
+        
+        client.close()
+        
+        response = {
+            'status': 'success',
+            'message': '데이터가 성공적으로 초기화되었습니다.',
+            'reset_target': business_number
+        }
+        print("\n=== /reset-data API 응답 ===")
+        print(f"Response: {json.dumps(response, indent=2, ensure_ascii=False)}")
+        print("==================================\n")
+        return jsonify(response), 200
+
+    except Exception as e:
+        print(f"\n=== /reset-data API 오류 발생 ===")
+        print(f"Error: {str(e)}")
+        print("==================================\n")
+        return jsonify({
+            'status': 'error',
+            'message': f'데이터 초기화 중 오류가 발생했습니다: {str(e)}'
+        }), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3400, debug=True) 

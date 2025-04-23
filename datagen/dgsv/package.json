@@ -11,9 +11,14 @@
     "nodemon": "^3.0.3"
   },
   "nodemonConfig": {
-    "ignore": ["*.test.js", "*.spec.js"],
-    "watch": ["datagen/dgsv/*.py"],
+    "ignore": [
+      "*.test.js",
+      "*.spec.js"
+    ],
+    "watch": [
+      "datagen/dgsv/*.py"
+    ],
     "ext": "py",
     "exec": "python datagen/dgsv/serv2.py"
   }
-} 
+}

@@ -98,7 +98,7 @@ def get_card_sales_data(merchant_info, card):
                 transformed_data.append({
                     "sale_date": date.replace("-", ""),
                     "business_number": biz_number,
-                    "sale_time": daily_sales["order_time"].split(":")[0],
+                    # "sale_time": daily_sales["order_time"].split(":")[0],
                     "sale_amt": daily_sales["total_amount"],
                     "transaction_type": daily_sales["transaction_type"],
                     "smb_sector": smb_sector,

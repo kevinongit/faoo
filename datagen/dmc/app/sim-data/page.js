@@ -71,14 +71,14 @@ export default function SimData() {
     gmarketRatio: "15",
     trend: "stable",
     trendRate: "5",
-    trendDeviation: "10",
-    seasonality: "low",
+    seasonalDeviation: "10",
+    seasonality: "neutral",
     locationType: "residential",
     startDate: "",
     endDate: "",
     zoneRange: "same",
     sectorRange: "same",
-    revenueRange: "1",
+    revenueRange: "none",
   });
   const [validationErrors, setValidationErrors] = useState({});
   const [revenueData, setRevenueData] = useState(null);
@@ -887,10 +887,10 @@ export default function SimData() {
                   </div>
                 </div>
 
-                {/* 배달 및 온라인 판매 정보 */}
+                {/* 배달 및 온라인 스토어 정보 */}
                 <div className="bg-white dark:bg-gray-800 rounded-lg border p-6">
                   <h3 className="text-lg font-medium mb-4">
-                    배달 및 온라인 판매 정보
+                    배달 및 온라인 스토어 정보
                   </h3>
                   <div className="space-y-6">
                     {/* 배달 정보 */}
@@ -972,7 +972,7 @@ export default function SimData() {
                       )}
                     </div>
 
-                    {/* 온라인 판매 정보 */}
+                    {/* 온라인 스토어 정보 */}
                     <div className="space-y-4">
                       <div className="flex items-center gap-4">
                         <input
@@ -994,7 +994,7 @@ export default function SimData() {
                           htmlFor="hasOnlineSales"
                           className="text-sm font-medium text-gray-700 dark:text-gray-300"
                         >
-                          온라인 판매 제공
+                          온라인 스토어 제공
                         </label>
                       </div>
 
@@ -1002,7 +1002,7 @@ export default function SimData() {
                         <div className="ml-8 space-y-4 border-l-2 border-gray-100 dark:border-gray-700 pl-6">
                           <div className="flex items-center gap-4">
                             <label className="w-24 text-sm font-medium text-gray-700 dark:text-gray-300">
-                              온라인 판매 비율
+                              온라인 스토어 비율
                             </label>
                             <div className="flex-1 flex items-center gap-2">
                               <input
@@ -1028,7 +1028,7 @@ export default function SimData() {
                           {formData.onlineSalesRatio > 0 && (
                             <div className="space-y-4">
                               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                온라인 판매 플랫폼 비율
+                                온라인 스토어 플랫폼 비율
                               </label>
                               <div className="w-full max-w-md">
                                 <OnlineSalesRatioSlider
@@ -1223,136 +1223,243 @@ export default function SimData() {
                 <div className="bg-white dark:bg-gray-800 rounded-lg border p-6">
                   <h3 className="text-lg font-medium mb-4">추가 설정</h3>
                   <div className="space-y-6">
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                        매출 트렌드
-                      </label>
-                      <select
-                        value={formData.trend}
-                        onChange={(e) =>
-                          setFormData({ ...formData, trend: e.target.value })
-                        }
-                        className="w-full p-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                      >
-                        <option value="stable">안정적</option>
-                        <option value="increasing">상승</option>
-                        <option value="decreasing">하락</option>
-                        <option value="seasonal">계절적</option>
-                      </select>
-
-                      {(formData.trend === "increasing" ||
-                        formData.trend === "decreasing") && (
-                        <div className="mt-4">
-                          <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                            {formData.trend === "increasing" ? "상승" : "하락"}{" "}
-                            변화율 (%)
-                          </label>
-                          <input
-                            type="number"
-                            value={formData.trendRate}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                trendRate: e.target.value,
-                              })
-                            }
-                            min="0"
-                            max="100"
-                            className="w-full p-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                            placeholder="예: 5"
-                          />
-                        </div>
-                      )}
-
-                      {formData.trend === "seasonal" && (
-                        <div className="mt-4 space-y-4">
-                          <div>
-                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                              계절성 패턴
-                            </label>
-                            <select
-                              value={formData.seasonType}
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  seasonType: e.target.value,
-                                })
-                              }
-                              className="w-full p-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                            >
-                              <option value="">패턴 선택</option>
-                              <option value="winter_to_summer">
-                                동고하저 (겨울강세)
-                              </option>
-                              <option value="summer_to_winter">
-                                동저하고 (여름강세)
-                              </option>
-                            </select>
-                          </div>
-                          {formData.seasonType && (
-                            <div>
-                              <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                계절성 편차 (%)
-                              </label>
-                              <input
-                                type="number"
-                                value={formData.trendDeviation}
-                                onChange={(e) =>
-                                  setFormData({
-                                    ...formData,
-                                    trendDeviation: e.target.value,
-                                  })
-                                }
-                                min="0"
-                                max="100"
-                                className="w-full p-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                                placeholder="예: 10"
-                              />
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                          계절성 영향
+                          매출 트렌드
                         </label>
-                        <select
-                          value={formData.seasonality}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              seasonality: e.target.value,
-                            })
-                          }
-                          className="w-full p-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                        >
-                          <option value="low">낮음</option>
-                          <option value="medium">중간</option>
-                          <option value="high">높음</option>
-                        </select>
+                        <div className="flex items-center gap-4">
+                          <select
+                            value={formData.trend}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                trend: e.target.value,
+                              })
+                            }
+                            className="w-1/2 p-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                          >
+                            <option value="stable">안정적</option>
+                            <option value="increasing">상승</option>
+                            <option value="decreasing">하락</option>
+                          </select>
+
+                          {(formData.trend === "increasing" ||
+                            formData.trend === "decreasing") && (
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const currentValue =
+                                      parseInt(formData.trendRate) || 0;
+                                    setFormData({
+                                      ...formData,
+                                      trendRate: Math.max(
+                                        0,
+                                        currentValue - 5
+                                      ).toString(),
+                                    });
+                                  }}
+                                  className="px-3 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-l-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-300"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-4 w-4"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M20 12H4"
+                                    />
+                                  </svg>
+                                </button>
+                                <input
+                                  type="number"
+                                  value={formData.trendRate}
+                                  onChange={(e) =>
+                                    setFormData({
+                                      ...formData,
+                                      trendRate: e.target.value,
+                                    })
+                                  }
+                                  min="0"
+                                  max="100"
+                                  className="w-20 p-2.5 border-t border-b border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-center"
+                                  placeholder="예: 5"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const currentValue =
+                                      parseInt(formData.trendRate) || 0;
+                                    setFormData({
+                                      ...formData,
+                                      trendRate: Math.min(
+                                        100,
+                                        currentValue + 5
+                                      ).toString(),
+                                    });
+                                  }}
+                                  className="px-3 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-r-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-300"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-4 w-4"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M12 4v16m8-8H4"
+                                    />
+                                  </svg>
+                                </button>
+                              </div>
+                              <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                %
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                       <div>
                         <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                          상권 유형
+                          계절적 영향
                         </label>
-                        <select
-                          value={formData.locationType}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              locationType: e.target.value,
-                            })
-                          }
-                          className="w-full p-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                        >
-                          <option value="residential">주거지</option>
-                          <option value="commercial">상업지</option>
-                          <option value="tourist">관광지</option>
-                          <option value="mixed">혼합</option>
-                        </select>
+                        <div className="flex items-center gap-4">
+                          <select
+                            value={formData.seasonality}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                seasonality: e.target.value,
+                              })
+                            }
+                            className="w-1/2 p-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                          >
+                            <option value="neutral">영향없음</option>
+                            <option value="winter">
+                              동고하저(겨울철 강세)
+                            </option>
+                            <option value="summer">
+                              동저하고(여름철 강세)
+                            </option>
+                          </select>
+
+                          {(formData.seasonality === "winter" ||
+                            formData.seasonality === "summer") && (
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const currentValue =
+                                      parseInt(formData.seasonalDeviation) || 0;
+                                    setFormData({
+                                      ...formData,
+                                      seasonalDeviation: Math.max(
+                                        0,
+                                        currentValue - 5
+                                      ).toString(),
+                                    });
+                                  }}
+                                  className="px-3 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-l-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-300"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-4 w-4"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M20 12H4"
+                                    />
+                                  </svg>
+                                </button>
+                                <input
+                                  type="number"
+                                  value={formData.seasonalDeviation}
+                                  onChange={(e) =>
+                                    setFormData({
+                                      ...formData,
+                                      seasonalDeviation: e.target.value,
+                                    })
+                                  }
+                                  min="0"
+                                  max="100"
+                                  className="w-20 p-2.5 border-t border-b border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-center"
+                                  placeholder="예: 10"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const currentValue =
+                                      parseInt(formData.seasonalDeviation) || 0;
+                                    setFormData({
+                                      ...formData,
+                                      seasonalDeviation: Math.min(
+                                        100,
+                                        currentValue + 5
+                                      ).toString(),
+                                    });
+                                  }}
+                                  className="px-3 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-r-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-300"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-4 w-4"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M12 4v16m8-8H4"
+                                    />
+                                  </svg>
+                                </button>
+                              </div>
+                              <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                %
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                        상권 유형
+                      </label>
+                      <select
+                        value={formData.locationType}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            locationType: e.target.value,
+                          })
+                        }
+                        className="w-full p-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                      >
+                        <option value="residential">주거지</option>
+                        <option value="commercial">상업지</option>
+                        <option value="tourist">관광지</option>
+                        <option value="mixed">혼합</option>
+                      </select>
                     </div>
                   </div>
                 </div>
@@ -1465,11 +1572,55 @@ export default function SimData() {
               <Button
                 onClick={handleStep2}
                 disabled={
-                  !generationResult || generationResult.status !== "success"
+                  !generationResult ||
+                  generationResult.status !== "success" ||
+                  isLoading
                 }
-                className="w-full max-w-xs"
+                className="w-full max-w-xs relative"
               >
-                데이터 조회
+                {isLoading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <svg
+                      className="animate-spin h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    <span>데이터 조회 중...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                    <span>데이터 조회</span>
+                  </div>
+                )}
               </Button>
             </div>
             {revenueData && (
@@ -2161,7 +2312,8 @@ export default function SimData() {
                   !steps.step3.completed ||
                   steps.step4.status === "completed" ||
                   isLoading ||
-                  !formData.revenueRange
+                  !formData.revenueRange ||
+                  formData.revenueRange === "none"
                 }
                 className="w-full mt-6"
               >
@@ -2190,7 +2342,23 @@ export default function SimData() {
                     생성 중...
                   </span>
                 ) : (
-                  "비교 그룹 생성"
+                  <span className="flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-2"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                      />
+                    </svg>
+                    비교 그룹 생성
+                  </span>
                 )}
               </Button>
             </div>
@@ -2361,14 +2529,14 @@ export default function SimData() {
                   gmarketRatio: "15",
                   trend: "stable",
                   trendRate: "5",
-                  trendDeviation: "10",
-                  seasonality: "low",
+                  seasonalDeviation: "10",
+                  seasonality: "neutral",
                   locationType: "residential",
                   startDate: "",
                   endDate: "",
                   zoneRange: "same",
                   sectorRange: "same",
-                  revenueRange: "1",
+                  revenueRange: "none",
                 });
                 setGenerationResult(null);
                 setRevenueData(null);
@@ -2389,29 +2557,28 @@ export default function SimData() {
 
   const handlePresetClick = () => {
     const businessDays = ["mon", "tue", "wed", "thu", "fri", "sat"];
-    const weekdayAvgSales = 500000;
-    const hasWeekend = businessDays.some(
-      (day) => day === "sat" || day === "sun"
-    );
+    const weekdayAvgSales = 400000;
+    const weekendAvgSales = 500000;
+
+    // 2024년 1월 1일 계산
     const today = new Date();
-    const threeMonthsAgo = new Date(today);
-    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+    const startDate = new Date("2024-01-01"); // 2024년 1월 1일
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1); // 어제
 
     setFormData({
       ...formData,
       businessDays,
-      weekdayAvgSales,
-      weekendAvgSales: hasWeekend
-        ? Math.round(weekdayAvgSales * 1.7)
-        : undefined,
-      startDate: threeMonthsAgo.toISOString().split("T")[0],
-      endDate: today.toISOString().split("T")[0],
+      weekdayAvgSales: weekdayAvgSales.toString(),
+      weekendAvgSales: weekendAvgSales.toString(),
+      startDate: "2024-01-01", // 직접 날짜 문자열 지정
+      endDate: yesterday.toISOString().split("T")[0],
       hasDelivery: true,
       deliveryRatio: 30,
       baeminRatio: 50,
       coupangEatsRatio: 30,
       yogiyoRatio: 20,
-      hasOnlineStore: false, // 온라인 스토어 선택 해제
+      hasOnlineStore: false,
     });
 
     // 데이터 생성 버튼으로 스크롤
@@ -2439,7 +2606,7 @@ export default function SimData() {
                     }}
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="사용자를 선택하세요" />
+                      <SelectValue placeholder="사업장을 선택하세요" />
                     </SelectTrigger>
                     <SelectContent>
                       {users &&
@@ -2559,7 +2726,7 @@ export default function SimData() {
             {!selectedUser ? (
               <div className="bg-white dark:bg-gray-800 rounded-lg border p-6 mb-6 min-h-[200px] flex items-center justify-center">
                 <p className="text-gray-500 text-center">
-                  사용자를 선택하여 프로세스를 시작하세요
+                  사업장을 선택하여 프로세스를 시작하세요
                 </p>
               </div>
             ) : (
