@@ -649,7 +649,7 @@ export default function Trend() {
                 </div>
                 <div>
                   <div className="flex items-center gap-1">
-                    <p className="text-xs text-gray-500">온라인 비중:</p>
+                    <p className="text-xs text-gray-500">온라인:</p>
                     <p className="font-bold text-blue-600 w-12">
                       {(() => {
                         const yearDataObj = yearData.find(
@@ -683,7 +683,7 @@ export default function Trend() {
                 </div>
                 <div>
                   <div className="flex items-center gap-1">
-                    <p className="text-xs text-gray-500">오프라인 비중:</p>
+                    <p className="text-xs text-gray-500">오프라인:</p>
                     <p className="font-bold text-indigo-600 w-12">
                       {(() => {
                         const yearDataObj = yearData.find(
@@ -741,7 +741,7 @@ export default function Trend() {
               )}
             </CardContent>
 
-            <CardContent className="py-3 px-3 border-t flex justify-around items-center bg-gradient-to-r from-blue-50 to-indigo-50 rounded-b-md">
+            <CardContent className="py-3 px-2 border-t flex justify-around items-center bg-gradient-to-r from-blue-50 to-indigo-50 rounded-b-md">
               <div className="flex items-center gap-3">
                 <div className="bg-blue-100 p-2 rounded-full">
                   <Image
@@ -776,7 +776,7 @@ export default function Trend() {
                     height={20}
                   />
                 </div>
-                <div className="flex justify-between gap-6 mr-2">
+                <div className="flex justify-between gap-2 mr-2">
                   <div>
                     <p className="text-xs text-center text-gray-500">
                       전년 대비
@@ -816,7 +816,7 @@ export default function Trend() {
                   </div>
                   <div>
                     <p className="text-xs text-center text-gray-500">
-                      전년 대비({new Date().getMonth()} 월)
+                      전년 {new Date().getMonth()}월 대비
                     </p>
                     <p className="text-base text-center font-bold text-indigo-600">
                       {(() => {
@@ -873,11 +873,7 @@ export default function Trend() {
             <div className="flex w-full">
               <button
                 className="w-1/2 py-4 bg-blue-400 text-white text-center font-semibold rounded-l-[20px]"
-                onClick={() =>
-                  router.push(
-                    `/soho/sales/chart-dashboard?date=${base_date_str}`
-                  )
-                }
+                onClick={() => router.push(`/soho/sales/chart-dashboard?date=`)}
               >
                 주간 분석비교 보기
               </button>

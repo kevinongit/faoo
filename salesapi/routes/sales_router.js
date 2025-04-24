@@ -27,7 +27,7 @@ async function getSalesData(business_number, start_date, end_date) {
     .find({
       business_number: business_number,
       sale_date: {
-        $gt: start_date,
+        $gte: start_date,
         $lte: end_date,
       },
     })
@@ -36,7 +36,7 @@ async function getSalesData(business_number, start_date, end_date) {
     .find({
       business_number: business_number,
       sale_date: {
-        $gt: start_date,
+        $gte: start_date,
         $lte: end_date,
       },
     })
@@ -70,9 +70,12 @@ async function getSalesData(business_number, start_date, end_date) {
     return acc;
   }, []);
 
-  start_dt.setDate(start_dt.getDate() + 1);
-
-  for (let dt = start_dt; dt <= end_dt; dt.setDate(dt.getDate() + 1)) {
+  // 시작일부터 누락된 날짜 채우기
+  for (
+    let dt = new Date(start_dt);
+    dt <= end_dt;
+    dt.setDate(dt.getDate() + 1)
+  ) {
     const date =
       dt.getFullYear() +
       String(dt.getMonth() + 1).padStart(2, "0") +
@@ -141,20 +144,46 @@ async function getSalesData(business_number, start_date, end_date) {
 router.post("/last7daySales", async (req, res) => {
   try {
     const { business_number, base_date } = req.body;
-    const end_dt = new Date(
+    const db = await connectToDatabase();
+
+    // 날짜가 없으면 어제 날짜 사용
+    if (!base_date) {
+      const currentDate = new Date();
+      currentDate.setDate(currentDate.getDate() - 1);
+      base_date =
+        currentDate.getFullYear() +
+        String(currentDate.getMonth() + 1).padStart(2, "0") +
+        String(currentDate.getDate()).padStart(2, "0");
+    }
+
+    // 기준일 파싱
+    const base_dt = new Date(
       base_date.substring(0, 4),
-      base_date.substring(4, 6) - 1,
+      Number(base_date.substring(4, 6)) - 1,
       base_date.substring(6, 8)
     );
-    const end_date =
-      end_dt.getFullYear() +
-      String(end_dt.getMonth() + 1).padStart(2, "0") +
-      String(end_dt.getDate()).padStart(2, "0");
-    end_dt.setDate(end_dt.getDate() - 7);
+
+    // 해당 주의 월요일 구하기
+    const dayOfWeek = base_dt.getDay();
+    const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+    // 이번 주 월요일
+    const monday = new Date(base_dt);
+    monday.setDate(base_dt.getDate() - daysFromMonday);
+
     const start_date =
-      end_dt.getFullYear() +
-      String(end_dt.getMonth() + 1).padStart(2, "0") +
-      String(end_dt.getDate()).padStart(2, "0");
+      monday.getFullYear() +
+      String(monday.getMonth() + 1).padStart(2, "0") +
+      String(monday.getDate()).padStart(2, "0");
+
+    // 이번 주 일요일
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+
+    const end_date =
+      sunday.getFullYear() +
+      String(sunday.getMonth() + 1).padStart(2, "0") +
+      String(sunday.getDate()).padStart(2, "0");
 
     const result_7day = await getSalesData(
       business_number,
@@ -169,10 +198,11 @@ router.post("/last7daySales", async (req, res) => {
     logger.info(
       `/last7daySales retrieved for business number: ${business_number} ${start_date}~${end_date} : ${result_7day.length}`
     );
+
     res.json(results);
   } catch (error) {
-    logger.error("Error retrieving last7daySales:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error(error);
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -301,29 +331,57 @@ router.post("/daySales", async (req, res) => {
  */
 router.post("/weekSales", async (req, res) => {
   try {
-    const { business_number, base_date, week_offset } = req.body;
-    const db = await connectToDatabase();
-    const off_collection = db.collection("sales_offline_info");
-    const on_collection = db.collection("sales_online_info");
+    const { business_number, base_date, week_offset = 0 } = req.body;
 
-    let base_dt = new Date(
+    if (!base_date) {
+      const date = new Date();
+      date.setDate(date.getDate() - 1);
+      base_date =
+        date.getFullYear() +
+        String(date.getMonth() + 1).padStart(2, "0") +
+        String(date.getDate()).padStart(2, "0");
+    }
+
+    // week_offset 적용
+    const offsetDate = new Date(
       base_date.substring(0, 4),
-      base_date.substring(4, 6) - 1,
-      base_date.substring(6, 8)
+      Number(base_date.substring(4, 6)) - 1,
+      Number(base_date.substring(6, 8))
     );
-    base_dt = new Date(base_dt.setDate(base_dt.getDate() + week_offset * 7));
+    offsetDate.setDate(offsetDate.getDate() + week_offset * 7);
+    const offsetDateStr =
+      offsetDate.getFullYear() +
+      String(offsetDate.getMonth() + 1).padStart(2, "0") +
+      String(offsetDate.getDate()).padStart(2, "0");
 
-    // 기준일 주
-    let base = new Date(base_dt);
-    const week_base_end =
-      base.getFullYear() +
-      String(base.getMonth() + 1).padStart(2, "0") +
-      String(base.getDate()).padStart(2, "0");
-    base = new Date(base.setDate(base.getDate() - 7));
+    // 기준일 파싱
+    const base_dt = new Date(
+      offsetDateStr.substring(0, 4),
+      Number(offsetDateStr.substring(4, 6)) - 1,
+      offsetDateStr.substring(6, 8)
+    );
+
+    // 해당 주의 월요일 구하기
+    const dayOfWeek = base_dt.getDay();
+    const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+    // 이번 주 월요일
+    const monday = new Date(base_dt);
+    monday.setDate(base_dt.getDate() - daysFromMonday);
+
     const week_base_start =
-      base.getFullYear() +
-      String(base.getMonth() + 1).padStart(2, "0") +
-      String(base.getDate()).padStart(2, "0");
+      monday.getFullYear() +
+      String(monday.getMonth() + 1).padStart(2, "0") +
+      String(monday.getDate()).padStart(2, "0");
+
+    // 이번 주 일요일 (월요일 + 6일)
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+
+    const week_base_end =
+      sunday.getFullYear() +
+      String(sunday.getMonth() + 1).padStart(2, "0") +
+      String(sunday.getDate()).padStart(2, "0");
 
     const result_base = await getSalesData(
       business_number,
@@ -331,18 +389,23 @@ router.post("/weekSales", async (req, res) => {
       week_base_end
     );
 
-    // 1주일 전
-    base = new Date(base_dt);
-    let week_7dayDate = new Date(base.setDate(base.getDate() - 7));
-    const week_7day_end =
-      week_7dayDate.getFullYear() +
-      String(week_7dayDate.getMonth() + 1).padStart(2, "0") +
-      String(week_7dayDate.getDate()).padStart(2, "0");
-    week_7dayDate = new Date(base.setDate(base.getDate() - 7));
+    // 지난주 월요일
+    const lastMonday = new Date(monday);
+    lastMonday.setDate(monday.getDate() - 7);
+
     const week_7day_start =
-      week_7dayDate.getFullYear() +
-      String(week_7dayDate.getMonth() + 1).padStart(2, "0") +
-      String(week_7dayDate.getDate()).padStart(2, "0");
+      lastMonday.getFullYear() +
+      String(lastMonday.getMonth() + 1).padStart(2, "0") +
+      String(lastMonday.getDate()).padStart(2, "0");
+
+    // 지난주 일요일
+    const lastSunday = new Date(lastMonday);
+    lastSunday.setDate(lastMonday.getDate() + 6);
+
+    const week_7day_end =
+      lastSunday.getFullYear() +
+      String(lastSunday.getMonth() + 1).padStart(2, "0") +
+      String(lastSunday.getDate()).padStart(2, "0");
 
     const result_7day = await getSalesData(
       business_number,
@@ -350,18 +413,14 @@ router.post("/weekSales", async (req, res) => {
       week_7day_end
     );
 
-    // 1년전
-    base = new Date(base_dt);
-    let week_prevYearDate = new Date(base.setFullYear(base.getFullYear() - 1));
-    const week_prevYear_end =
-      week_prevYearDate.getFullYear() +
-      String(week_prevYearDate.getMonth() + 1).padStart(2, "0") +
-      String(week_prevYearDate.getDate()).padStart(2, "0");
-    week_prevYearDate = new Date(base.setDate(base.getDate() - 7));
+    // 작년 데이터 가져오기 (단순히 년도만 1년 빼기)
     const week_prevYear_start =
-      week_prevYearDate.getFullYear() +
-      String(week_prevYearDate.getMonth() + 1).padStart(2, "0") +
-      String(week_prevYearDate.getDate()).padStart(2, "0");
+      Number(week_base_start.substring(0, 4)) -
+      1 +
+      week_base_start.substring(4);
+
+    const week_prevYear_end =
+      Number(week_base_end.substring(0, 4)) - 1 + week_base_end.substring(4);
 
     const result_prevYear = await getSalesData(
       business_number,

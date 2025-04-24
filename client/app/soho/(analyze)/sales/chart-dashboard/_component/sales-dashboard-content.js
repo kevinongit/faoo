@@ -92,7 +92,7 @@ export default function SalesDashboardContent() {
     if (user?.business_number) {
       fetchWeekData(user.business_number, base_date_str, weekOffset);
     }
-  }, [weekOffset, user]);
+  }, [weekOffset, user, base_date_str, fetchWeekData]);
 
   useEffect(() => {
     if (last7daySales) {
@@ -102,15 +102,16 @@ export default function SalesDashboardContent() {
           "매출",
           { role: "style" },
           { role: "tooltip", type: "string" },
+          { role: "annotation" },
         ],
         ...last7daySales
           .sort((x, y) => Number(x.sale_date) - Number(y.sale_date))
-          .map((item, idx) => {
-            // 날짜 파싱
+          .map((item) => {
             const itemDate = new Date(
               item.sale_date.replace(/^(\d{4})(\d{2})(\d{2})$/, "$1-$2-$3")
             );
             const dayOfWeek = day_nm[itemDate.getDay()];
+            const amount = item.sum_amt ? Number(item.sum_amt) / 10000 : 0;
 
             // 선택된 날짜와 동일한지 확인
             const isSelectedDate = item.sale_date === base_date_str;
@@ -121,21 +122,25 @@ export default function SalesDashboardContent() {
               item.sale_date <= week_end_str;
 
             return [
-              dayOfWeek,
-              item.sum_amt ? Number(item.sum_amt) / 10000 : null,
-              isSelectedDate
-                ? "#1E88E5"
-                : isInSelectedWeek
-                ? "#4CAF50"
-                : "#FFE082",
-              item.sum_amt
-                ? `${item.sale_date.replace(
-                    /^(\d{4})(\d{2})(\d{2})$/,
-                    "$1.$2.$3"
-                  )} (${dayOfWeek}): ${Number(
-                    item.sum_amt
-                  ).toLocaleString()} 원`
+              `${dayOfWeek}\n${item.sale_date.substring(
+                4,
+                6
+              )}.${item.sale_date.substring(6, 8)}`,
+              amount || null,
+              amount > 0
+                ? isSelectedDate
+                  ? "#1E88E5"
+                  : isInSelectedWeek
+                  ? "#4CAF50"
+                  : "#FFE082"
                 : null,
+              `${item.sale_date.replace(
+                /^(\d{4})(\d{2})(\d{2})$/,
+                "$1.$2.$3"
+              )} (${dayOfWeek})\n${
+                item.sum_amt ? item.sum_amt.toLocaleString() : 0
+              } 원`,
+              amount > 0 ? amount.toFixed(0) : "",
             ];
           }),
       ];
@@ -189,13 +194,6 @@ export default function SalesDashboardContent() {
 
           // 데이터 포인트 스타일 설정
           let pointStyle = "#1E88E5"; // 기본 파란색
-          if (isSelectedDate) {
-            pointStyle =
-              "point { size: 10; shape-type: circle; fill-color: #1E88E5; }"; // 선택된 날짜는 큰 원으로 강조
-          } else if (isInSelectedWeek) {
-            pointStyle =
-              "point { size: 7; shape-type: circle; fill-color: #4CAF50; }"; // 선택된 주는 녹색으로 표시
-          }
 
           return [
             dateLabel,
@@ -261,23 +259,40 @@ export default function SalesDashboardContent() {
   const last7_options = {
     legend: "none",
     vAxis: { format: "#,###", minValue: 0 },
-    chartArea: { width: "87%", height: "75%" },
+    chartArea: { width: "87%", height: "75%", top: 10 },
     bar: { groupWidth: "40%" },
     colors: ["#1E88E5"],
+    annotations: {
+      textStyle: {
+        fontSize: 10,
+        color: "#1E88E5",
+        bold: true,
+      },
+      alwaysOutside: true,
+    },
+    hAxis: {
+      textStyle: {
+        fontSize: 10,
+      },
+    },
   };
 
   const week_options = {
-    legend: { position: "top", alignment: "center" },
+    legend: {
+      position: "bottom",
+      alignment: "end",
+      textStyle: { fontSize: 10 },
+    },
     vAxis: { format: "#,###", minValue: 0, viewWindow: { min: 0 } },
-    chartArea: { width: "87%", height: "75%" },
-    colors: ["#4285F4", "#b5b5b5", "#D3D3D3"], // 이번주(파란색), 지난주(회색), 이전년도(연한 회색)
-    lineWidth: 3,
+    chartArea: { width: "87%", height: "65%", bottom: 50 },
+    colors: ["#4285F4", "#b5b5b5", "#D3D3D3"],
+    lineWidth: 2,
     curveType: "function",
-    pointSize: 5,
+    pointSize: 4,
     series: {
-      0: {}, // 이번주 - 기본 설정 유지
-      1: { lineWidth: 2 }, // 지난주 - 약간 얇게
-      2: { lineWidth: 2, lineDashStyle: [4, 4] }, // 이전년도 - 점선 스타일 추가
+      0: { zIndex: 3 }, // 이번주 라인을 가장 위에 표시
+      1: { zIndex: 2 }, // 지난주 라인
+      2: { lineDashStyle: [4, 4], zIndex: 1 }, // 작년 데이터는 점선으로 표시
     },
   };
 
@@ -304,32 +319,34 @@ export default function SalesDashboardContent() {
         sector={user?.smb_sector_en}
       />
       <div className="container mx-auto p-3 pt-16 pb-20">
-        <Card className="mb-6 shadow-md border border-gray-300 rounded-lg p-5">
+        <Card className="mb-2 shadow-md border border-gray-300 rounded-lg px-5 py-3 bg-blue-50">
           <CardHeader className="flex p-0 justify-between items-start">
-            <CardTitle className="text-2xl sm:text-3xl font-semibold text-gray-800">
-              <span className="text-[15px] font-extrabold">
-                {base_date_str.replace(/^(\d{4})(\d{2})(\d{2})$/, "$1.$2.$3")}일
-                매출 금액은
-              </span>{" "}
-              <div className="text-left -mt-1">
-                <span className="text-red-500 font-extrabold">
-                  {last7daySales &&
-                    Number(
-                      last7daySales.find((x) => x.sale_date == base_date_str)
-                        ?.sum_amt || 0
-                    ).toLocaleString()}
+            <CardTitle className="text-gray-800">
+              <span className="text-xs">
+                {week_start_str.replace(/^(\d{4})(\d{2})(\d{2})$/, "$1.$2.$3")}{" "}
+                ~ {week_end_str.replace(/^(\d{4})(\d{2})(\d{2})$/, "$1.$2.$3")}
+              </span>
+              <div className="text-left">
+                <span className="text-blue-600 text-sm">
+                  누적 매출:{" "}
+                  {last7daySales
+                    ? last7daySales
+                        .reduce((sum, item) => sum + item.sum_amt, 0)
+                        .toLocaleString()
+                    : 0}
                   원
-                </span>{" "}
-                <span className="text-[15px] font-extrabold">이에요</span>
+                </span>
               </div>
             </CardTitle>
           </CardHeader>
+        </Card>
+        <Card className="mb-4 shadow-md border border-gray-300 rounded-lg p-5">
           <CardContent className="p-0 -mt-5 pb-1">
             <div className="relative top-4 flex flex-col items-center">
               <Chart
                 chartType="ColumnChart"
                 width="100%"
-                height="250px"
+                height="200px"
                 data={chartlast7Data}
                 options={last7_options}
               />
@@ -340,59 +357,77 @@ export default function SalesDashboardContent() {
           </CardContent>
         </Card>
 
-        <Card className="mb-6 shadow-md border border-gray-300 rounded-lg p-5 pb-3">
-          <CardHeader className="flex p-0 flex-row justify-between items-center">
-            <button
-              className="px-4 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-              onClick={() => setWeekOffset((prev) => prev - 1)}
-            >
-              이전주
-            </button>
-            <CardTitle className="flex-grow text-center text-lg sm:text-xl font-semibold text-gray-800">
-              주간 매출 비교
-            </CardTitle>
-            <button
-              className="px-4 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-              onClick={() => setWeekOffset((prev) => prev + 1)}
-            >
-              다음주
-            </button>
-          </CardHeader>
-          <CardContent className="p-0 pb-1">
-            <div className="relative top-4 flex flex-col items-center">
-              <Chart
-                chartType="LineChart"
-                width="100%"
-                height="250px"
-                data={chartTableData}
-                options={week_options}
-              />
-              <div className="absolute right-2 -top-1 text-gray-500 text-[9px]">
-                단위 : 만원
-              </div>
-            </div>
-          </CardContent>
-
-          <CardContent className="p-0">
-            <div className="mt-3 flex w-full">
-              <div className="ml-0 mt-3">
-                <button
-                  className="inline-flex items-center px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-blue-500 text-sm font-medium transition border border-gray-300"
-                  onClick={() =>
-                    router.push(
-                      `/soho/sales/monthly-compare?month=${base_date_str.substring(
-                        0,
-                        6
-                      )}`
-                    )
-                  }
+        <Card className="mb-4 shadow-md border border-gray-300 rounded-lg pb-1">
+          <div>
+            <CardHeader className="flex flex-row justify-between items-center bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-lg border-b border-blue-200 h-6">
+              <button
+                className="bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-colors duration-200 shadow-sm border border-blue-200 flex justify-center items-center gap-1 w-6 h-6"
+                onClick={() => setWeekOffset((prev) => prev - 1)}
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  월간 분석비교 보기 <span className="ml-1">→</span>
-                </button>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+              <CardTitle className="flex-grow text-center text-sm font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-800 p-0 m-0">
+                주간 매출 비교
+              </CardTitle>
+              <button
+                className="bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-colors duration-200 shadow-sm border border-blue-200 flex justify-center items-center gap-1 w-6 h-6"
+                onClick={() => setWeekOffset((prev) => prev + 1)}
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
+            </CardHeader>
+          </div>
+          <div className="mb-2 p-2">
+            <CardContent className="p-0 pb-1">
+              <div className="relative flex flex-col items-center">
+                <Chart
+                  chartType="LineChart"
+                  width="100%"
+                  height="250px"
+                  data={chartTableData}
+                  options={week_options}
+                />
+                <div className="absolute right-2 top-1 text-gray-500 text-[9px]">
+                  단위 : 만원
+                </div>
               </div>
-            </div>
-          </CardContent>
+            </CardContent>
+          </div>
         </Card>
+        <div className="w-full mb-4">
+          <div className="flex w-full">
+            <button
+              className="w-full py-4 bg-green-500 text-white text-center font-semibold rounded-[20px]"
+              onClick={() => router.push(`/soho/sales/monthly-compare`)}
+            >
+              {new Date().getMonth()}월 월간 분석비교 보기
+            </button>
+          </div>
+        </div>
 
         {/* <Card className="shadow-md border border-gray-300 rounded-lg">
           <CardHeader className="flex justify-between items-center">
