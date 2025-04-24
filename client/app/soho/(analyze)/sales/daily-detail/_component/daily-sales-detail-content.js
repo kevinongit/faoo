@@ -136,7 +136,7 @@ export default function DailySalesDetail() {
       <BusinessHeader
         business_name={user?.business_name}
         business_number={user?.business_number}
-        sector={user?.sector}
+        sector={user?.smb_sector_en}
       />
       <div className="container mx-auto p-3 pt-16 pb-20">
         {/* 온라인/오프라인 매출 요약 */}
