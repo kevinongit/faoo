@@ -93,7 +93,7 @@ async function getSalesData(business_number, start_date, end_date) {
 
 /**
  * @swagger
- * /sales/last7daySales:
+ * /saleapi/last7daySales:
  *   post:
  *     tags:
  *       - sales_router.js
@@ -178,7 +178,7 @@ router.post("/last7daySales", async (req, res) => {
 
 /**
  * @swagger
- * /sales/daySales:
+ * /saleapi/daySales:
  *   post:
  *     tags:
  *       - sales_router.js
@@ -258,7 +258,7 @@ router.post("/daySales", async (req, res) => {
 
 /**
  * @swagger
- * /sales/weekSales:
+ * /saleapi/weekSales:
  *   post:
  *     tags:
  *       - sales_router.js
@@ -283,7 +283,7 @@ router.post("/daySales", async (req, res) => {
  *                 example: "20250423"
  *               week_offset:
  *                 type: integer
- *                 description: 기준 주 오프셋 (0: 기준 주, 1: 다음 주, -1: 이전 주 등)
+ *                 description: "기준 주 오프셋 (0: 기준 주, 1: 다음 주, -1: 이전 주 등)"
  *     responses:
  *       200:
  *         description: 기준, 1주 전, 1년 전 주간 매출 데이터
@@ -390,7 +390,7 @@ router.post("/weekSales", async (req, res) => {
 
 /**
  * @swagger
- * /sales/monthSales:
+ * /saleapi/monthSales:
  *   post:
  *     tags:
  *       - sales_router.js
@@ -541,7 +541,7 @@ router.post("/monthSales", async (req, res) => {
 
 /**
  * @swagger
- * /sales/totalSales:
+ * /saleapi/totalSales:
  *   post:
  *     tags:
  *       - sales_router.js
@@ -593,7 +593,7 @@ router.post("/totalSales", async (req, res) => {
 
 /**
  * @swagger
- * /sales/dailySalesDetail:
+ * /saleapi/dailySalesDetail:
  *   post:
  *     tags:
  *       - sales_router.js
@@ -647,6 +647,36 @@ router.post("/dailySalesDetail", async (req, res) => {
       })
       .toArray();
 
+    const platformList = [...on_sum_base];
+
+    const platform = platformList.reduce((acc, sales) => {
+      const obj = acc.find((x) => x.platform_cd == sales.platform_cd);
+      if (obj) {
+        ++obj.cnt;
+        obj.sum_amt += Number(sales.sale_amt);
+      } else {
+        acc.push({
+          platform_cd: sales.platform_cd,
+          platform_nm: sales.platform_nm,
+          cnt: 1,
+          sum_amt: Number(sales.sale_amt),
+        });
+      }
+      return acc;
+    }, []);
+
+    // 온라인 매출 합계 계산
+    const online_sum = on_sum_base.reduce(
+      (sum, item) => sum + Number(item.sale_amt),
+      0
+    );
+
+    // 오프라인 매출 합계 계산
+    const offline_sum = off_sum_base.reduce(
+      (sum, item) => sum + Number(item.sale_amt),
+      0
+    );
+
     const sumList = off_sum_base.concat(on_sum_base);
 
     const day_sum = sumList.reduce(
@@ -663,26 +693,28 @@ router.post("/dailySalesDetail", async (req, res) => {
         ++acc[`time_${sales.sale_time}`].cnt;
         acc[`time_${sales.sale_time}`].amt += sales.sale_amt;
 
-        const obj = acc.platform.find(
-          (x) => x.platform_cd == sales.platform_cd
-        );
-        if (obj) {
-          ++obj.cnt;
-          obj.sum_amt += Number(sales.sale_amt);
-        } else {
-          acc.platform.push({
-            platform_cd: sales.platform_cd,
-            platform_nm: sales.platform_nm,
-            cnt: 1,
-            sum_amt: Number(sales.sale_amt),
-          });
-        }
+        // const obj = acc.platform.find(
+        //   (x) => x.platform_cd == sales.platform_cd
+        // );
+        // if (obj) {
+        //   ++obj.cnt;
+        //   obj.sum_amt += Number(sales.sale_amt);
+        // } else {
+        //   acc.platform.push({
+        //     platform_cd: sales.platform_cd,
+        //     platform_nm: sales.platform_nm,
+        //     cnt: 1,
+        //     sum_amt: Number(sales.sale_amt),
+        //   });
+        // }
 
         return acc;
       },
       {
         male: 0,
         female: 0,
+        online_sum: online_sum,
+        offline_sum: offline_sum,
         age_00: { cnt: 0, amt: 0 },
         age_10: { cnt: 0, amt: 0 },
         age_20: { cnt: 0, amt: 0 },
@@ -720,6 +752,8 @@ router.post("/dailySalesDetail", async (req, res) => {
         platform: [],
       }
     );
+
+    day_sum.platform = platform;
 
     logger.info(
       `/dailySalesDetail retrieved for business number: ${business_number} ${base_date} : ${sumList.length}`

@@ -11,7 +11,7 @@
       "label": "data generatornpm install",
       "command": "npm install",
       "type": "shell",
-      "options": { "cwd": "${workspaceFolder}/datagen/dgapp" }
+      "options": { "cwd": "${workspaceFolder}/datagen/dmc" }
     },
     {
       "label": "salesapi npm install",

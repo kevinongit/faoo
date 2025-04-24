@@ -7,17 +7,9 @@ import { useAuthStore } from "@/lib/store/authStore";
 import Loading from "@/components/Loading";
 import useDailySalesDetailStore from "@/lib/store/dailySalesDetailStore";
 import BusinessHeader from "@/components/BusinessHeader";
-import {
-  XAxis,
-  YAxis,
-  Tooltip,
-  AreaChart,
-  Area,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-} from "recharts";
+// ECharts 사용을 위해 recharts 관련 임포트 제거
+import ReactECharts from "echarts-for-react";
+import Image from "next/image";
 
 export default function DailySalesDetail() {
   const router = useRouter();
@@ -58,9 +50,17 @@ export default function DailySalesDetail() {
     if (ratioData && Object.keys(ratioData).length > 0) {
       const platformData = ratioData.platform.map((item) => {
         if (selectedType === "건수별") {
-          return { key: item.platform_nm, value: item.cnt };
+          return {
+            name: item.platform_nm,
+            value: item.cnt,
+            key: item.platform_nm,
+          };
         } else {
-          return { key: item.platform_nm, value: item.sum_amt };
+          return {
+            name: item.platform_nm,
+            value: item.sum_amt,
+            key: item.platform_nm,
+          };
         }
       });
       setPlatformData(platformData || []);
@@ -102,65 +102,29 @@ export default function DailySalesDetail() {
     }
   }, [ratioData, selectedType]);
 
-  const getColor = function (entry, index) {
-    const COLORS = ["#9134d3", "#fdf400", "#fb6b05", "#ff8c94"];
+  const getColor = (entry, index) => {
+    const colors = [
+      "#4285F4", // Google Blue
+      "#EA4335", // Google Red
+      "#FBBC05", // Google Yellow
+      "#34A853", // Google Green
+      "#5851DB", // Instagram Purple
+      "#E1306C", // Instagram Pink
+      "#FD1D1D", // Instagram Red
+      "#F77737", // Instagram Orange
+    ];
 
-    switch (entry.key) {
-      case "배달의민족":
-        return "#19b9d2";
-      case "쿠팡이츠":
-        return "#0639c4";
-      case "요기요":
-        return "#db0404";
-      default:
-        return COLORS[index % COLORS.length];
-    }
-  };
+    // 특정 플랫폼에 대한 고정 색상 지정
+    if (entry.key === "네이버" || entry.name === "네이버") return "#03C75A";
+    if (entry.key === "카카오" || entry.name === "카카오") return "#FEE500";
+    if (entry.key === "쿠팡이츠" || entry.name === "쿠팡이츠") return "#E1B327";
+    if (entry.key === "배달의민족" || entry.name === "배달의민족")
+      return "#44CCC6";
+    if (entry.key === "요기요" || entry.name === "요기요") return "#FB0A58";
+    if (entry.key === "오프라인" || entry.name === "오프라인") return "#333333";
 
-  const renderCustomizedLabel = ({
-    cx,
-    cy,
-    midAngle,
-    innerRadius,
-    outerRadius,
-    percent,
-    index,
-  }) => {
-    const RADIAN = Math.PI / 180;
-    const radius = innerRadius + (outerRadius - innerRadius) * 1.5;
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-    const platform = platformData[index];
-    const label = `${platform.key} ${(percent * 100).toFixed(0)}%`;
-
-    return (
-      <g>
-        <rect
-          x={x - label.length * 2.8}
-          y={y - 10}
-          rx={10}
-          ry={10}
-          width={label.length * 10}
-          height={20}
-          fill={getColor(platform, index)}
-          stroke={getColor(platform, index)}
-          strokeWidth={1}
-          style={{ filter: "drop-shadow(1px 1px 2px rgba(0,0,0,0.1))" }}
-        />
-        <text
-          x={x + 15}
-          y={y + 2}
-          fill="#ffffff"
-          textAnchor="middle"
-          dominantBaseline="middle"
-          fontSize="10"
-          fontWeight="bold"
-        >
-          {label}
-        </text>
-      </g>
-    );
+    // 그 외의 경우 기본 색상 배열에서 선택
+    return colors[index % colors.length];
   };
 
   if (ratioData && Object.keys(ratioData).length === 0) {
@@ -172,109 +136,289 @@ export default function DailySalesDetail() {
       <BusinessHeader
         business_name={user?.business_name}
         business_number={user?.business_number}
-        sector={user?.sector}
+        sector={user?.smb_sector_en}
       />
       <div className="container mx-auto p-3 pt-16 pb-20">
-        {/* ✅ 1. 플랫폼별 매출 비중 */}
-        <Card className="mb-6 shadow-md border border-gray-300 rounded-lg p-5">
-          <CardHeader className="flex flex-row items-center justify-between p-0">
-            {/* 제목 */}
-            <h2 className="text-lg font-bold text-gray-800 whitespace-nowrap">
-              플랫폼별 매출 비중
-            </h2>
-
-            {/* 금액별 / 건수별 선택 버튼 */}
-            <div className="flex gap-2">
-              {["금액별", "건수별"].map((type) => (
-                <button
-                  key={type}
-                  className={`text-sm leading-none px-3 py-1 rounded-full border transition
-                    ${
-                      selectedType === type
-                        ? "bg-blue-500 text-white border-blue-500"
-                        : "bg-white text-gray-600 border-gray-300 hover:bg-gray-100"
-                    }`}
-                  onClick={() => setSelectedType(type)}
-                >
-                  {type}
-                </button>
-              ))}
+        {/* 온라인/오프라인 매출 요약 */}
+        {ratioData && (
+          <div className="flex justify-between mb-4 gap-2">
+            <div className="flex justify-between items-center p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg shadow-sm border border-blue-200 w-full">
+              <p className="text-xs text-gray-600 mb-1">온라인 매출</p>
+              <p className="text-lg font-bold text-blue-600 text-right">
+                {ratioData.online_sum?.toLocaleString() || 0}원
+              </p>
             </div>
-          </CardHeader>
-
-          <CardContent>
-            <ResponsiveContainer width="100%" height={220}>
-              <PieChart>
-                <Pie
-                  data={platformData}
-                  cx="45%"
-                  cy="50%"
-                  innerRadius={0}
-                  outerRadius={67}
-                  dataKey="value"
-                  isAnimationActive={true}
-                  label={renderCustomizedLabel}
-                >
-                  {platformData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={getColor(entry, index)} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-
-          {/* 🔽 요약 박스 */}
-          <div className="flex justify-center gap-3 mt-0 text-black">
-            <div className="bg-white rounded-lg py-3 px-4 flex flex-col items-center shadow">
-              <div className="text-xs text-gray-500">주 성별</div>
-              <div className="text-sm font-bold">{summary.mainGender}</div>
-            </div>
-            <div className="bg-white rounded-lg py-3 px-4 flex flex-col items-center shadow">
-              <div className="text-xs text-gray-500">주 연령대</div>
-              <div className="text-sm font-bold">{summary.mainAge}대</div>
-            </div>
-            <div className="bg-white rounded-lg py-3 px-4 flex flex-col items-center shadow">
-              <div className="text-xs text-gray-500">주 시간대</div>
-              <div className="text-sm font-bold">{summary.mainHour}시</div>
+            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg shadow-sm border border-gray-200 w-full">
+              <p className="text-xs text-gray-600 mb-1">오프라인 매출</p>
+              <p className="text-lg font-bold text-gray-700">
+                {ratioData.offline_sum?.toLocaleString() || 0}원
+              </p>
             </div>
           </div>
-        </Card>
+        )}
+        {/* 금액별 / 건수별 선택 버튼 - Card 밖으로 이동 */}
+        {/* 금액별 / 건수별 탭 */}
+        <div className="w-full mb-2">
+          <div className="flex">
+            {["금액별", "건수별"].map((type) => (
+              <button
+                key={type}
+                className={`flex-1 py-3 text-center font-semibold transition
+                  ${
+                    selectedType === type
+                      ? "border-b-2 border-blue-500 bg-blue-200 text-blue-700"
+                      : "border-b-2 border-transparent bg-blue-50 text-gray-600 hover:bg-gray-50"
+                  }`}
+                onClick={() => setSelectedType(type)}
+              >
+                {type}
+              </button>
+            ))}
+          </div>
+        </div>
 
-        <Card className="mb-6 shadow-md border border-gray-300 rounded-lg p-5">
-          <CardHeader className="flex p-0">
-            <h2 className="text-lg font-bold text-gray-800 whitespace-nowrap">
-              시간대별 매출 추이
-            </h2>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={150}>
-              <AreaChart data={hourlySalesData}>
-                <XAxis
-                  dataKey="hour"
-                  axisLine={false}
-                  tickLine={false}
-                  interval={2}
-                  tick={{ fontSize: 12 }}
+        {/* 1. 플랫폼별 매출 비중 */}
+
+        <Card className="mb-6 shadow-md border border-gray-300 rounded-lg">
+          <CardContent className="m-0 p-0">
+            <p className="text-sm mx-3 my-2">플랫폼별 매출 비중</p>
+            <ReactECharts
+              style={{ height: "220px", width: "100%", marginBottom: "20px" }}
+              option={{
+                tooltip: {
+                  trigger: "item",
+                  formatter: "{b}: {c} ({d}%)",
+                },
+                legend: {
+                  orient: "horizontal",
+                  bottom: 0,
+                  data: platformData.map((item) => item.name),
+                  type: "scroll", // 항목이 많을 경우 스크롤 활성화
+                  formatter: function (name) {
+                    return name; // 전체 텍스트 표시
+                  },
+                  textStyle: {
+                    width: 120, // 텍스트 너비 더 확보
+                    overflow: "breakAll",
+                    ellipsis: false,
+                  },
+                  itemWidth: 15, // 범례 아이콘 너비 줄이기
+                  itemGap: 15, // 범례 항목 간격 조정
+                  pageButtonPosition: "end", // 페이지 버튼 위치
+                  pageIconSize: 12, // 페이지 버튼 크기
+                },
+                series: [
+                  {
+                    name: selectedType === "금액별" ? "매출액" : "주문건수",
+                    type: "pie",
+                    radius: ["20%", "65%"],
+                    center: ["50%", "45%"],
+                    roseType: "area",
+                    itemStyle: {
+                      borderRadius: 5,
+                    },
+                    label: {
+                      formatter: function (params) {
+                        // 플랫폼 이름과 퍼센트를 두 줄로 표시
+                        return (
+                          params.name + "\n" + params.percent.toFixed(1) + "%"
+                        );
+                      },
+                      overflow: "none",
+                      width: 130,
+                      lineHeight: 15, // 줄 간격 설정
+                      rich: {
+                        // 텍스트 스타일 설정
+                        a: { fontSize: 12, lineHeight: 20 },
+                        b: { fontSize: 11, lineHeight: 20 },
+                      },
+                    },
+                    data: platformData.map((item, index) => ({
+                      value: item.value,
+                      name: item.name,
+                      itemStyle: {
+                        color: getColor(item, index),
+                      },
+                    })),
+                  },
+                ],
+              }}
+              opts={{ renderer: "canvas" }}
+              notMerge={false}
+              lazyUpdate={true}
+              onEvents={{
+                dblclick: () => {}, // 모바일에서 더블클릭 방지
+              }}
+            />
+          </CardContent>
+
+          {/* 요약 박스 - 새로운 디자인 */}
+          <CardContent className="px-4 py-3 gap-2 border-t flex justify-around items-center bg-gradient-to-r from-blue-50 to-indigo-50 rounded-b-[10px]">
+            <div className="flex items-center">
+              <div className="bg-indigo-100 p-2 rounded-full mr-2">
+                <Image
+                  src="/images/gender.png"
+                  alt="성별"
+                  width={20}
+                  height={20}
                 />
-                <YAxis hide />
-                <Tooltip />
-                <Area
-                  type="monotone"
-                  dataKey="value"
-                  stroke="#FB8C00"
-                  fill="#FFE0B2"
-                  strokeWidth={2}
+              </div>
+              <div>
+                <div className="flex flex-col justify-center w-full">
+                  <p className="text-xs text-center">주 성별</p>
+                  <p className="font-bold text-indigo-600 w-12 text-center">
+                    {summary.mainGender}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center">
+              <div className="bg-indigo-100 p-2 rounded-full mr-2">
+                <Image
+                  src="/images/age.png"
+                  alt="연령대"
+                  width={20}
+                  height={20}
                 />
-              </AreaChart>
-            </ResponsiveContainer>
+              </div>
+              <div>
+                <div className="flex flex-col justify-center w-full">
+                  <p className="text-xs text-center">주 연령대</p>
+                  <p className="font-bold text-indigo-600 w-12 text-center">
+                    {summary.mainAge}대
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center">
+              <div className="bg-indigo-100 p-2 rounded-full mr-2">
+                <Image
+                  src="/images/time.png"
+                  alt="시간대"
+                  width={20}
+                  height={20}
+                />
+              </div>
+              <div>
+                <div className="flex flex-col justify-center w-full">
+                  <p className="text-xs text-center">주 시간대</p>
+                  <p className="font-bold text-green-600 w-12 text-center">
+                    {summary.mainHour}시
+                  </p>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
-        {/* ✅ 하단 분석 버튼 영역 */}
-        <div className="left-0 w-full px-4">
-          <div className="flex justify-between max-w-md mx-auto">
+        <Card className="mb-6 shadow-md border border-gray-300 rounded-lg">
+          <CardContent className="m-0 p-0">
+            <p className="text-sm mx-3 my-2">시간대별 매출 추이</p>
+            <div
+              style={{
+                height: "150px",
+                width: "100%",
+                margin: "0",
+                padding: "0",
+              }}
+            >
+              <ReactECharts
+                option={{
+                  grid: {
+                    top: 0,
+                    right: 10,
+                    bottom: 30,
+                    left: -30,
+                    containLabel: true,
+                  },
+                  xAxis: {
+                    type: "category",
+                    data: hourlySalesData.map((item) => item.hour),
+                    axisLine: {
+                      show: true,
+                      lineStyle: {
+                        color: "#ccc",
+                      },
+                    },
+                    axisTick: { show: false },
+                    axisLabel: {
+                      fontSize: 12,
+                      interval: 2,
+                    },
+                    splitLine: {
+                      show: true,
+                      lineStyle: {
+                        color: "#E0E6F1",
+                        type: "dashed",
+                        width: 1,
+                      },
+                    },
+                  },
+                  yAxis: {
+                    type: "value",
+                    show: false,
+                    splitLine: {
+                      show: true,
+                      lineStyle: {
+                        color: "#E0E6F1",
+                        type: "dashed",
+                        width: 1,
+                      },
+                    },
+                  },
+                  tooltip: {
+                    trigger: "axis",
+                    formatter: function (params) {
+                      const data = params[0];
+                      return `${data.name}: ${data.value.toLocaleString()}원`;
+                    },
+                  },
+                  series: [
+                    {
+                      data: hourlySalesData.map((item) => item.value),
+                      type: "line",
+                      smooth: true,
+                      symbol: "none",
+                      lineStyle: {
+                        width: 2,
+                        color: "#FB8C00",
+                      },
+                      areaStyle: {
+                        color: {
+                          type: "linear",
+                          x: 0,
+                          y: 0,
+                          x2: 0,
+                          y2: 1,
+                          colorStops: [
+                            {
+                              offset: 0,
+                              color: "#FFE0B2",
+                            },
+                            {
+                              offset: 1,
+                              color: "rgba(255, 224, 178, 0.2)",
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  ],
+                  onEvents: {
+                    dblclick: () => {},
+                  },
+                }}
+                style={{ height: "100%", width: "100%" }}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 하단 분석 버튼 배너 영역 */}
+        <div className="w-full mb-4">
+          <div className="flex w-full">
             <button
-              className="flex-1 mr-2 py-3 rounded-xl bg-blue-100 text-blue-700 font-semibold shadow hover:bg-blue-200 transition"
+              className="w-1/2 py-4 bg-blue-400 text-white text-center font-semibold rounded-l-[20px]"
               onClick={() =>
                 router.push(`/soho/sales/chart-dashboard?date=${base_date_str}`)
               }
@@ -282,7 +426,7 @@ export default function DailySalesDetail() {
               주간 분석비교 보기
             </button>
             <button
-              className="flex-1 ml-2 py-3 rounded-xl bg-green-100 text-green-700 font-semibold shadow hover:bg-green-200 transition"
+              className="w-1/2 py-4 bg-green-500 text-white text-center font-semibold rounded-r-[20px]"
               onClick={() => router.push(`/soho/sales/monthly-compare`)}
             >
               월간 분석비교 보기
