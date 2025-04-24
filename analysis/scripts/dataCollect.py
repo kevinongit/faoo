@@ -21,16 +21,11 @@ def connect_to_mongo():
 def get_target_data(db, business_number):
     try:
         collection = db["sales_data"]
-        today = date.today()
-        start_of_day = datetime(today.year, today.month, today.day, 0, 0, 0)
-        end_of_day = datetime(today.year, today.month, today.day, 23, 59, 59)
+        # 날짜 필터링 제거 - 사업자번호만으로 필터링
         query = {
-            "business_number": business_number,
-            "created_at": {
-                "$gte": start_of_day,
-                "$lte": end_of_day
-            }
+            "business_number": business_number
         }
+        # 가장 최근에 생성된 데이터를 가져옴
         latest_item = collection.find(query).sort("created_at", -1).limit(1)
         return latest_item
     except Exception as e:
@@ -95,10 +90,13 @@ def get_card_sales_data(merchant_info, card):
         for detail in card["daily_sales_data"]:
             date = detail["date"]
             for daily_sales in detail["approval_details"]:
+                # approval_datetime에서 시간 추출 (형식: "2024-01-01 19:04:42")
+                approval_time = daily_sales["approval_datetime"].split(" ")[1].split(":")[0] if "approval_datetime" in daily_sales else "00"
+                
                 transformed_data.append({
                     "sale_date": date.replace("-", ""),
                     "business_number": biz_number,
-                    # "sale_time": daily_sales["order_time"].split(":")[0],
+                    "sale_time": approval_time,  # approval_datetime에서 추출한 시간 사용
                     "sale_amt": daily_sales["total_amount"],
                     "transaction_type": daily_sales["transaction_type"],
                     "smb_sector": smb_sector,
