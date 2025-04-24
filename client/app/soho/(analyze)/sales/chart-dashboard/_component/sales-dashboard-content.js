@@ -210,7 +210,7 @@ export default function SalesDashboardContent() {
       <BusinessHeader
         business_name={user?.business_name}
         business_number={user?.business_number}
-        sector={user?.sector}
+        sector={user?.smb_sector_en}
       />
       <div className="container mx-auto p-3 pt-16 pb-20">
         <Card className="mb-6 shadow-md border border-gray-300 rounded-lg p-5">
@@ -303,7 +303,7 @@ export default function SalesDashboardContent() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-md border border-gray-300 rounded-lg">
+        {/* <Card className="shadow-md border border-gray-300 rounded-lg">
           <CardHeader className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <CardTitle className="text-lg sm:text-xl text-gray-800 font-bold flex items-center">
@@ -408,7 +408,7 @@ export default function SalesDashboardContent() {
               </table>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </>
   );

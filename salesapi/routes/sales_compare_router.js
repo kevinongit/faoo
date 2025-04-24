@@ -238,4 +238,170 @@ function calculatePercentileRank(data, targetValue) {
   };
 }
 
+/**
+ * @swagger
+ * /compareapi/v2/salesRanking:
+ *   post:
+ *     tags:
+ *       - sales_compare_router.js
+ *     summary: 사업장 매출 순위 비교 정보 조회 (v2)
+ *     description: 사업자번호와 월 정보를 기반으로 해당 업종의 매출 순위 비교 정보를 제공합니다.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - business_number
+ *               - month
+ *             properties:
+ *               business_number:
+ *                 type: string
+ *                 description: 사업자번호
+ *                 example: "1001010001"
+ *               month:
+ *                 type: string
+ *                 description: 월 정보 (YYYYMM 형식)
+ *                 example: "202504"
+ *     responses:
+ *       200:
+ *         description: 업종별 매출 순위 비교 정보
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ */
+router.post("/v2/salesRanking", async (req, res) => {
+  try {
+    const results = {};
+    const { business_number, month } = req.body;
+
+    const client = await connectToDB();
+    const user_collection = client.db("fidb").collection("users");
+    const user_info = await user_collection.findOne({
+      business_number: business_number,
+    });
+
+    const comparison_groups_collection = client
+      .db("analyzed")
+      .collection("comparison_groups");
+    const comparison_groups = await comparison_groups_collection.findOne({
+      smb_sector: user_info.smb_sector,
+    });
+
+    res.json(comparison_groups);
+  } catch (error) {
+    logger.error("Error retrieving salesRanking:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+function calculatePercentileRank(data, targetValue) {
+  // 1️⃣ 내림차순 정렬
+  const sortedData = [...data].sort((a, b) => b - a);
+
+  // 2️⃣ 상위 몇 %인지 구하기
+  const rank = sortedData.indexOf(targetValue) + 1; // 1-based rank
+  const percentileRank = (
+    (1 - (1 - (rank - 0.5) / sortedData.length)) *
+    100
+  ).toFixed(0);
+
+  // 3️⃣ 전체 평균값 구하기
+  const totalAvg =
+    sortedData.reduce((sum, val) => sum + val, 0) / sortedData.length;
+
+  const rateCnt = Math.floor(sortedData.length * 0.1);
+  let top10Avg,
+    top20Avg,
+    top30Avg,
+    top40Avg,
+    top50Avg,
+    top60Avg,
+    top70Avg,
+    top80Avg,
+    top90Avg,
+    topOthAvg;
+  for (let i = 0; i < 10; i++) {
+    logger.info(i * rateCnt + "  ===>   " + rateCnt);
+    switch (i) {
+      case 0:
+        top10Avg =
+          sortedData
+            .slice(i * rateCnt, (i + 1) * rateCnt)
+            .reduce((sum, val) => sum + val, 0) / rateCnt;
+        break;
+      case 1:
+        top20Avg =
+          sortedData
+            .slice(i * rateCnt, (i + 1) * rateCnt)
+            .reduce((sum, val) => sum + val, 0) / rateCnt;
+        break;
+      case 2:
+        top30Avg =
+          sortedData
+            .slice(i * rateCnt, (i + 1) * rateCnt)
+            .reduce((sum, val) => sum + val, 0) / rateCnt;
+        break;
+      case 3:
+        top40Avg =
+          sortedData
+            .slice(i * rateCnt, (i + 1) * rateCnt)
+            .reduce((sum, val) => sum + val, 0) / rateCnt;
+        break;
+      case 4:
+        top50Avg =
+          sortedData
+            .slice(i * rateCnt, (i + 1) * rateCnt)
+            .reduce((sum, val) => sum + val, 0) / rateCnt;
+        break;
+      case 5:
+        top60Avg =
+          sortedData
+            .slice(i * rateCnt, (i + 1) * rateCnt)
+            .reduce((sum, val) => sum + val, 0) / rateCnt;
+        break;
+      case 6:
+        top70Avg =
+          sortedData
+            .slice(i * rateCnt, (i + 1) * rateCnt)
+            .reduce((sum, val) => sum + val, 0) / rateCnt;
+        break;
+      case 7:
+        top80Avg =
+          sortedData
+            .slice(i * rateCnt, (i + 1) * rateCnt)
+            .reduce((sum, val) => sum + val, 0) / rateCnt;
+        break;
+      case 8:
+        top90Avg =
+          sortedData
+            .slice(i * rateCnt, (i + 1) * rateCnt)
+            .reduce((sum, val) => sum + val, 0) / rateCnt;
+        break;
+      case 9:
+        topOthAvg =
+          sortedData.slice(i * rateCnt).reduce((sum, val) => sum + val, 0) /
+          sortedData.slice(i * rateCnt).length;
+        break;
+    }
+  }
+
+  return {
+    percentileRank,
+    top10Avg,
+    top20Avg,
+    top30Avg,
+    top40Avg,
+    top50Avg,
+    top60Avg,
+    top70Avg,
+    top80Avg,
+    top90Avg,
+    topOthAvg,
+    totalAvg,
+  };
+}
+
 module.exports = router;

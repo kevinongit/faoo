@@ -429,7 +429,7 @@ export default function DailySalesDetail() {
               className="w-1/2 py-4 bg-green-500 text-white text-center font-semibold rounded-r-[20px]"
               onClick={() => router.push(`/soho/sales/monthly-compare`)}
             >
-              월간 분석비교 보기
+              {new Date().getMonth()}월 월간 분석비교 보기
             </button>
           </div>
         </div>

@@ -189,17 +189,17 @@ export default function SalesCompareContent() {
           </h1>
         </div>
 
-        <Card className="mb-6 mt-7 shadow-md border border-gray-300 rounded-lg p-5 relative">
-          <CardHeader className="flex p-0 justify-between items-start">
-            <CardTitle className="text-lg sm:text-xl text-gray-800 font-bold mb-5">
+        <Card className="flex flex-col mb-6 mt-7 shadow-md border border-gray-300 rounded-lg p-5">
+          <CardHeader className="flex p-0 justify-between items-cent">
+            <CardTitle className="text-lg sm:text-xl text-gray-800 font-bold mb-1">
               {`${Number(rankData.base_month)}월 ${rankData.zone_nm} ${
                 rankData.smb_sector
               } 사업장 매출 비교`}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0 pb-1">
-            <div className="flex justify-start gap-4 items-center relative">
-              <div className="flex-1 max-w-[200px]">
+            <div className="flex justify-center gap-4 md:gap-16 items-center">
+              <div className="flex max-w-[200px]">
                 <svg ref={ref} className="block mx-auto" />
               </div>
               <div className="flex flex-col items-center pt-0">
@@ -207,8 +207,8 @@ export default function SalesCompareContent() {
                   {`상위 ${rankData?.monthInfo?.percentileRank || ""}%`}
                 </div>
                 <p className="text-[13px] -mt-2 text-gray-700 font-medium leading-tight text-center">
-                  우리가게는
-                  <br />
+                  {/* 우리가게는 */}
+                  {/* <br /> */}
                   <span className="font-semibold text-[15px] text-black">
                     {rankData.zone_nm} {rankData.smb_sector}
                   </span>{" "}
@@ -220,8 +220,9 @@ export default function SalesCompareContent() {
                   상위{" "}
                   <span className="text-red-500 text-[15px] font-bold">
                     {rankData?.monthInfo?.percentileRank || ""}%
-                  </span>{" "}
-                  수준이에요.
+                  </span>
+                  {/* {" "}
+                  수준이에요. */}
                 </p>
               </div>
             </div>

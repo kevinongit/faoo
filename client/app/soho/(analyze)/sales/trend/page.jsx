@@ -868,6 +868,27 @@ export default function Trend() {
               </div>
             </CardContent>
           </Card>
+          {/* 하단 분석 버튼 배너 영역 */}
+          <div className="w-full mb-4">
+            <div className="flex w-full">
+              <button
+                className="w-1/2 py-4 bg-blue-400 text-white text-center font-semibold rounded-l-[20px]"
+                onClick={() =>
+                  router.push(
+                    `/soho/sales/chart-dashboard?date=${base_date_str}`
+                  )
+                }
+              >
+                주간 분석비교 보기
+              </button>
+              <button
+                className="w-1/2 py-4 bg-green-500 text-white text-center font-semibold rounded-r-[20px]"
+                onClick={() => router.push(`/soho/sales/monthly-compare`)}
+              >
+                {new Date().getMonth()}월 월간 분석비교 보기
+              </button>
+            </div>
+          </div>
         </div>
       </main>
     </div>
