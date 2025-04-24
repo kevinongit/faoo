@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/select";
 import DeliveryRatioSlider from "@/components/DeliveryRatioSlider";
 import OnlineSalesRatioSlider from "@/components/OnlineSalesRatioSlider";
+import MonthlySalesChart from "@/components/MonthlySalesChart";
 
 export default function SimData() {
   const {
@@ -201,8 +202,8 @@ export default function SimData() {
         step4: { status: "ready", completed: false },
       }));
 
-      // 4. 다음 단계로 이동
-      setCurrentStep(4);
+      // 4. 다음 단계로 이동하지 않고 현재 단계에 머무름
+      // setCurrentStep(4);
     } catch (err) {
       console.error("Error:", err);
       setError(err.message);
@@ -334,10 +335,10 @@ export default function SimData() {
         console.log("validateForm failed");
         return;
       }
-      console.log(formData);
+      console.log("Form Data:", formData);
       setIsLoading(true);
       setError(null);
-      console.log(formData);
+
       // 주말 영업일이 선택된 경우에만 주말 평균매출 포함
       const requestData = {
         ...formData,
@@ -348,7 +349,16 @@ export default function SimData() {
           ? formData.weekendAvgSales
           : undefined,
       };
-      console.log(requestData);
+      console.log("Request Data:", requestData);
+      console.log("Date Range:", {
+        startDate: requestData.startDate,
+        endDate: requestData.endDate,
+        days: Math.round(
+          (new Date(requestData.endDate) - new Date(requestData.startDate)) /
+            (1000 * 60 * 60 * 24)
+        ),
+      });
+
       // 데이터 생성 API 호출
       const response = await fetch("http://localhost:3400/gen-smb-revenue", {
         method: "POST",
@@ -363,9 +373,11 @@ export default function SimData() {
       }
 
       const result = await response.json();
+      console.log("Generation Result:", result);
       setGenerationResult(result);
       setCurrentStep(2);
     } catch (err) {
+      console.error("Error in handleGenerateData:", err);
       setError(err.message);
     } finally {
       setIsLoading(false);
@@ -2159,6 +2171,14 @@ export default function SimData() {
                 </p>
               </div>
             )}
+            {collectionData && collectionData.data?.monthly_sales && (
+              <div className="mt-6">
+                <h3 className="text-lg font-medium mb-4">월별 매출 추이</h3>
+                <MonthlySalesChart
+                  monthlySales={collectionData.data.monthly_sales}
+                />
+              </div>
+            )}
           </div>
         );
       case 4:
@@ -2560,18 +2580,18 @@ export default function SimData() {
     const weekdayAvgSales = 400000;
     const weekendAvgSales = 500000;
 
-    // 2024년 1월 1일 계산
+    // 2024년 1월 1일부터 어제까지의 날짜 설정
     const today = new Date();
-    const startDate = new Date("2024-01-01"); // 2024년 1월 1일
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1); // 어제
+    const startDate = new Date("2024-01-01"); // 2024년 1월 1일
 
     setFormData({
       ...formData,
       businessDays,
       weekdayAvgSales: weekdayAvgSales.toString(),
       weekendAvgSales: weekendAvgSales.toString(),
-      startDate: "2024-01-01", // 직접 날짜 문자열 지정
+      startDate: startDate.toISOString().split("T")[0],
       endDate: yesterday.toISOString().split("T")[0],
       hasDelivery: true,
       deliveryRatio: 30,
