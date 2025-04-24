@@ -390,7 +390,7 @@ router.post("/weekSales", async (req, res) => {
 
 /**
  * @swagger
- * //monthSales:
+ * /saleapi/monthSales:
  *   post:
  *     tags:
  *       - sales_router.js
@@ -665,6 +665,18 @@ router.post("/dailySalesDetail", async (req, res) => {
       return acc;
     }, []);
 
+    // 온라인 매출 합계 계산
+    const online_sum = on_sum_base.reduce(
+      (sum, item) => sum + Number(item.sale_amt),
+      0
+    );
+
+    // 오프라인 매출 합계 계산
+    const offline_sum = off_sum_base.reduce(
+      (sum, item) => sum + Number(item.sale_amt),
+      0
+    );
+
     const sumList = off_sum_base.concat(on_sum_base);
 
     const day_sum = sumList.reduce(
@@ -701,6 +713,8 @@ router.post("/dailySalesDetail", async (req, res) => {
       {
         male: 0,
         female: 0,
+        online_sum: online_sum,
+        offline_sum: offline_sum,
         age_00: { cnt: 0, amt: 0 },
         age_10: { cnt: 0, amt: 0 },
         age_20: { cnt: 0, amt: 0 },
