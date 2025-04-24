@@ -495,6 +495,20 @@ export default function Trend() {
           type: "value",
           name: "매출액",
           boundaryGap: ["0%", "10%"],
+          min: function (value) {
+            // 최소값 계산 - 평균값에서 일정 비율만큼 낮게 설정
+            const avg = (value.max + value.min) / 2;
+            const range = value.max - value.min;
+            // 평균값에서 범위의 70%만큼 낮게 설정 (최소 0)
+            return Math.max(0, avg - range * 0.9);
+          },
+          max: function (value) {
+            // 최대값 계산 - 평균값에서 일정 비율만큼 높게 설정
+            const avg = (value.max + value.min) / 2;
+            const range = value.max - value.min;
+            // 평균값에서 범위의 70%만큼 높게 설정
+            return avg + range * 0.7;
+          },
           axisLabel: {
             show: false,
             formatter: function (value) {
@@ -549,7 +563,7 @@ export default function Trend() {
                   focus: "series",
                 },
                 symbolSize: 4,
-                smooth: true,
+                smooth: false,
                 lineStyle: {
                   width: 1,
                   type: "dashed",
@@ -610,7 +624,7 @@ export default function Trend() {
       <main className="flex flex-col gap-4 px-4 pb-16 mt-16">
         {/* 연도 선택 및 이전 연도 평균 토글 */}
         <div className="flex flex-col items-center gap-2 mb-2">
-          {/* 최근 6개월 매출 차트 (2024년 11월 ~ 2025년 4월) */}
+          {/* 최근 6개월 매출 차트 */}
           <Card className="w-full mb-2">
             <CardContent className="px-0 pb-2">
               <p className="text-sm mx-3 my-2">최근 6개월 매출</p>
@@ -727,7 +741,7 @@ export default function Trend() {
               )}
             </CardContent>
 
-            <CardContent className="py-3 px-4 border-t flex justify-around items-center bg-gradient-to-r from-blue-50 to-indigo-50 rounded-b-md">
+            <CardContent className="py-3 px-3 border-t flex justify-around items-center bg-gradient-to-r from-blue-50 to-indigo-50 rounded-b-md">
               <div className="flex items-center gap-3">
                 <div className="bg-blue-100 p-2 rounded-full">
                   <Image
@@ -762,33 +776,94 @@ export default function Trend() {
                     height={20}
                   />
                 </div>
-                <div>
-                  <p className="text-xs text-gray-500">전년 대비 성장률</p>
-                  <p className="text-base text-center font-bold text-indigo-600">
-                    {(() => {
-                      const currentYearData = yearData.find(
-                        (d) => d.year === selectedYear
-                      );
-                      const prevYearData = yearData.find(
-                        (d) => d.year === selectedYear - 1
-                      );
-                      if (!currentYearData || !prevYearData) return "-";
-                      const currentTotal = currentYearData.data.reduce(
-                        (sum, month) => sum + month.total,
-                        0
-                      );
-                      const prevTotal = prevYearData.data.reduce(
-                        (sum, month) => sum + month.total,
-                        0
-                      );
-                      if (prevTotal === 0) return "-";
-                      const growthRate =
-                        ((currentTotal - prevTotal) / prevTotal) * 100;
-                      return `${growthRate > 0 ? "+" : ""}${growthRate.toFixed(
-                        1
-                      )}%`;
-                    })()}
-                  </p>
+                <div className="flex justify-between gap-6 mr-2">
+                  <div>
+                    <p className="text-xs text-center text-gray-500">
+                      전년 대비
+                    </p>
+                    <p className="text-base text-center font-bold text-indigo-600">
+                      {(() => {
+                        // 현재 연도와 이전 연도 데이터 찾기
+                        const currentYearData = yearData.find(
+                          (d) => d.year === selectedYear
+                        );
+                        const prevYearData = yearData.find(
+                          (d) => d.year === selectedYear - 1
+                        );
+                        if (!currentYearData || !prevYearData) return "-";
+
+                        // 현재 월 가져오기 (예: 4월)
+                        const currentMonth = new Date().getMonth() + 1; // 0부터 시작하므로 +1
+
+                        // 현재 연도의 현재 월까지의 매출 합계
+                        const currentTotal = currentYearData.data
+                          .slice(0, currentMonth) // 현재 월까지만 계산 (1월~현재월)
+                          .reduce((sum, month) => sum + month.total, 0);
+
+                        // 작년 동일 기간(1월~현재월)의 매출 합계
+                        const prevTotal = prevYearData.data
+                          .slice(0, currentMonth) // 현재 월까지만 계산 (1월~현재월)
+                          .reduce((sum, month) => sum + month.total, 0);
+
+                        if (prevTotal === 0) return "-";
+                        const growthRate =
+                          ((currentTotal - prevTotal) / prevTotal) * 100;
+                        return `${
+                          growthRate > 0 ? "+" : ""
+                        }${growthRate.toFixed(1)}%`;
+                      })()}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-center text-gray-500">
+                      전년 대비({new Date().getMonth()} 월)
+                    </p>
+                    <p className="text-base text-center font-bold text-indigo-600">
+                      {(() => {
+                        // 현재 연도와 이전 연도 데이터 찾기
+                        const currentYearData = yearData.find(
+                          (d) => d.year === selectedYear
+                        );
+                        const prevYearData = yearData.find(
+                          (d) => d.year === selectedYear - 1
+                        );
+                        if (!currentYearData || !prevYearData) return "-";
+
+                        // 현재 월 가져오기 (예: 4월)
+                        const currentMonth = new Date().getMonth() + 1; // 0부터 시작하므로 +1
+
+                        // 이전 월까지의 데이터만 계산 (1월~이전월)
+                        const prevMonth = currentMonth - 1;
+
+                        if (prevMonth <= 0) {
+                          // 1월인 경우 비교할 이전 데이터가 없음
+                          return "-";
+                        }
+
+                        // 현재 연도의 이전 월까지의 매출 합계 (1월~이전월)
+                        const currentYearPrevMonthTotal = currentYearData.data
+                          .slice(0, prevMonth) // 이전 월까지만 계산 (1월~이전월)
+                          .reduce((sum, month) => sum + month.total, 0);
+
+                        // 작년 동일 기간(1월~이전월)의 매출 합계
+                        const prevYearSameMonthTotal = prevYearData.data
+                          .slice(0, prevMonth) // 이전 월까지만 계산 (1월~이전월)
+                          .reduce((sum, month) => sum + month.total, 0);
+
+                        if (prevYearSameMonthTotal === 0) return "-";
+
+                        const growthRate =
+                          ((currentYearPrevMonthTotal -
+                            prevYearSameMonthTotal) /
+                            prevYearSameMonthTotal) *
+                          100;
+
+                        return `${
+                          growthRate > 0 ? "+" : ""
+                        }${growthRate.toFixed(1)}%`;
+                      })()}
+                    </p>
+                  </div>
                 </div>
               </div>
             </CardContent>
