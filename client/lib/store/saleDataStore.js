@@ -6,19 +6,28 @@ const useSaleDataStore = create((set, get) => ({
   last7daySales: null,
   weekSalesData: null,
   error: null,
-  fetchData: async (businessNumber, base_date) => {
+  fetchData: async (businessNumber, start_date, end_date) => {
     const HOST = get().apiUrl;
     try {
+      // 주 단위 데이터를 가져오도록 수정
+      // start_date와 end_date를 모두 전달하여 해당 기간의 데이터를 가져옴
       const last7daySales =
         await fetch(`${HOST}/saleapi/last7daySales`, {
           method: "POST",
-          body: JSON.stringify({ business_number: businessNumber, base_date: base_date }),
+          body: JSON.stringify({ 
+            business_number: businessNumber, 
+            base_date: end_date,  // 기존 호환성을 위해 base_date 유지
+            start_date: start_date,  // 주의 시작 날짜 (월요일)
+            end_date: end_date  // 주의 끝 날짜 (일요일)
+          }),
           headers: { "Content-Type": "application/json" },
         }).then((res) => res.json())
 
       set({ last7daySales:last7daySales.result_7day });
+      console.log(`주 단위 데이터 가져오기 성공: ${start_date} ~ ${end_date}`);
     } catch (error) {
       set({ error: error.message });
+      console.error(`데이터 가져오기 오류: ${error.message}`);
     }
   },
   fetchWeekData: async (businessNumber, base_date, weekOffset) => {
