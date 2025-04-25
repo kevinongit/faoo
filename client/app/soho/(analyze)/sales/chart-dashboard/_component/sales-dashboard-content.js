@@ -321,14 +321,14 @@ export default function SalesDashboardContent() {
       <div className="container mx-auto p-3 pt-16 pb-20">
         <Card className="mb-2 shadow-md border border-gray-300 rounded-lg px-5 py-3 bg-blue-50">
           <CardHeader className="flex p-0 justify-between items-start">
-            <CardTitle className="text-gray-800">
+            <CardTitle className="text-gray-800 flex items-center justify-between w-full">
               <span className="text-xs">
                 {week_start_str.replace(/^(\d{4})(\d{2})(\d{2})$/, "$1.$2.$3")}{" "}
                 ~ {week_end_str.replace(/^(\d{4})(\d{2})(\d{2})$/, "$1.$2.$3")}
               </span>
               <div className="text-left">
                 <span className="text-blue-600 text-sm">
-                  누적 매출:{" "}
+                  매출:{" "}
                   {last7daySales
                     ? last7daySales
                         .reduce((sum, item) => sum + item.sum_amt, 0)
