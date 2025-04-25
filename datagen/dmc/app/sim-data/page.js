@@ -28,6 +28,7 @@ import {
 import DeliveryRatioSlider from "@/components/DeliveryRatioSlider";
 import OnlineSalesRatioSlider from "@/components/OnlineSalesRatioSlider";
 import MonthlySalesChart from "@/components/MonthlySalesChart";
+import { toast, Toaster } from "sonner";
 
 export default function SimData() {
   const {
@@ -62,9 +63,9 @@ export default function SimData() {
     weekendCloseTime: "22:00",
     hasDelivery: false,
     deliveryRatio: "30",
-    baeminRatio: "55",
+    baeminRatio: "50",
     coupangEatsRatio: "40",
-    yogiyoRatio: "5",
+    yogiyoRatio: "10",
     hasOnlineSales: false,
     onlineSalesRatio: "20",
     smartStoreRatio: "35",
@@ -88,6 +89,7 @@ export default function SimData() {
   const generateButtonRef = useRef(null);
   const [comparisonResult, setComparisonResult] = useState(null);
   const [collectionData, setCollectionData] = useState(null); // 데이터 수집 결과 저장
+  const [isResetting, setIsResetting] = useState(false);
 
   const stepLabels = [
     { id: 1, label: "데이터생성" },
@@ -2539,9 +2541,9 @@ export default function SimData() {
                   weekendCloseTime: "22:00",
                   hasDelivery: false,
                   deliveryRatio: "30",
-                  baeminRatio: "55",
+                  baeminRatio: "50",
                   coupangEatsRatio: "40",
-                  yogiyoRatio: "5",
+                  yogiyoRatio: "10",
                   hasOnlineSales: false,
                   onlineSalesRatio: "20",
                   smartStoreRatio: "35",
@@ -2596,8 +2598,8 @@ export default function SimData() {
       hasDelivery: true,
       deliveryRatio: 30,
       baeminRatio: 50,
-      coupangEatsRatio: 30,
-      yogiyoRatio: 20,
+      coupangEatsRatio: 40,
+      yogiyoRatio: 10,
       hasOnlineStore: false,
     });
 
@@ -2605,8 +2607,64 @@ export default function SimData() {
     setTimeout(scrollToGenerateButton, 100);
   };
 
+  const handleResetData = async () => {
+    console.log("Reset data started"); // 디버깅 로그
+    setIsResetting(true);
+    try {
+      console.log("Sending reset request for:", selectedUser); // 디버깅 로그
+      const response = await fetch("http://localhost:3400/reset-data", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          businessNumber: selectedUser,
+        }),
+      });
+
+      console.log("Response received:", response.status); // 디버깅 로그
+
+      if (!response.ok) {
+        throw new Error("데이터 초기화에 실패했습니다.");
+      }
+
+      const result = await response.json();
+      console.log("Reset result:", result); // 디버깅 로그
+
+      if (result.status === "success") {
+        toast.success("데이터가 성공적으로 초기화되었습니다.", {
+          duration: 3000,
+          position: "top-center",
+        });
+        // 상태 초기화
+        setGenerationResult(null);
+        setRevenueData(null);
+        setComparisonResult(null);
+        setCollectionData(null);
+        setCurrentStep(1);
+        setSteps({
+          step1: { status: "ready", completed: false },
+          step2: { status: "ready", completed: false },
+          step3: { status: "ready", completed: false },
+          step4: { status: "ready", completed: false },
+        });
+      } else {
+        throw new Error(result.message || "데이터 초기화에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("Error resetting data:", error);
+      toast.error(error.message, {
+        duration: 3000,
+        position: "top-center",
+      });
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+      <Toaster richColors position="top-center" />
       <Navigation />
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
@@ -2756,15 +2814,58 @@ export default function SimData() {
                     {stepLabels[currentStep - 1]?.label}
                   </h2>
                   {selectedUser && currentStep === 1 && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handlePresetClick}
-                      className="flex items-center gap-2"
-                    >
-                      <FileText className="h-4 w-4" />
-                      사업장 프리셋
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handlePresetClick}
+                        className="flex items-center gap-2"
+                      >
+                        <FileText className="h-4 w-4" />
+                        사업장 프리셋
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          console.log("Reset button clicked"); // 디버깅 로그
+                          handleResetData();
+                        }}
+                        disabled={isResetting}
+                        className="flex items-center gap-2"
+                      >
+                        {isResetting ? (
+                          <>
+                            <svg
+                              className="animate-spin h-4 w-4"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                              ></path>
+                            </svg>
+                            초기화 중...
+                          </>
+                        ) : (
+                          <>
+                            <RefreshCw className="h-4 w-4" />
+                            데이터 초기화
+                          </>
+                        )}
+                      </Button>
+                    </div>
                   )}
                 </div>
                 {currentStep !== 5 && (

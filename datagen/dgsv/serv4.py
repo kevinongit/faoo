@@ -11,7 +11,14 @@ import numpy as np
 from scipy.stats import norm
 
 app = Flask(__name__)
-CORS(app)
+# CORS 설정 수정
+CORS(app, resources={
+    r"/*": {  # 모든 경로에 대해 CORS 허용
+        "origins": ["http://localhost:3020", "http://localhost:3000"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 # Load sector-specific ratios
 with open('smb_sector.json', 'r', encoding='utf-8') as f:
@@ -23,6 +30,30 @@ data_generator = DataGenerator(SECTOR_RATIOS, SMB_USERS)
 CARD_TYPES = ["신한카드", "삼성카드", "현대카드", "롯데카드"]
 CARD_FEE_RATE = 0.02  # 카드사 수수료 2%
 DELIVERY_FEE_RATE = 0.10  # 배달 앱 수수료 10%
+
+# 뱅킹앱 매핑 정보를 저장할 파일 경로
+BANKING_APP_MAPPINGS_FILE = "banking_app_mappings.json"
+
+def load_banking_app_mappings():
+    """뱅킹앱 매핑 정보를 로드합니다."""
+    if os.path.exists(BANKING_APP_MAPPINGS_FILE):
+        try:
+            with open(BANKING_APP_MAPPINGS_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error loading banking app mappings: {e}")
+            return {"bankingApp1": "none", "bankingApp2": "none"}
+    return {"bankingApp1": "none", "bankingApp2": "none"}
+
+def save_banking_app_mappings(mappings):
+    """뱅킹앱 매핑 정보를 저장합니다."""
+    try:
+        with open(BANKING_APP_MAPPINGS_FILE, 'w', encoding='utf-8') as f:
+            json.dump(mappings, f, ensure_ascii=False, indent=2)
+        return True
+    except Exception as e:
+        print(f"Error saving banking app mappings: {e}")
+        return False
 
 # 현실적인 시간 분포 생성 (피크타임 반영)
 def generate_transaction_time(base_date, location_type, is_weekend=False, open_time=None, close_time=None):
@@ -1108,6 +1139,39 @@ def reset_data():
             'status': 'error',
             'message': f'데이터 초기화 중 오류가 발생했습니다: {str(e)}'
         }), 500
+
+@app.route('/api/banking-app-mappings', methods=['GET'])
+def get_banking_app_mappings():
+    """뱅킹앱 매핑 정보를 조회합니다."""
+    mappings = load_banking_app_mappings()
+    return jsonify({"mappings": mappings})
+
+@app.route('/api/banking-app-mappings', methods=['POST'])
+def update_banking_app_mappings():
+    """뱅킹앱 매핑 정보를 업데이트합니다."""
+    try:
+        data = request.get_json()
+        if not data or 'mappings' not in data:
+            return jsonify({"error": "Invalid request data"}), 400
+
+        mappings = data['mappings']
+        if not isinstance(mappings, dict):
+            return jsonify({"error": "Invalid mappings format"}), 400
+
+        # 필수 키 확인
+        required_keys = ['bankingApp1', 'bankingApp2']
+        if not all(key in mappings for key in required_keys):
+            return jsonify({"error": "Missing required mapping keys"}), 400
+
+        # 매핑 정보 저장
+        if save_banking_app_mappings(mappings):
+            return jsonify({"message": "Banking app mappings updated successfully"})
+        else:
+            return jsonify({"error": "Failed to save mappings"}), 500
+
+    except Exception as e:
+        print(f"Error updating banking app mappings: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3400, debug=True) 

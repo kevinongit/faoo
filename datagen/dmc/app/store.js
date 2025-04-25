@@ -6,6 +6,7 @@ export const useStore = create((set) => ({
   users: [],
   genDataStatus: {},
   genComparisonStatus: {},
+  bankingAppMappings: { bankingApp1: "none", bankingApp2: "none" },
 
   // Fetch users from server
   fetchUsers: async () => {
@@ -74,6 +75,23 @@ export const useStore = create((set) => ({
     } catch (error) {
       console.error("Error checking gen comparison:", error);
       return false;
+    }
+  },
+
+  setBankingAppMappings: (mappings) => set({ bankingAppMappings: mappings }),
+
+  // 뱅킹앱 매핑 정보 로드 함수 수정
+  loadBankingAppMappings: async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:3400/api/banking-app-mappings"
+      );
+      const data = await response.json();
+      set({ bankingAppMappings: data.mappings });
+      return data.mappings;
+    } catch (error) {
+      console.error("Error loading banking app mappings:", error);
+      return { bankingApp1: "none", bankingApp2: "none" };
     }
   },
 }));

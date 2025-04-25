@@ -114,6 +114,7 @@ function createChatRouter(io) {
       logger.error("Missing required fields in k-notify request");
       return res.status(400).json({ error: "Missing required fields" });
     }
+    console.log(req.body);
 
     const message = {
       from,

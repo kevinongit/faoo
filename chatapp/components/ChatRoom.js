@@ -220,7 +220,7 @@ export default function ChatRoom({ chatId }) {
     } else if (message.type === "notification") {
       const { title, content, link_title, link_uri } = message;
       const theme = getNotificationTheme(title);
-
+      console.log(link_uri);
       return (
         <motion.div
           key={index}

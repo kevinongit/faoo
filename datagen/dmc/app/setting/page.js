@@ -14,7 +14,8 @@ import { toast } from "sonner";
 import { Toaster } from "sonner";
 
 export default function Setting() {
-  const { users, fetchUsers } = useStore();
+  const { users, fetchUsers, bankingAppMappings, setBankingAppMappings } =
+    useStore();
   const [settings, setSettings] = useState({
     notifications: true,
     resourceMappings: {
@@ -36,15 +37,68 @@ export default function Setting() {
     }));
   };
 
-  const handleResourceMapping = (resource, userId) => {
+  const handleResourceMapping = async (resource, userId) => {
+    const newMappings = {
+      ...settings.resourceMappings,
+      [resource]: userId,
+    };
+
     setSettings((prev) => ({
       ...prev,
-      resourceMappings: {
-        ...prev.resourceMappings,
-        [resource]: userId,
-      },
+      resourceMappings: newMappings,
     }));
+
+    // 전역 상태 업데이트
+    setBankingAppMappings(newMappings);
+
+    // 서버에 매핑 정보 저장
+    try {
+      const response = await fetch(
+        "http://localhost:3400/api/banking-app-mappings",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            mappings: newMappings,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("매핑 정보 저장에 실패했습니다.");
+      }
+
+      toast.success("뱅킹앱 매핑이 저장되었습니다.");
+    } catch (error) {
+      console.error("Error saving mappings:", error);
+      toast.error("매핑 정보 저장에 실패했습니다.");
+    }
   };
+
+  // 컴포넌트 마운트 시 서버에서 매핑 정보 로드
+  useEffect(() => {
+    const loadMappings = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:3400/api/banking-app-mappings"
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setSettings((prev) => ({
+            ...prev,
+            resourceMappings: data.mappings,
+          }));
+          setBankingAppMappings(data.mappings);
+        }
+      } catch (error) {
+        console.error("Error loading mappings:", error);
+      }
+    };
+
+    loadMappings();
+  }, []);
 
   const handleResetData = async () => {
     if (!selectedBusiness) {
@@ -199,7 +253,7 @@ export default function Setting() {
                 <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
                   <div className="flex items-center gap-2 mb-4">
                     <Link2 className="h-5 w-5 text-primary" />
-                    <h3 className="text-lg font-medium">리소스 매핑</h3>
+                    <h3 className="text-lg font-medium">뱅킹 앱 매핑 관리</h3>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">

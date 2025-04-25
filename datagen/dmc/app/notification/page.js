@@ -14,7 +14,8 @@ import { Bell, Send, RefreshCw, CheckCircle, AlertCircle } from "lucide-react";
 import { useStore } from "../store";
 
 export default function Notification() {
-  const { users, fetchUsers } = useStore();
+  const { users, fetchUsers, bankingAppMappings, loadBankingAppMappings } =
+    useStore();
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(false);
   const [businessNumber, setBusinessNumber] = useState("");
@@ -31,7 +32,7 @@ export default function Notification() {
       content:
         "$BUSINESS_NAME 사장님, 이번 주 매출 리포트가 도착했어요. 지금 확인해보세요!",
       buttonName: "리포트 보기",
-      buttonUrl: "bapp1://sales/dashboard",
+      buttonUrl: "soho/home",
     },
     {
       id: templateId++,
@@ -39,7 +40,7 @@ export default function Notification() {
       content:
         "$BUSINESS_NAME 사장님, 이번 달 실적이 정리됐습니다. 자세히 확인해보세요!",
       buttonName: "확인하기",
-      buttonUrl: "bapp1://products",
+      buttonUrl: "soho/sales/dashboard",
     },
     {
       id: templateId++,
@@ -47,7 +48,7 @@ export default function Notification() {
       content:
         "$BUSINESS_NAME 사장님, 이번 주 매출이 평균보다 높아요. 자세한 내용 여기서!",
       buttonName: "자세히 보기",
-      buttonUrl: "https://example.com/deeplink/sales-increase",
+      buttonUrl: "soho/home",
     },
     {
       id: templateId++,
@@ -55,7 +56,7 @@ export default function Notification() {
       content:
         "$BUSINESS_NAME 사장님, 신용정보가 새로 업데이트됐어요. 확인해보세요!",
       buttonName: "업데이트 확인",
-      buttonUrl: "https://example.com/deeplink/credit-update",
+      buttonUrl: "soho/home",
     },
     {
       id: templateId++,
@@ -63,13 +64,22 @@ export default function Notification() {
       content:
         "$BUSINESS_NAME 사장님, 특별 이벤트에 초대합니다! 지금 참여해보세요!",
       buttonName: "참여하기",
-      buttonUrl: "https://example.com/deeplink/event",
+      buttonUrl: "soho/home",
+    },
+    {
+      id: templateId++,
+      title: "악성 리뷰 감지 알림",
+      content:
+        "$BUSINESS_NAME 사장님, 악성 리뷰가 감지되었습니다. 확인해보세요!",
+      buttonName: "확인하기",
+      buttonUrl: "soho/home",
     },
   ];
 
   useEffect(() => {
     fetchUsers();
-  }, [fetchUsers]);
+    loadBankingAppMappings();
+  }, [fetchUsers, loadBankingAppMappings]);
 
   useEffect(() => {
     const loginToChatServer = async () => {
@@ -106,6 +116,25 @@ export default function Notification() {
     }
   }, [selectedTemplate, businessNumber]);
 
+  const getBankingAppUrl = (businessNumber) => {
+    console.log("Getting banking app URL for:", businessNumber);
+    const user = users.find((u) => u.bid === businessNumber);
+    if (!user) return "soho/";
+
+    // 해당 사업자가 매핑된 뱅킹앱 찾기
+    const app1Mapping = bankingAppMappings?.bankingApp1;
+    const app2Mapping = bankingAppMappings?.bankingApp2;
+    console.log("Banking app mappings:", bankingAppMappings);
+
+    if (app1Mapping === businessNumber) {
+      return "bapp1://";
+    } else if (app2Mapping === businessNumber) {
+      return "bapp2://";
+    }
+
+    return "soho/"; // 기본값으로 soho/ 반환
+  };
+
   const sendNotification = async () => {
     if (!token || !businessNumber || !message) {
       alert("모든 필드를 채워주세요.");
@@ -115,6 +144,7 @@ export default function Notification() {
     try {
       const template = templates.find((t) => t.title === selectedTemplate);
       const selectedUser = users.find((user) => user.bid === businessNumber);
+      const bankingAppUrl = getBankingAppUrl(businessNumber);
 
       const payload = {
         to: selectedUser ? selectedUser.bid : businessNumber,
@@ -124,10 +154,10 @@ export default function Notification() {
         title: template.title,
         content: message,
         link_title: template.buttonName,
-        link_uri: template.buttonUrl,
+        link_uri: bankingAppUrl + template.buttonUrl,
         sdata: {},
       };
-
+      console.log("Sending notification with payload:", payload);
       const response = await fetch("http://localhost:5200/api/k-notify", {
         method: "POST",
         headers: {
