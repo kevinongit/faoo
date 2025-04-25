@@ -139,9 +139,10 @@ export default function DailySalesDetail() {
         sector={user?.smb_sector_en}
       />
       {/* 선택한 날짜 표시 */}
+
       <div className="container mx-auto p-3 pt-16 pb-20">
         {ratioData && (
-          <div className="mb-4 bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+          <div className="mb-4 bg-white rounded-lg shadow-sm border border-gray-300 overflow-hidden">
             {/* 날짜 표시 부분 */}
             <div className="flex items-center justify-between p-3 border-b border-gray-100">
               <div className="flex items-center gap-2">
