@@ -138,32 +138,65 @@ export default function DailySalesDetail() {
         business_number={user?.business_number}
         sector={user?.smb_sector_en}
       />
+      {/* 선택한 날짜 표시 */}
       <div className="container mx-auto p-3 pt-16 pb-20">
-        {/* 온라인/오프라인 매출 요약 */}
         {ratioData && (
-          <div className="flex justify-between mb-4 gap-2">
-            <div className="flex justify-between items-center p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg shadow-sm border border-blue-200 w-full">
-              <p className="text-xs text-gray-600 mb-1">온라인 매출</p>
-              <p className="text-lg font-bold text-blue-600 text-right">
-                {ratioData.online_sum?.toLocaleString() || 0}원
-              </p>
+          <div className="mb-4 bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+            {/* 날짜 표시 부분 */}
+            <div className="flex items-center justify-between p-3 border-b border-gray-100">
+              <div className="flex items-center gap-2">
+                <div className="bg-blue-100 p-1.5 rounded-full">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-blue-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+                <h2 className="text-sm font-medium text-gray-700">
+                  {base_date.getFullYear()}년 {base_date.getMonth() + 1}월{" "}
+                  {base_date.getDate()}일 매출 상세
+                </h2>
+              </div>
+              <span className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full font-medium">
+                {["일", "월", "화", "수", "목", "금", "토"][base_date.getDay()]}
+                요일
+              </span>
             </div>
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg shadow-sm border border-gray-200 w-full">
-              <p className="text-xs text-gray-600 mb-1">오프라인 매출</p>
-              <p className="text-lg font-bold text-gray-700">
-                {ratioData.offline_sum?.toLocaleString() || 0}원
-              </p>
+
+            {/* 온라인/오프라인 매출 요약 */}
+            <div className="flex divide-x divide-gray-100">
+              <div className="flex w-1/2 justify-between items-center p-3 bg-gradient-to-r from-blue-50 to-blue-100">
+                <p className="text-xs text-gray-600">온라인</p>
+                <p className="text-sm font-bold text-blue-600">
+                  {ratioData.online_sum?.toLocaleString() || 0}원
+                </p>
+              </div>
+              <div className="flex w-1/2 justify-between items-center p-3 bg-gray-50">
+                <p className="text-xs text-gray-600">오프라인</p>
+                <p className="text-sm font-bold text-gray-700">
+                  {ratioData.offline_sum?.toLocaleString() || 0}원
+                </p>
+              </div>
             </div>
           </div>
         )}
         {/* 금액별 / 건수별 선택 버튼 - Card 밖으로 이동 */}
         {/* 금액별 / 건수별 탭 */}
-        <div className="w-full mb-2">
+        <div className="w-full">
           <div className="flex">
             {["금액별", "건수별"].map((type) => (
               <button
                 key={type}
-                className={`flex-1 py-3 text-center font-semibold transition
+                className={`flex-1 py-2 text-center text-sm font-medium transition
                   ${
                     selectedType === type
                       ? "border-b-2 border-blue-500 bg-blue-200 text-blue-700"
@@ -179,7 +212,7 @@ export default function DailySalesDetail() {
 
         {/* 1. 플랫폼별 매출 비중 */}
 
-        <Card className="mb-6 shadow-md border border-gray-300 rounded-lg">
+        <Card className="mb-6 shadow-md border border-gray-300 rounded-none">
           <CardContent className="m-0 p-0">
             <p className="text-sm mx-3 my-2">플랫폼별 매출 비중</p>
             <ReactECharts
@@ -302,7 +335,7 @@ export default function DailySalesDetail() {
               <div>
                 <div className="flex flex-col justify-center w-full">
                   <p className="text-xs text-center">주 시간대</p>
-                  <p className="font-bold text-green-600 w-12 text-center">
+                  <p className="font-bold text-indigo-600 w-12 text-center">
                     {summary.mainHour}시
                   </p>
                 </div>
@@ -311,7 +344,7 @@ export default function DailySalesDetail() {
           </CardContent>
         </Card>
 
-        <Card className="mb-6 shadow-md border border-gray-300 rounded-lg">
+        <Card className="mb-6 shadow-md border border-gray-300">
           <CardContent className="m-0 p-0">
             <p className="text-sm mx-3 my-2">시간대별 매출 추이</p>
             <div
