@@ -273,6 +273,34 @@ export default function SohoHome() {
     return "";
   });
 
+  // 매출 목표값을 API에서 가져오는 상태 (페이지 접속마다 새로 가져옴)
+  const [apiGoalValue, setApiGoalValue] = useState("");
+
+  // 목표값을 API에서 가져오는 함수
+  const fetchGoalValue = async () => {
+    try {
+      // API 호출 예시 (실제 API 엔드포인트로 수정 필요)
+      const response = await fetch(
+        `http://localhost:6100/api/dashboard/sales/weekly_goal?business_number=${business_number}`
+      );
+      if (!response.ok) {
+        throw new Error("주간 목표 데이터를 불러오는 데 실패했습니다.");
+      }
+      const data = await response.json();
+      console.log("주간 목표 데이터:", data);
+
+      // API에서 받아온 목표값 설정 (daa.goal_value 등 실제 응답 구조에 맞게 수정 필요)
+      setApiGoalValue(
+        data.goal_value ||
+          Math.floor(Math.random() * 5000000 + 5000000).toString()
+      );
+    } catch (error) {
+      console.error("주간 목표 조회 오류:", error);
+      // API 오류 시 랜덤 값으로 설정 (테스트용)
+      setApiGoalValue(Math.floor(Math.random() * 5000000 + 5000000).toString());
+    }
+  };
+
   const openGoalModal = () => {
     setGoalInput(goalValue || "");
     setGoalModalOpen(true);
@@ -421,7 +449,7 @@ export default function SohoHome() {
                 <div className="flex space-x-4">
                   <div className="flex-1 mb-4">
                     <SalesProgressBar
-                      goalValue={goalValue}
+                      goalValue={apiGoalValue || goalValue} // API에서 가져온 값 우선 사용, 없으면 기존 값 사용
                       weekSales={weekSales}
                       setWeekSales={setWeekSales}
                     />

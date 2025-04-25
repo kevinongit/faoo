@@ -8,6 +8,7 @@ import BusinessHeader from "@/components/BusinessHeader";
 import BackHeader from "@/components/BackHeader";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { formatAmount } from "@/lib/utils";
 
 // 최근 6개월 매출 차트 컴포넌트
 const RecentSixMonthsChart = ({ yearData }) => {
@@ -372,7 +373,7 @@ export default function Trend() {
 
     return {
       month: `${maxSalesMonth.month}월`,
-      amount: `${(maxSalesMonth.total / 10000).toFixed(0)}만원`,
+      amount: `${formatAmount((maxSalesMonth.total / 10000).toFixed(0))}만원`,
     };
   }, [yearData, selectedYear]);
 

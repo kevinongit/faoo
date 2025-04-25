@@ -5,6 +5,11 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
+//금액 포매팅 하는 함수
+export const formatAmount = (amount) => {
+  return new Intl.NumberFormat("ko-KR").format(amount);
+};
+
 export function getSectorImage(sector) {
   let sectorImage = "";
   switch (sector) {
