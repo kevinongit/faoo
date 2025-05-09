@@ -6,10 +6,11 @@ import PageLayout from "../PageLayout";
 import useSalesSimulationStore from "../store/salesSimulationStore";
 import DeliveryRatioSlider from "../components/DeliveryRatioSlider";
 import OnlineSalesRatioSlider from "../components/OnlineSalesRatioSlider";
+import { DGSV2_URL } from "../constants/api";
 
 async function fetchUsers() {
   try {
-    const usersRes = await fetch("http://localhost:3400/users");
+    const usersRes = await fetch(`${DGSV2_URL}/users`);
     const users = await usersRes.json();
     return users;
   } catch (error) {

@@ -32,15 +32,15 @@ export default function Notification() {
       content:
         "$BUSINESS_NAME 사장님, 이번 주 매출 리포트가 도착했어요. 지금 확인해보세요!",
       buttonName: "리포트 보기",
-      buttonUrl: "soho/home",
+      buttonUrl: "weekly",
     },
     {
       id: templateId++,
       title: "월간 실적 업데이트",
       content:
-        "$BUSINESS_NAME 사장님, 이번 달 실적이 정리됐습니다. 자세히 확인해보세요!",
+        "$BUSINESS_NAME 사장님, 이번 달 매출 실적이 정리되었어요. IBK 소호플러스에서 지금 확인 해보세요!",
       buttonName: "확인하기",
-      buttonUrl: "soho/sales/dashboard",
+      buttonUrl: "monthly",
     },
     {
       id: templateId++,
@@ -48,7 +48,7 @@ export default function Notification() {
       content:
         "$BUSINESS_NAME 사장님, 이번 주 매출이 평균보다 높아요. 자세한 내용 여기서!",
       buttonName: "자세히 보기",
-      buttonUrl: "soho/home",
+      buttonUrl: "home",
     },
     {
       id: templateId++,
@@ -56,23 +56,39 @@ export default function Notification() {
       content:
         "$BUSINESS_NAME 사장님, 신용정보가 새로 업데이트됐어요. 확인해보세요!",
       buttonName: "업데이트 확인",
-      buttonUrl: "soho/home",
+      buttonUrl: "home",
     },
     {
       id: templateId++,
       title: "이벤트 참여 초대",
       content:
         "$BUSINESS_NAME 사장님, 특별 이벤트에 초대합니다! 지금 참여해보세요!",
-      buttonName: "참여하기",
-      buttonUrl: "soho/home",
+      buttonName: "이벤트 참여하기",
+      buttonUrl: "home",
     },
     {
       id: templateId++,
       title: "악성 리뷰 감지 알림",
       content:
         "$BUSINESS_NAME 사장님, 악성 리뷰가 감지되었습니다. 확인해보세요!",
-      buttonName: "확인하기",
-      buttonUrl: "soho/home",
+      buttonName: "악성리뷰 확인하기",
+      buttonUrl: "home",
+    },
+    {
+      id: templateId++,
+      title: "자금 캘린더가 완성 되었어요!",
+      content:
+        "$BUSINESS_NAME 사장님, 캘린더를 통해 자금 현황을 파악해 보세요!",
+      buttonName: "캘린더 확인하기",
+      buttonUrl: "calendar",
+    },
+    {
+      id: templateId++,
+      title: "매출추이를 확인해보세요!",
+      content:
+        "$BUSINESS_NAME 사장님, 매출추이를 분석했어요. 바로 확인해보세요!",
+      buttonName: "매출추이 확인하기",
+      buttonUrl: "trend",
     },
   ];
 

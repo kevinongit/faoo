@@ -1,9 +1,10 @@
-import PageLayout from '../PageLayout'
+import PageLayout from "../PageLayout";
 import TemporaryPage from "../TemporaryPage";
+import { DGSV2_URL } from "../constants/api";
 
 async function fetchUsersAndTrends() {
   try {
-    const usersRes = await fetch("http://localhost:3400/users");
+    const usersRes = await fetch(`${DGSV2_URL}/users`);
     const users = await usersRes.json();
     // console.log("Fetched users and trends:", { users, trends });
     return users;

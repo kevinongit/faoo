@@ -6,7 +6,6 @@ export default function Navigation() {
 
   const navItems = [
     { name: "시뮬레이션 데이터", path: "/sim-data" },
-    { name: "데이터 조회", path: "/data-inquiry" },
     { name: "알림", path: "/notification" },
     { name: "설정", path: "/setting" },
   ];

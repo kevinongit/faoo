@@ -83,7 +83,7 @@ def generate_sales_data(user, duration_days, weekday_avg_revenue, trend_type, pe
     # today = datetime(2025, 3, 10)
     today = datetime.now() - timedelta(days=1)
     start_date = today - timedelta(days=duration_days - 1)
-    sector = next(s for s in SECTOR_RATIOS if s["smb_sector"] == user["smb_sector_en"])
+    sector = next(s for s in SECTOR_RATIOS if s["smb_sector"] == user["smb_sector"])
 
     total_weekday_avg = weekday_avg_revenue / sector["card_ratio"]
     weekend_boost = random.uniform(1.1, 1.3)
@@ -363,7 +363,7 @@ def get_sectors():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/gen-sales', methods=['POST'])
-def generate_sales_data():
+def gen_salse():
     try:
         data = request.json
         print("\n=== /gen-sales API 호출 파라미터 ===")
@@ -613,4 +613,4 @@ def generate_sales_data_v2(business_info, sales_data, date_range, trend, seasona
     return result
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=3400)
+    app.run(debug=True, host='0.0.0.0', port=3399)

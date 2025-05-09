@@ -1,6 +1,7 @@
 import { create } from "zustand";
+import { DGSV2_URL } from "../constants/api";
 
-const API_BASE_URL = "http://localhost:3400";
+const API_BASE_URL = DGSV2_URL;
 
 const useSalesSimulationStore = create((set, get) => ({
   // 상태
