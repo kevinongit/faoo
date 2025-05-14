@@ -232,7 +232,12 @@ def generate_smb_revenue_direct():
 
             # 주중/주말 구분
             is_weekend = current_date.weekday() >= 5
-            base_sales = int(data['weekdayAvgSales']) * (1.2 if is_weekend else 1)
+            
+            # 주말인 경우 weekendAvgSales 사용, 아니면 weekdayAvgSales 사용
+            if is_weekend and 'weekendAvgSales' in data and data['weekendAvgSales']:
+                base_sales = int(data['weekendAvgSales'])
+            else:
+                base_sales = int(data['weekdayAvgSales'])
 
             # Apply trend and seasonal factors
             days_elapsed = (current_date - start_date).days
@@ -241,10 +246,33 @@ def generate_smb_revenue_direct():
             
             # Calculate adjusted sales
             adjusted_sales = base_sales * trend_factor * seasonal_factor
+            
+            # 전체 매출을 기준으로 각 매출 형태의 비율 계산
+            # 배달 매출 비율 계산
+            delivery_ratio = 0
+            if data.get('hasDelivery', False):
+                delivery_ratio = float(data.get('deliveryRatio', 0)) / 100
+                # Adjust delivery ratio based on location type
+                delivery_ratio = adjust_delivery_ratio(delivery_ratio, location_type)
+            
+            # 현금영수증 매출 비율 (고정 5%)
+            cash_ratio = 0.05
+            
+            # 세금계산서 매출 비율 (고정 1%)
+            tax_invoice_ratio = 0.01
+            
+            # 카드 매출 비율 (나머지)
+            card_ratio = 1 - delivery_ratio - cash_ratio - tax_invoice_ratio
+            
+            # 각 매출 형태별 금액 계산
+            card_sales = adjusted_sales * card_ratio
+            delivery_sales = adjusted_sales * delivery_ratio
+            cash_sales = adjusted_sales * cash_ratio
+            tax_invoice_sales = adjusted_sales * tax_invoice_ratio
 
             # Scale transaction count based on revenue and location type
-            card_txn_count = scale_transaction_count(adjusted_sales, location_type, is_weekend)
-            card_total = adjusted_sales
+            card_txn_count = scale_transaction_count(card_sales, location_type, is_weekend)
+            card_total = card_sales
 
             # 카드 거래 생성
             card_txns = []
@@ -303,13 +331,7 @@ def generate_smb_revenue_direct():
             })
 
             # 배달 플랫폼 데이터 생성
-            if data.get('hasDelivery', False):
-                delivery_ratio = float(data.get('deliveryRatio', 0)) / 100
-                # Adjust delivery ratio based on location type
-                delivery_ratio = adjust_delivery_ratio(delivery_ratio, location_type)
-                
-                # 배달앱 매출을 base_sales와 별개로 계산
-                delivery_sales = int(adjusted_sales * (delivery_ratio / (1 - delivery_ratio)))
+            if data.get('hasDelivery', False) and delivery_ratio > 0:
 
                 for platform, ratio in [
                     ('baemin', float(data.get('baeminRatio', 0)) / 100),
@@ -358,24 +380,28 @@ def generate_smb_revenue_direct():
                         })
 
             # 현금영수증 데이터 생성
-            cash_txn_count = random.randint(0, 4)
+            cash_txn_count = random.randint(1, 3) if cash_sales > 0 else 0
             cash_txns = []
-            for _ in range(cash_txn_count):
-                amount = generate_variable_amount(50000, 0.8, 1.5)
-                approval_time = generate_transaction_time(
-                    current_date,
-                    location_type,
-                    is_weekend,
-                    data.get('weekdayOpenTime'),
-                    data.get('weekdayCloseTime')
-                )
-                cash_txns.append({
-                    "amount": amount,
-                    "receipt_number": f"CR-{current_date.strftime('%y%m%d')}-{str(len(cash_txns)+1).zfill(3)}",
-                    "issue_datetime": approval_time.strftime("%Y-%m-%d %H:%M:%S"),
-                    "customer_id": f"010-{random.randint(1000, 9999)}-{random.randint(1000, 9999)}",
-                    "status": "issued"
-                })
+            
+            # 현금영수증 거래 건수가 있는 경우
+            if cash_txn_count > 0:
+                avg_cash_amount = cash_sales / cash_txn_count
+                for _ in range(cash_txn_count):
+                    amount = generate_variable_amount(avg_cash_amount, 0.8, 1.2)
+                    approval_time = generate_transaction_time(
+                        current_date,
+                        location_type,
+                        is_weekend,
+                        data.get('weekdayOpenTime'),
+                        data.get('weekdayCloseTime')
+                    )
+                    cash_txns.append({
+                        "amount": amount,
+                        "receipt_number": f"CR-{current_date.strftime('%y%m%d')}-{str(len(cash_txns)+1).zfill(3)}",
+                        "issue_datetime": approval_time.strftime("%Y-%m-%d %H:%M:%S"),
+                        "customer_id": f"010-{random.randint(1000, 9999)}-{random.randint(1000, 9999)}",
+                        "status": "issued"
+                    })
 
             result['hometax_cash_receipts'].append({
                 "date": current_date.strftime("%Y-%m-%d"),
@@ -387,8 +413,8 @@ def generate_smb_revenue_direct():
             })
 
             # 세금계산서 데이터 생성
-            if random.random() < 0.1:  # 10% 확률로 세금계산서 발행
-                amount = generate_variable_amount(50000, 0.8, 1.5)
+            if tax_invoice_sales > 0:  # 세금계산서 매출이 있는 경우
+                amount = tax_invoice_sales
                 approval_time = generate_transaction_time(
                     current_date,
                     location_type,
@@ -407,7 +433,7 @@ def generate_smb_revenue_direct():
                         "payment_method": "card",
                         "card_type": random.choice(CARD_TYPES),
                         "approval_number": f"TI-{chr(65+data_count)}{random.randint(100000000, 999999999)}",
-                        "buyer_name": "㈜중구테크",
+                        "buyer_name": "주)중구테크",
                         "buyer_business_number": "123-45-67890",
                         "buyer_address": "서울시 중구 세종대로 100",
                         "status": "issued"
