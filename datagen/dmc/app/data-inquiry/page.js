@@ -893,10 +893,19 @@ export default function DataInquiryPage() {
       setSubData(initialSubData);
       setCurrentPage(initialPages);
 
+      // 현재 날짜로 설정
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth() + 1;
+      
+      // 현재 년도와 월로 상태 업데이트
+      setSelectedYear(currentYear);
+      setSelectedMonth(currentMonth);
+
       // 월별 매출 정보와 일별 매출 데이터 함께 가져오기
       setMonthlySalesLoading(true);
       setDailySalesLoading(true);
-      const salesData = await fetchMonthlySales(selectedUser, selectedYear, selectedMonth);
+      const salesData = await fetchMonthlySales(selectedUser, currentYear, currentMonth);
 
       if (salesData) {
         setMonthlySales(salesData.monthly);
