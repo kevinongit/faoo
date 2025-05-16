@@ -1199,5 +1199,985 @@ def update_banking_app_mappings():
         print(f"Error updating banking app mappings: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
+@app.route('/get-user-info', methods=['GET'])
+def get_user_info():
+    business_number = request.args.get('business_number')
+    if not business_number:
+        return jsonify({
+            'status': 'error',
+            'message': '사업자번호가 필요합니다.'
+        }), 400
+    
+    try:
+        # MongoDB 연결
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client['fidb']
+        users_collection = db['users']
+        
+        # 사업자번호로 사용자 정보 조회
+        user = users_collection.find_one({'business_number': business_number}, {'_id': 0})
+        
+        if not user:
+            return jsonify({
+                'status': 'error',
+                'message': '해당 사업자 정보를 찾을 수 없습니다.'
+            }), 404
+        
+        return jsonify({
+            'status': 'success',
+            'data': user
+        })
+    except Exception as e:
+        print(f"사용자 정보 조회 중 오류 발생: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': f'서버 오류: {str(e)}'
+        }), 500
+
+@app.route('/get-monthly-sales', methods=['GET'])
+def get_monthly_sales():
+    # 요청 파라미터 가져오기
+    business_number = request.args.get('business_number')
+    year = request.args.get('year')
+    month = request.args.get('month')
+    
+    # 필수 파라미터 검증
+    if not business_number or not year or not month:
+        return jsonify({
+            'status': 'error',
+            'message': '사업자번호, 년도, 월 정보가 모두 필요합니다.'
+        }), 400
+    
+    try:
+        # MongoDB 연결
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client['analyzed']
+        monthly_sales_collection = db['monthly_sales']
+        
+        # 년도와 월을 정수로 변환
+        year = int(year)
+        month = int(month)
+        
+        # 해당 사업자의 특정 년월 매출 정보 조회
+        query = {
+            'business_number': business_number,
+            'year': year,
+            'month': month
+        }
+        
+        monthly_data = monthly_sales_collection.find_one(query, {'_id': 0})
+        
+        if not monthly_data:
+            # 데이터가 없는 경우 기본 구조 반환
+            return jsonify({
+                'status': 'success',
+                'data': {
+                    'business_number': business_number,
+                    'year': year,
+                    'month': month,
+                    'total_sales': 0,
+                    'online_sales': 0,
+                    'offline_sales': 0,
+                    'transaction_count': 0,
+                    'average_sales': 0,
+                    'platform_sales': {
+                        'baemin': 0,
+                        'coupang': 0,
+                        'yogiyo': 0
+                    }
+                }
+            })
+        
+        # 데이터가 있는 경우 해당 데이터 반환
+        return jsonify({
+            'status': 'success',
+            'data': monthly_data
+        })
+    
+    except Exception as e:
+        print(f"월별 매출 정보 조회 중 오류 발생: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': f'서버 오류: {str(e)}'
+        }), 500
+def get_daily_sales():
+    # 요청 파라미터 가져오기
+    business_number = request.args.get('business_number')
+    year = request.args.get('year')
+    month = request.args.get('month')
+    
+    # 필수 파라미터 검증
+    if not business_number or not year or not month:
+        return jsonify({
+            'status': 'error',
+            'message': '사업자번호, 년도, 월 정보가 모두 필요합니다.'
+        }), 400
+    
+    try:
+        # MongoDB 연결
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client['analyzed']
+        daily_sales_collection = db['daily_sales']
+        
+        # 년도와 월을 정수로 변환
+        year = int(year)
+        month = int(month)
+        
+        # 현재 날짜 확인
+        current_date = datetime.now()
+        current_year = current_date.year
+        current_month = current_date.month
+        
+        # 현재 날짜 이후의 데이터는 반환하지 않음
+        if year > current_year or (year == current_year and month > current_month):
+            return jsonify({
+                'status': 'success',
+                'data': []
+            })
+        
+        # 해당 사업자의 특정 년월의 일별 매출 정보 조회
+        query = {
+            'business_number': business_number,
+            'year': year,
+            'month': month
+        }
+        
+        # 일별 매출 데이터 가져오기
+        daily_data = list(daily_sales_collection.find(query, {'_id': 0}).sort('day', 1))
+        
+        if not daily_data:
+            # 데이터가 없는 경우 빈 배열 반환
+            return jsonify({
+                'status': 'success',
+                'data': []
+            })
+        
+        # 데이터가 있는 경우 해당 데이터 반환
+        return jsonify({
+            'status': 'success',
+            'data': daily_data
+        })
+    
+    except Exception as e:
+        print(f"일별 매출 정보 조회 중 오류 발생: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': f'서버 오류: {str(e)}'
+        }), 500
+
+@app.route('/get-card-transactions', methods=['GET'])
+def get_card_transactions():
+    business_number = request.args.get('business_number')
+    date = request.args.get('date')
+    
+    if not business_number or not date:
+        return jsonify({
+            'status': 'error',
+            'message': 'Business number and date are required'
+        })
+    
+    try:
+        # MongoDB에서 해당 사업자번호와 날짜에 대한 카드 거래 내역 조회
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client['originalData']
+        collection = db['sales_data']
+        
+        # 날짜 형식 변환 (YYYY-MM-DD, YYYYMMDD 등 다양한 형식 지원)
+        date_formats = [date]  # 원본 형식
+        
+        # YYYY-MM-DD 형식 변환
+        date_parts = date.split('-')
+        if len(date_parts) == 3:
+            date_formats.append(f"{date_parts[0]}-{int(date_parts[1]):02d}-{int(date_parts[2]):02d}")
+        
+        # YYYYMMDD 형식 변환
+        date_without_dash = date.replace('-', '')
+        if date_without_dash != date:
+            date_formats.append(date_without_dash)
+            
+        print(f"\n[DEBUG] Looking for card transactions for business_number={business_number}, date={date}")
+        print(f"[DEBUG] Date formats to try: {date_formats}")
+        
+        # sales_data2.json 구조에서 card_sales_data.daily_sales_data에서 해당 날짜의 데이터 검색
+        query = {
+            'business_number': business_number,
+            'card_sales_data.daily_sales_data': {
+                '$elemMatch': {
+                    'date': {'$in': date_formats}
+                }
+            }
+        }
+        
+        print(f"[DEBUG] Card transactions query: {query}")
+        results = list(collection.find(query))
+        print(f"[DEBUG] Found {len(results)} documents with card_sales_data")
+        
+        transactions = []
+        
+        # 검색 결과가 있는 경우
+        if results:
+            for result in results:
+                card_sales_data = result.get('card_sales_data', {})
+                daily_sales_data = card_sales_data.get('daily_sales_data', [])
+                
+                # 해당 날짜의 데이터 찾기
+                for daily_data in daily_sales_data:
+                    if daily_data.get('date') in date_formats:
+                        approval_details = daily_data.get('approval_details', [])
+                        print(f"[DEBUG] Found {len(approval_details)} approval_details for date {daily_data.get('date')}")
+                        
+                        # approval_details에서 거래 정보 추출
+                        for approval in approval_details:
+                            transactions.append({
+                                'approval_datetime': approval.get('approval_datetime', ''),
+                                'card_type': approval.get('card_type', ''),
+                                'approval_number': approval.get('approval_number', ''),
+                                'transaction_type': approval.get('transaction_type', 'card'),
+                                'supply_value': approval.get('supply_value', 0),
+                                'vat': approval.get('vat', 0),
+                                'total_amount': approval.get('total_amount', 0)
+                            })
+        
+        # 데이터가 없는 경우 로그 추가
+        if not transactions:
+            print(f"[DEBUG] No card transactions found for business_number={business_number}, date={date}")
+            # 사용자에게 데이터가 없음을 알리기 위해 비어있는 배열 반환
+        
+        # 필요한 필드만 추출하여 반환
+        formatted_transactions = []
+        for transaction in transactions:
+            formatted_transactions.append({
+                'approval_datetime': transaction.get('approval_datetime', ''),
+                'card_type': transaction.get('card_type', ''),
+                'approval_number': transaction.get('approval_number', ''),
+                'transaction_type': 'online' if transaction.get('transaction_type') == 'online_card' else 'offline',
+                'supply_value': transaction.get('supply_value', 0),
+                'vat': transaction.get('vat', 0),
+                'total_amount': transaction.get('total_amount', 0)
+            })
+        
+        # 거래 통계 정보 가져오기
+        sales_stats = {}
+        
+        # 실제 sales_stats 정보가 있는지 확인
+        for result in results:
+            # 해당 날짜의 데이터에서 sales_stats 찾기
+            for daily_data in result.get('card_sales_data', {}).get('daily_sales_data', []):
+                if daily_data.get('date') in date_formats:
+                    if 'sales_stats' in daily_data:
+                        sales_stats = daily_data.get('sales_stats')
+                        print(f"[DEBUG] Found sales_stats in data: {sales_stats}")
+                        break
+        
+        # sales_stats가 없는 경우 기본값 설정
+        if not sales_stats:
+            sales_stats = {
+                'approval_count': len(formatted_transactions),
+                'acquisition_count': len(formatted_transactions),
+                'deposit_count': len(formatted_transactions) > 0 and 1 or 0
+            }
+            print(f"[DEBUG] Using default sales_stats: {sales_stats}")
+        
+        # 추가 통계 정보 계산
+        total_amount = sum(t.get('total_amount', 0) for t in formatted_transactions)
+        total_supply_value = sum(t.get('supply_value', 0) for t in formatted_transactions)
+        total_vat = sum(t.get('vat', 0) for t in formatted_transactions)
+        
+        # 기존 sales_stats에 추가 정보 추가
+        sales_stats.update({
+            'total_amount': total_amount,
+            'total_supply_value': total_supply_value,
+            'total_vat': total_vat
+        })
+        
+        return jsonify({
+            'status': 'success',
+            'data': {
+                'transactions': formatted_transactions,
+                'sales_stats': sales_stats
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'서버 오류: {str(e)}'
+        }), 500
+
+@app.route('/get-baemin-transactions', methods=['GET'])
+def get_baemin_transactions():
+    business_number = request.args.get('business_number')
+    date = request.args.get('date')
+    
+    if not business_number or not date:
+        return jsonify({
+            'status': 'error',
+            'message': '사업자번호와 날짜 정보가 모두 필요합니다.'
+        }), 400
+    
+    try:
+        # MongoDB에서 해당 사업자번호와 날짜에 대한 배민 거래 내역 조회
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client['originalData']
+        collection = db['sales_data']
+        
+        # baemin.daily_sales_data 구조에서 해당 날짜의 주문 내역 조회
+        pipeline = [
+            {
+                "$match": {
+                    "business_number": business_number
+                }
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "business_number": 1,
+                    "baemin_data": "$baemin.daily_sales_data"
+                }
+            },
+            {
+                "$unwind": "$baemin_data"
+            },
+            {
+                "$match": {
+                    "baemin_data.date": date
+                }
+            },
+            {
+                "$unwind": {
+                    "path": "$baemin_data.daily_sales",
+                    "preserveNullAndEmptyArrays": False
+                }
+            },
+            {
+                "$project": {
+                    "business_number": 1,
+                    "order_data": "$baemin_data.daily_sales"
+                }
+            }
+        ]
+        
+        # 디버깅을 위한 로그 추가
+        print(f"\n[DEBUG] Baemin transactions pipeline: {pipeline}")
+        
+        transactions = list(collection.aggregate(pipeline))
+        print(f"[DEBUG] Found {len(transactions)} baemin transactions with pipeline")
+        
+        # 데이터가 없으면 날짜 형식을 변경해서 다시 시도
+        if not transactions:
+            # YYYY-MM-DD 형식으로 날짜를 변환해서 시도
+            date_parts = date.split('-')
+            if len(date_parts) == 3:
+                alt_date = f"{date_parts[0]}-{int(date_parts[1]):02d}-{int(date_parts[2]):02d}"
+                if alt_date != date:
+                    # 파이프라인 재실행
+                    pipeline[3]["$match"]["baemin_data.date"] = alt_date
+                    print(f"[DEBUG] Trying alternative date format: {alt_date}")
+                    transactions = list(collection.aggregate(pipeline))
+                    print(f"[DEBUG] Found {len(transactions)} baemin transactions with alternative date format")
+        
+        # 필요한 필드만 추출하여 반환
+        formatted_transactions = []
+        for transaction in transactions:
+            if 'order_data' in transaction:
+                order_data = transaction['order_data']
+                # 시간 형식 변환 (HH:MM -> YYYY-MM-DD HH:MM)
+                order_time = order_data.get('order_time', '')
+                if order_time and ':' in order_time and len(order_time) <= 5:  # HH:MM 형식인 경우
+                    order_time = f"{date} {order_time}"
+                
+                # 결제 방식 한글화
+                payment_method = order_data.get('payment_method', '')
+                if payment_method == 'card':
+                    payment_method = '카드'
+                elif payment_method == 'cash':
+                    payment_method = '현금'
+                
+                # 배달비 추출
+                fee_detail = order_data.get('fee_detail', {})
+                delivery_fee = fee_detail.get('delivery_fee', 0) if isinstance(fee_detail, dict) else 0
+                
+                formatted_transactions.append({
+                    'order_time': order_time,
+                    'order_number': order_data.get('order_id', ''),
+                    'payment_method': payment_method,
+                    'delivery_fee': delivery_fee,
+                    'discount_amount': 0,  # 배민 데이터에는 할인 정보가 없음
+                    'total_amount': order_data.get('amount', 0)
+                })
+        
+        # 거래 통계 정보 계산
+        total_amount = sum(t.get('total_amount', 0) for t in formatted_transactions)
+        order_count = len(formatted_transactions)
+        avg_order_value = total_amount / order_count if order_count > 0 else 0
+        
+        sales_stats = {
+            'order_count': order_count,
+            'total_sales': total_amount,
+            'avg_order_value': avg_order_value
+        }
+        
+        return jsonify({
+            'status': 'success',
+            'data': {
+                'transactions': formatted_transactions,
+                'sales_stats': sales_stats
+            }
+        })
+        
+    except Exception as e:
+        print(f"배민 거래 내역 조회 중 오류 발생: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': f'서버 오류: {str(e)}'
+        }), 500
+        
+        # 데이터가 없는 경우 표준 쿼리도 시도
+        if not transactions:
+            # 일반적인 쿼리 시도
+            query = {
+                'business_number': business_number,
+                '$or': [
+                    {'date': {'$in': date_formats}},
+                    {'date': {'$regex': date.replace('-', '[-]?')}}
+                ]
+            }
+            
+            print(f"[DEBUG] Trying standard query: {query}")
+            std_results = list(collection.find(query))
+            print(f"[DEBUG] Found {len(std_results)} baemin transactions with standard query")
+            
+            if std_results:
+                for order in std_results:
+                    if 'platform' in order and 'baemin' in order['platform'].lower() or \
+                       'delivery_platform' in order and 'baemin' in order['delivery_platform'].lower() or \
+                       'transaction_type' in order and 'baemin' in order['transaction_type'].lower():
+                        
+                        transactions.append({
+                            'order_time': order.get('order_time', '') or order.get('transaction_time', ''),
+                            'order_number': order.get('order_number', '') or order.get('receipt_number', ''),
+                            'menu_items': order.get('menu_items', [{"메뉴": "배민 주문", "가격": order.get('total_amount', 0)}]),
+                            'payment_method': order.get('payment_method', '카드'),
+                            'delivery_fee': order.get('delivery_fee', 0),
+                            'discount_amount': order.get('discount_amount', 0),
+                            'total_amount': order.get('total_amount', 0)
+                        })
+        
+        # 데이터가 없는 경우 로그 추가
+        if not transactions:
+            print(f"[DEBUG] No baemin transactions found for business_number={business_number}, date={date}")
+        
+        # 필요한 필드만 추출하여 반환
+        formatted_transactions = []
+        for transaction in transactions:
+            # 필드 이름이 다를 수 있으므로 여러 가능한 필드명 확인
+            order_time = transaction.get('order_time', '') or transaction.get('transaction_time', '') or transaction.get('approval_datetime', '')
+            order_number = transaction.get('order_number', '') or transaction.get('receipt_number', '') or transaction.get('approval_number', '')
+            menu_items = transaction.get('menu_items', [])
+            if not menu_items and transaction.get('menu_name'):
+                menu_items = [{'메뉴': transaction.get('menu_name'), '가격': transaction.get('menu_price', 0)}]
+            
+            payment_method = transaction.get('payment_method', '') or transaction.get('card_type', '카드')
+            delivery_fee = transaction.get('delivery_fee', 0)
+            discount_amount = transaction.get('discount_amount', 0)
+            total_amount = transaction.get('total_amount', 0)
+            
+            formatted_transactions.append({
+                'order_time': order_time,
+                'order_number': order_number,
+                'menu_items': menu_items,
+                'payment_method': payment_method,
+                'delivery_fee': delivery_fee,
+                'discount_amount': discount_amount,
+                'total_amount': total_amount
+            })
+        
+        # 거래 통계 정보 가져오기
+        sales_stats = {}
+        
+        # 실제 통계 정보가 있는지 확인
+        for result in results:
+            baemin_data = result.get('baemin', {})
+            daily_sales_data = baemin_data.get('daily_sales_data', [])
+            print(f"[DEBUG] Checking stats in {len(daily_sales_data)} daily_sales_data entries")
+            
+            for daily_data in daily_sales_data:
+                daily_date = str(daily_data.get('date', ''))
+                print(f"[DEBUG] Checking stats for date: '{daily_date}'")
+                
+                # 날짜 형식 비교
+                date_match = False
+                for fmt in date_formats:
+                    if daily_date == fmt:
+                        date_match = True
+                        print(f"[DEBUG] Date match found for stats: '{daily_date}' == '{fmt}'")
+                        break
+                
+                if date_match or daily_date in date_formats:
+                    # 배민 데이터에서 사용할 수 있는 통계 정보 추출
+                    total_sales_amount = daily_data.get('total_sales_amount', 0)
+                    total_fee = daily_data.get('total_fee', 0)
+                    settlement_amount = daily_data.get('settlement_amount', 0)
+                    
+                    print(f"[DEBUG] Found stats: total_sales_amount={total_sales_amount}, total_fee={total_fee}")
+                    
+                    if total_sales_amount > 0:
+                        sales_stats = {
+                            'order_count': len(daily_data.get('daily_sales', [])),
+                            'total_sales': total_sales_amount,
+                            'total_fee': total_fee,
+                            'settlement_amount': settlement_amount,
+                            'payment_status': daily_data.get('payment_status', ''),
+                            'payment_due_date': daily_data.get('payment_due_date', ''),
+                            'settlement_reference': daily_data.get('settlement_reference', '')
+                        }
+                        print(f"[DEBUG] Found baemin sales_stats in data: {sales_stats}")
+                        break
+            if sales_stats:  # 통계 정보를 찾았으면 루프 종료
+                break
+        
+        # 통계 정보가 없는 경우 기본값 계산
+        if not sales_stats:
+            total_amount = sum(t.get('total_amount', 0) for t in formatted_transactions)
+            total_delivery_fee = sum(t.get('delivery_fee', 0) for t in formatted_transactions)
+            
+            sales_stats = {
+                'order_count': len(formatted_transactions),
+                'total_sales': total_amount,
+                'total_fee': total_delivery_fee,
+                'settlement_amount': total_amount - total_delivery_fee,
+                'avg_order_value': total_amount / len(formatted_transactions) if formatted_transactions else 0
+            }
+            print(f"[DEBUG] Using calculated baemin sales_stats: {sales_stats}")
+        
+        # 평균 주문 금액이 없는 경우 계산
+        if 'avg_order_value' not in sales_stats and sales_stats.get('order_count', 0) > 0:
+            sales_stats['avg_order_value'] = sales_stats.get('total_sales', 0) / sales_stats.get('order_count', 1)
+        
+        return jsonify({
+            'status': 'success',
+            'transactions': formatted_transactions,
+            'sales_stats': sales_stats
+        })
+    except Exception as e:
+        print(f"[ERROR] Error in get_baemin_transactions: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'message': f'서버 오류: {str(e)}'
+        }), 500
+
+@app.route('/get-coupang-transactions', methods=['GET'])
+def get_coupang_transactions():
+    business_number = request.args.get('business_number')
+    date = request.args.get('date')
+    
+    if not business_number or not date:
+        return jsonify({
+            'status': 'error',
+            'message': '사업자번호와 날짜 정보가 모두 필요합니다.'
+        }), 400
+    
+    try:
+        # MongoDB에서 해당 사업자번호와 날짜에 대한 쿠팡이츠 거래 내역 조회
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client['originalData']
+        collection = db['sales_data']
+        
+        # coupangeats.daily_sales_data 구조에서 해당 날짜의 주문 내역 조회
+        pipeline = [
+            {
+                "$match": {
+                    "business_number": business_number
+                }
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "business_number": 1,
+                    "coupang_data": "$coupangeats.daily_sales_data"
+                }
+            },
+            {
+                "$unwind": "$coupang_data"
+            },
+            {
+                "$match": {
+                    "coupang_data.date": date
+                }
+            },
+            {
+                "$unwind": {
+                    "path": "$coupang_data.daily_sales",
+                    "preserveNullAndEmptyArrays": False
+                }
+            },
+            {
+                "$project": {
+                    "business_number": 1,
+                    "order_data": "$coupang_data.daily_sales"
+                }
+            }
+        ]
+        
+        # 디버깅을 위한 로그 추가
+        print(f"\n[DEBUG] Coupang transactions pipeline: {pipeline}")
+        
+        transactions = list(collection.aggregate(pipeline))
+        print(f"[DEBUG] Found {len(transactions)} coupang transactions with pipeline")
+        
+        # 데이터가 없으면 날짜 형식을 변경해서 다시 시도
+        if not transactions:
+            # YYYY-MM-DD 형식으로 날짜를 변환해서 시도
+            date_parts = date.split('-')
+            if len(date_parts) == 3:
+                alt_date = f"{date_parts[0]}-{int(date_parts[1]):02d}-{int(date_parts[2]):02d}"
+                if alt_date != date:
+                    # 파이프라인 재실행
+                    pipeline[3]["$match"]["coupang_data.date"] = alt_date
+                    print(f"[DEBUG] Trying alternative date format: {alt_date}")
+                    transactions = list(collection.aggregate(pipeline))
+                    print(f"[DEBUG] Found {len(transactions)} coupang transactions with alternative date format")
+        
+        # 필요한 필드만 추출하여 반환
+        formatted_transactions = []
+        for transaction in transactions:
+            if 'order_data' in transaction:
+                order_data = transaction['order_data']
+                # 시간 형식 변환 (HH:MM -> YYYY-MM-DD HH:MM)
+                order_time = order_data.get('order_time', '')
+                if order_time and ':' in order_time and len(order_time) <= 5:  # HH:MM 형식인 경우
+                    order_time = f"{date} {order_time}"
+                
+                # 결제 방식 한글화
+                payment_method = order_data.get('payment_method', '')
+                if payment_method == 'card':
+                    payment_method = '카드'
+                elif payment_method == 'cash':
+                    payment_method = '현금'
+                
+                # 배달비 추출
+                fee_detail = order_data.get('fee_detail', {})
+                delivery_fee = fee_detail.get('delivery_fee', 0) if isinstance(fee_detail, dict) else 0
+                
+                formatted_transactions.append({
+                    'order_time': order_time,
+                    'order_number': order_data.get('order_id', ''),
+                    'payment_method': payment_method,
+                    'delivery_fee': delivery_fee,
+                    'discount_amount': 0,  # 쿠팡이츠 데이터에는 할인 정보가 없음
+                    'total_amount': order_data.get('amount', 0)
+                })
+        
+        # 거래 통계 정보 계산
+        total_amount = sum(t.get('total_amount', 0) for t in formatted_transactions)
+        order_count = len(formatted_transactions)
+        avg_order_value = total_amount / order_count if order_count > 0 else 0
+        
+        sales_stats = {
+            'order_count': order_count,
+            'total_sales': total_amount,
+            'avg_order_value': avg_order_value
+        }
+        
+        return jsonify({
+            'status': 'success',
+            'data': {
+                'transactions': formatted_transactions,
+                'sales_stats': sales_stats
+            }
+        })
+        
+    except Exception as e:
+        print(f"쿠팡이츠 거래 내역 조회 중 오류 발생: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': f'서버 오류: {str(e)}'
+        }), 500
+
+@app.route('/get-yogiyo-transactions', methods=['GET'])
+def get_yogiyo_transactions():
+    business_number = request.args.get('business_number')
+    date = request.args.get('date')
+    
+    if not business_number or not date:
+        return jsonify({
+            'status': 'error',
+            'message': '사업자번호와 날짜 정보가 모두 필요합니다.'
+        }), 400
+    
+    try:
+        # MongoDB에서 해당 사업자번호와 날짜에 대한 요기요 거래 내역 조회
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client['originalData']
+        collection = db['sales_data']
+        
+        # yogiyo.daily_sales_data 구조에서 해당 날짜의 주문 내역 조회
+        pipeline = [
+            {
+                "$match": {
+                    "business_number": business_number
+                }
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "business_number": 1,
+                    "yogiyo_data": "$yogiyo.daily_sales_data"
+                }
+            },
+            {
+                "$unwind": "$yogiyo_data"
+            },
+            {
+                "$match": {
+                    "yogiyo_data.date": date
+                }
+            },
+            {
+                "$unwind": {
+                    "path": "$yogiyo_data.daily_sales",
+                    "preserveNullAndEmptyArrays": False
+                }
+            },
+            {
+                "$project": {
+                    "business_number": 1,
+                    "order_data": "$yogiyo_data.daily_sales"
+                }
+            }
+        ]
+        
+        # 디버깅을 위한 로그 추가
+        print(f"\n[DEBUG] Yogiyo transactions pipeline: {pipeline}")
+        
+        transactions = list(collection.aggregate(pipeline))
+        print(f"[DEBUG] Found {len(transactions)} yogiyo transactions with pipeline")
+        
+        # 데이터가 없으면 날짜 형식을 변경해서 다시 시도
+        if not transactions:
+            # YYYY-MM-DD 형식으로 날짜를 변환해서 시도
+            date_parts = date.split('-')
+            if len(date_parts) == 3:
+                alt_date = f"{date_parts[0]}-{int(date_parts[1]):02d}-{int(date_parts[2]):02d}"
+                if alt_date != date:
+                    # 파이프라인 재실행
+                    pipeline[3]["$match"]["yogiyo_data.date"] = alt_date
+                    print(f"[DEBUG] Trying alternative date format: {alt_date}")
+                    transactions = list(collection.aggregate(pipeline))
+                    print(f"[DEBUG] Found {len(transactions)} yogiyo transactions with alternative date format")
+        
+        # 필요한 필드만 추출하여 반환
+        formatted_transactions = []
+        for transaction in transactions:
+            if 'order_data' in transaction:
+                order_data = transaction['order_data']
+                # 시간 형식 변환 (HH:MM -> YYYY-MM-DD HH:MM)
+                order_time = order_data.get('order_time', '')
+                if order_time and ':' in order_time and len(order_time) <= 5:  # HH:MM 형식인 경우
+                    order_time = f"{date} {order_time}"
+                
+                # 결제 방식 한글화
+                payment_method = order_data.get('payment_method', '')
+                if payment_method == 'card':
+                    payment_method = '카드'
+                elif payment_method == 'cash':
+                    payment_method = '현금'
+                
+                formatted_transactions.append({
+                    'order_time': order_time,
+                    'order_number': order_data.get('order_id', ''),
+                    'payment_method': payment_method,
+                    'delivery_fee': order_data.get('fee_detail', {}).get('delivery_fee', 0),
+                    'discount_amount': 0,  # 요기요 데이터에는 할인 정보가 없음
+                    'total_amount': order_data.get('amount', 0)
+                })
+        
+        # 거래 통계 정보 계산
+        total_amount = sum(t.get('total_amount', 0) for t in formatted_transactions)
+        order_count = len(formatted_transactions)
+        avg_order_value = total_amount / order_count if order_count > 0 else 0
+        
+        sales_stats = {
+            'order_count': order_count,
+            'total_sales': total_amount,
+            'avg_order_value': avg_order_value
+        }
+        
+        return jsonify({
+            'status': 'success',
+            'data': {
+                'transactions': formatted_transactions,
+                'sales_stats': sales_stats
+            }
+        })
+        
+    except Exception as e:
+        print(f"요기요 거래 내역 조회 중 오류 발생: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': f'서버 오류: {str(e)}'
+        }), 500
+
+@app.route('/get-cash-transactions', methods=['GET'])
+def get_cash_transactions():
+    business_number = request.args.get('business_number')
+    date = request.args.get('date')
+    
+    if not business_number or not date:
+        return jsonify({
+            'status': 'error',
+            'message': '사업자번호와 날짜 정보가 모두 필요합니다.'
+        }), 400
+    
+    try:
+        # MongoDB에서 해당 사업자번호와 날짜에 대한 현금 거래 내역 조회
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client['originalData']
+        collection = db['sales_data']
+        
+        # hometax_cash_receipts 구조에서 해당 날짜의 현금 영수증 내역 조회
+        pipeline = [
+            {
+                "$match": {
+                    "business_number": business_number
+                }
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "business_number": 1,
+                    "cash_data": "$hometax_cash_receipts"
+                }
+            },
+            {
+                "$unwind": "$cash_data"
+            },
+            {
+                "$match": {
+                    "cash_data.date": date
+                }
+            },
+            {
+                "$unwind": {
+                    "path": "$cash_data.cash_receipts",
+                    "preserveNullAndEmptyArrays": False
+                }
+            },
+            {
+                "$project": {
+                    "business_number": 1,
+                    "receipt_data": "$cash_data.cash_receipts",
+                    "date": "$cash_data.date"
+                }
+            }
+        ]
+        
+        # 디버깅을 위한 로그 추가
+        print(f"\n[DEBUG] Cash transactions pipeline: {pipeline}")
+        
+        transactions = list(collection.aggregate(pipeline))
+        print(f"[DEBUG] Found {len(transactions)} cash transactions with pipeline")
+        
+        # 데이터가 없으면 날짜 형식을 변경해서 다시 시도
+        if not transactions:
+            # YYYY-MM-DD 형식으로 날짜를 변환해서 시도
+            date_parts = date.split('-')
+            if len(date_parts) == 3:
+                alt_date = f"{date_parts[0]}-{int(date_parts[1]):02d}-{int(date_parts[2]):02d}"
+                if alt_date != date:
+                    # 파이프라인 재실행
+                    pipeline[3]["$match"]["cash_data.date"] = alt_date
+                    print(f"[DEBUG] Trying alternative date format: {alt_date}")
+                    transactions = list(collection.aggregate(pipeline))
+                    print(f"[DEBUG] Found {len(transactions)} cash transactions with alternative date format")
+        
+        # 필요한 필드만 추출하여 반환
+        formatted_transactions = []
+        for transaction in transactions:
+            if 'receipt_data' in transaction:
+                receipt_data = transaction['receipt_data']
+                # 시간 형식 변환 (HH:MM:SS -> YYYY-MM-DD HH:MM:SS)
+                issue_datetime = receipt_data.get('issue_datetime', '')
+                if issue_datetime and not issue_datetime.startswith(date):
+                    if len(issue_datetime) <= 8:  # HH:MM:SS 형식인 경우
+                        issue_datetime = f"{date} {issue_datetime}"
+                
+                formatted_transactions.append({
+                    'transaction_time': issue_datetime,
+                    'receipt_number': receipt_data.get('receipt_number', ''),
+                    'customer_id': receipt_data.get('customer_id', ''),
+                    'status': receipt_data.get('status', 'issued'),
+                    'total_amount': receipt_data.get('amount', 0)
+                })
+        
+        # 거래 통계 정보 계산
+        total_amount = sum(t.get('total_amount', 0) for t in formatted_transactions)
+        transaction_count = len(formatted_transactions)
+        avg_transaction = total_amount / transaction_count if transaction_count > 0 else 0
+        
+        # 통계 정보 가져오기
+        stats_pipeline = [
+            {
+                "$match": {
+                    "business_number": business_number
+                }
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "cash_data": "$hometax_cash_receipts"
+                }
+            },
+            {
+                "$unwind": "$cash_data"
+            },
+            {
+                "$match": {
+                    "cash_data.date": date
+                }
+            },
+            {
+                "$project": {
+                    "total_cash_amount": "$cash_data.total_cash_amount",
+                    "issued_count": "$cash_data.issued_count",
+                    "non_issued_count": "$cash_data.non_issued_count",
+                    "total_issued_amount": "$cash_data.total_issued_amount"
+                }
+            }
+        ]
+        
+        stats_result = list(collection.aggregate(stats_pipeline))
+        
+        sales_stats = {
+            'transaction_count': transaction_count,
+            'total_sales': total_amount,
+            'avg_transaction': avg_transaction
+        }
+        
+        # 데이터베이스에서 통계 정보가 있는 경우 추가
+        if stats_result:
+            stats = stats_result[0]
+            sales_stats.update({
+                'total_cash_amount': stats.get('total_cash_amount', total_amount),
+                'issued_count': stats.get('issued_count', transaction_count),
+                'non_issued_count': stats.get('non_issued_count', 0),
+                'total_issued_amount': stats.get('total_issued_amount', total_amount)
+            })
+        
+        return jsonify({
+            'status': 'success',
+            'data': {
+                'transactions': formatted_transactions,
+                'sales_stats': sales_stats
+            }
+        })
+        
+    except Exception as e:
+        print(f"현금 거래 내역 조회 중 오류 발생: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': f'서버 오류: {str(e)}'
+        }), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3400, debug=True) 
